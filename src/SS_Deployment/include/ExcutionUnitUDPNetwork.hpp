@@ -17,4 +17,6 @@ private:
 
 	std::shared_ptr<INetworkContainer> m_udpContainer;
 	std::thread m_masterThread;
+
+	bool m_ThreadShouldExit;
 };

@@ -8,7 +8,6 @@ int main(int argc, char** argv)
 	LOG(INFO) << "Welcome to SmartHomePlatform...";
 	auto l_deployment = std::make_shared<SmartHomeDeployment>();
 	l_deployment->start();
-	l_deployment->shutdown();
 	LOG(INFO) << "Say Good Bye!!!";
 	return 0;
 }

@@ -4,13 +4,15 @@
 #include "ContainerNetwork.hpp"
 #include "glog/logging.h"
 
-MasterThreadNetworkUnit::MasterThreadNetworkUnit()
+MasterThreadNetworkUnit::MasterThreadNetworkUnit(): m_ThreadShouldExit(false)
 {
 	LOG(INFO) << "Construct MasterThreadNetworkUnit";
 }
 
 MasterThreadNetworkUnit::~MasterThreadNetworkUnit()
 {
+	m_ThreadShouldExit = true;
+	m_masterThread.join();
 	LOG(INFO) << "de-construct MasterThreadNetworkUnit";
 }
 
@@ -26,13 +28,14 @@ bool MasterThreadNetworkUnit::run()
 
 bool MasterThreadNetworkUnit::masterThreadTask()
 {
+	LOG(INFO) << "MasterThreadNetworkUnit::masterThreadTask start";
 	if(false == m_udpContainer->create())
 	{
 		LOG(WARNING) << "MasterThreadNetworkUnit call UDPContainer::create failed";
 		return false;
 	}
 
-	while(true)
+	while(m_ThreadShouldExit == false)
 	{
 		std::string l_data = m_udpContainer->read(1, 0);
 		if(l_data == std::string("selectError"))
@@ -59,6 +62,6 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 			}
 		}
 	}
-
+	LOG(INFO) << "MasterThreadNetworkUnit::masterThreadTask start";
 	return true;
 }

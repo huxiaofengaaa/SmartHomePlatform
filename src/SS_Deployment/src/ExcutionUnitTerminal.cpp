@@ -2,17 +2,21 @@
 #include <unistd.h>
 #include "ExcutionUnitTerminal.hpp"
 #include "ContainerTerminal.hpp"
+#include "EventTypeStruct.hpp"
 #include "glog/logging.h"
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
-TerminalThreadUnit::TerminalThreadUnit()
+TerminalThreadUnit::TerminalThreadUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
+	: m_dataCallback(p_callback), m_ThreadShouldExit(false)
 {
 	LOG(INFO) << "construct TerminalThreadUnit";
 }
 
 TerminalThreadUnit::~TerminalThreadUnit()
 {
+	m_ThreadShouldExit = true;
+	m_masterThread.join();
 	LOG(INFO) << "de-construct TerminalThreadUnit";
 }
 
@@ -38,6 +42,7 @@ bool TerminalThreadUnit::isErrorOccurred(std::string p_data)
 
 bool TerminalThreadUnit::masterThreadTask()
 {
+	LOG(INFO) << "TerminalThreadUnit::masterThreadTask start";
 	m_terminalContainer->write(std::string(PLATFORM_NAME));
 	do
 	{
@@ -59,11 +64,14 @@ bool TerminalThreadUnit::masterThreadTask()
 			if(l_data.empty() == false)
 			{
 				LOG(INFO) << "TerminalContainer read data :" << l_data;
+				auto l_eventobj = std::make_shared<EventTypeDataObject>(EventType::E_EVENT_TYPE_TERMINAL_INPUT,
+						l_data.c_str(), l_data.size());
+				m_dataCallback(l_eventobj);
 			}
 			m_terminalContainer->write(std::string(PLATFORM_NAME));
 		}
 	}
-	while(true);
-
+	while(m_ThreadShouldExit == false);
+	LOG(INFO) << "TerminalThreadUnit::masterThreadTask exit";
 	return true;
 }
