@@ -16,7 +16,7 @@ SmartHomeDeployment::SmartHomeDeployment()
 	std::function<bool(std::shared_ptr<EventTypeDataObject>)> l_UDPDataCallback =
 			std::bind(&SmartHomeDeployment::UeContextRawDataCallback,
 			this, std::placeholders::_1);
-	m_udpNetworkUnit = std::make_shared<MasterThreadNetworkUnit>();
+	m_udpNetworkUnit = std::make_shared<MasterThreadNetworkUnit>(l_UDPDataCallback);
 
 	std::function<bool(std::shared_ptr<EventTypeDataObject>)> l_terminalDataCallback =
 			std::bind(&SmartHomeDeployment::TerminalRawDataCallback,

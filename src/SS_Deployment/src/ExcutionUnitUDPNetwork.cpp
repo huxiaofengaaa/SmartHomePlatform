@@ -4,7 +4,8 @@
 #include "ContainerNetwork.hpp"
 #include "glog/logging.h"
 
-MasterThreadNetworkUnit::MasterThreadNetworkUnit(): m_ThreadShouldExit(false)
+MasterThreadNetworkUnit::MasterThreadNetworkUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
+	: m_ThreadShouldExit(false), m_dataCallback(p_callback)
 {
 	LOG(INFO) << "Construct MasterThreadNetworkUnit";
 }
@@ -26,6 +27,16 @@ bool MasterThreadNetworkUnit::run()
 	return true;
 }
 
+bool MasterThreadNetworkUnit::isErrorOccurred(std::string p_data)
+{
+	if(p_data == std::string("selectError") || p_data == std::string("readError") ||
+			p_data == std::string("codeError"))
+	{
+		return true;
+	}
+	return false;
+}
+
 bool MasterThreadNetworkUnit::masterThreadTask()
 {
 	LOG(INFO) << "MasterThreadNetworkUnit::masterThreadTask start";
@@ -38,27 +49,22 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 	while(m_ThreadShouldExit == false)
 	{
 		std::string l_data = m_udpContainer->read(1, 0);
-		if(l_data == std::string("selectError"))
+		if(true == isErrorOccurred(l_data))
 		{
-			LOG(WARNING) << "UDPContainer select error: " << l_data;
+			LOG(WARNING) << "TerminalContainer read data failed: " << l_data;
 		}
 		else if(l_data == std::string("timeout"))
 		{
 
-		}
-		else if(l_data == std::string("readError"))
-		{
-			LOG(WARNING) << "UDPContainer read fd error: " << l_data;
-		}
-		else if(l_data == std::string("codeError"))
-		{
-			LOG(WARNING) << "UDPContainer code error: " << l_data;
 		}
 		else
 		{
 			if(l_data.empty() == false)
 			{
 				LOG(INFO) << "UDPContainer read data :" << l_data;
+				auto l_eventobj = std::make_shared<EventTypeDataObject>(EventType::E_EVENT_TYPE_ANDLINK_DEVICE,
+						l_data.c_str(), l_data.size());
+				m_dataCallback(l_eventobj);
 			}
 		}
 	}
