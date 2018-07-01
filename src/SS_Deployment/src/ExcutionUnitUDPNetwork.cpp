@@ -2,15 +2,16 @@
 #include <unistd.h>
 #include "ExcutionUnitUDPNetwork.hpp"
 #include "ContainerNetwork.hpp"
+#include "glog/logging.h"
 
 MasterThreadNetworkUnit::MasterThreadNetworkUnit()
 {
-
+	LOG(INFO) << "Construct MasterThreadNetworkUnit";
 }
 
 MasterThreadNetworkUnit::~MasterThreadNetworkUnit()
 {
-
+	LOG(INFO) << "de-construct MasterThreadNetworkUnit";
 }
 
 bool MasterThreadNetworkUnit::run()
@@ -19,6 +20,7 @@ bool MasterThreadNetworkUnit::run()
 
 	std::function<bool()> l_threadtask = std::bind(&MasterThreadNetworkUnit::masterThreadTask, this);
 	m_masterThread = std::thread(l_threadtask);
+	LOG(INFO) << "create thread for MasterThreadNetworkUnit successfully";
 	return true;
 }
 
@@ -26,6 +28,7 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 {
 	if(false == m_udpContainer->create())
 	{
+		LOG(WARNING) << "MasterThreadNetworkUnit call UDPContainer::create failed";
 		return false;
 	}
 
@@ -34,25 +37,25 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 		std::string l_data = m_udpContainer->read(1, 0);
 		if(l_data == std::string("selectError"))
 		{
-			std::cout << l_data << std::endl;
+			LOG(WARNING) << "UDPContainer select error: " << l_data;
 		}
 		else if(l_data == std::string("timeout"))
 		{
-//			std::cout << l_data << std::endl;
+
 		}
 		else if(l_data == std::string("readError"))
 		{
-			std::cout << l_data << std::endl;
+			LOG(WARNING) << "UDPContainer read fd error: " << l_data;
 		}
 		else if(l_data == std::string("codeError"))
 		{
-			std::cout << l_data << std::endl;
+			LOG(WARNING) << "UDPContainer code error: " << l_data;
 		}
 		else
 		{
 			if(l_data.empty() == false)
 			{
-				std::cout << l_data << std::endl;
+				LOG(INFO) << "UDPContainer read data :" << l_data;
 			}
 		}
 	}
