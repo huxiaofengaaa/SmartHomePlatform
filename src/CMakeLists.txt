@@ -10,6 +10,8 @@ add_subdirectory(SS_DataChannel)
 add_subdirectory(SS_EventResolve)
 add_subdirectory(SS_SysMechanish)
 
+add_dependencies(sysMechanish glog)
+
 add_executable(SmartHomePlatform SmartHomeMain.cpp
                                  SS_Deployment/src/SmartHomeDeployment.cpp
                                  SS_Deployment/src/ExcutionUnitUDPNetwork.cpp
