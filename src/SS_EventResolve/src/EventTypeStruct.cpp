@@ -43,7 +43,8 @@ std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> 
 	default:
 		break;
 	}
-	os << ",size: " << strlen(obj->m_rawData);
+	os << ", size: " << strlen(obj->m_rawData);
+	os << ", msg: " << obj->m_rawData;
 
 	return os;
 }
@@ -70,5 +71,6 @@ std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeNetworkDataO
 	os << ", size:" << obj->m_rawData.size();
 	os << ", IP:" << inet_ntoa(obj->m_clientAddr.sin_addr);
 	os << ", Port:" << ntohs(obj->m_clientAddr.sin_port);
+	os << ", msg: " << obj->m_rawData;
 	return os;
 }

@@ -1,6 +1,7 @@
 #include "SmartHomeDeployment.hpp"
 #include "SignalRegister.hpp"
 #include "glog/logging.h"
+#include "AndlinkDeviceEventHandler.hpp"
 #include <unistd.h>
 #include <functional>
 
@@ -56,7 +57,16 @@ void SmartHomeDeployment::UeContextThreadTaskMainLoop()
 		else
 		{
 			auto l_event = detachUeContextEventObject();
-			LOG(INFO) << l_event;
+			AndlinkDeviceEventHandler l_handler;
+			std::string resp = l_handler.run(l_event);
+			if(resp.empty() == false)
+			{
+				int l_serverSockfd = l_event->m_serverSocketFd;
+				struct sockaddr_in l_cliAddr = l_event->m_clientAddr;
+				writeDataToSocketFd(l_serverSockfd, l_cliAddr, resp);
+				LOG(INFO) << "send msg to IP:" << inet_ntoa(l_cliAddr.sin_addr)
+						<< ":Port" << ntohs(l_cliAddr.sin_port) << ", msg: " << resp;
+			}
 		}
 	}
 	LOG(INFO) << "UeContextThreadTask main loop exit";
@@ -83,7 +93,7 @@ void SmartHomeDeployment::start()
 		else
 		{
 			auto l_event = detachTerminalEventObject();
-			LOG(INFO) << l_event;
+			//LOG(INFO) << l_event;
 		}
 	}
 	LOG(INFO) << "SmartHomeDeployment main loop exit";
@@ -136,7 +146,7 @@ bool SmartHomeDeployment::isTerminalEventObjectNotEmpty()
 bool SmartHomeDeployment::TerminalRawDataCallback(std::shared_ptr<EventTypeDataObject> p_event)
 {
 	addTerminalEventObject(p_event);
-	LOG(INFO) << "add terminal raw event object to queue, current event number: " << getTerminalEventObjectSize();
+	LOG(INFO) << "Current Quene size " << getUeContextEventObjectSize() << ", recv msg : " << p_event;
 	return true;
 }
 
@@ -178,7 +188,7 @@ bool SmartHomeDeployment::isUeContextEventObjectNotEmpty()
 bool SmartHomeDeployment::UeContextRawDataCallback(std::shared_ptr<EventTypeNetworkDataObject> p_event)
 {
 	addUeContextEventObject(p_event);
-	LOG(INFO) << "add UDP raw event object to queue, current event number: " << getUeContextEventObjectSize();
+	LOG(INFO) << "Current Quene size " << getUeContextEventObjectSize() << ", recv msg : " << p_event;
 	return true;
 }
 
