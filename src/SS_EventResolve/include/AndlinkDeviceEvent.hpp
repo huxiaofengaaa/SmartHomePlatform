@@ -75,6 +75,21 @@ struct Interface56_Auth_Resp
 	std::string ServerIP;
 };
 
+struct Interface56_heartbeat_Req
+{
+	std::string RPCMethod;
+	std::string deviceId;
+	std::string MAC;
+	std::string IPAddr;
+};
+
+struct Interface56_heartbeat_Resp
+{
+	int respCode;
+	long heartBeatTime;
+	std::string ServerIP;
+};
+
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
 
 std::string build_register_response_success_msg(struct Interface56_Register_Resp resp);
@@ -88,3 +103,5 @@ std::string build_online_response_failed_msg(struct Interface56_Online_Resp resp
 bool resolve_if56_auth_request_msg(std::string msg, struct Interface56_Auth_Req* req);
 std::string build_auth_response_msg(struct Interface56_Auth_Resp resp);
 
+bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_heartbeat_Req* req);
+std::string build_heartbeat_response_msg(struct Interface56_heartbeat_Resp resp);
