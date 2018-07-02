@@ -5,7 +5,7 @@
 #include "glog/logging.h"
 
 MasterThreadNetworkUnit::MasterThreadNetworkUnit(std::string p_host, int p_port,
-		std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
+		std::function<bool(std::shared_ptr<EventTypeNetworkDataObject>)> p_callback)
 	: m_host(p_host), m_port(p_port), m_ThreadShouldExit(false), m_dataCallback(p_callback)
 {
 	LOG(INFO) << "Construct MasterThreadNetworkUnit - " << m_host << ":" << m_port;
@@ -62,9 +62,10 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 		{
 			if(l_data->m_rawData.empty() == false)
 			{
-				LOG(INFO) << "UDPContainer read data :" << l_data->m_rawData;
-				auto l_eventobj = std::make_shared<EventTypeDataObject>(EventType::E_EVENT_TYPE_ANDLINK_DEVICE,
-						l_data->m_rawData.c_str(), l_data->m_rawData.size());
+				auto l_eventobj = std::make_shared<EventTypeNetworkDataObject>(
+						l_data->m_clientAddr,
+						l_data->m_fd,
+						l_data->m_rawData);
 				m_dataCallback(l_eventobj);
 			}
 		}

@@ -15,7 +15,7 @@ SmartHomeDeployment::SmartHomeDeployment()
 
 	m_cmdHandler = std::make_shared<TerminalCommnadHandler>(std::shared_ptr<SmartHomeDeployment>(this));
 
-	std::function<bool(std::shared_ptr<EventTypeDataObject>)> l_UDPDataCallback =
+	std::function<bool(std::shared_ptr<EventTypeNetworkDataObject>)> l_UDPDataCallback =
 			std::bind(&SmartHomeDeployment::UeContextRawDataCallback,
 			this, std::placeholders::_1);
 	m_udpNetworkUnit = std::make_shared<MasterThreadNetworkUnit>("127.0.0.1", 6887, l_UDPDataCallback);
@@ -56,7 +56,7 @@ void SmartHomeDeployment::UeContextThreadTaskMainLoop()
 		else
 		{
 			auto l_event = detachUeContextEventObject();
-			//TODO
+			LOG(INFO) << l_event;
 		}
 	}
 	LOG(INFO) << "UeContextThreadTask main loop exit";
@@ -140,7 +140,7 @@ bool SmartHomeDeployment::TerminalRawDataCallback(std::shared_ptr<EventTypeDataO
 	return true;
 }
 
-void SmartHomeDeployment::addUeContextEventObject(std::shared_ptr<EventTypeDataObject> p_event)
+void SmartHomeDeployment::addUeContextEventObject(std::shared_ptr<EventTypeNetworkDataObject> p_event)
 {
 	m_UeContextEventQueueMutex.lock();
 	m_UeContextEventQueue.push_back(p_event);
@@ -148,9 +148,9 @@ void SmartHomeDeployment::addUeContextEventObject(std::shared_ptr<EventTypeDataO
 	m_UeContextEventQueueNotify.notifyAll();
 }
 
-std::shared_ptr<EventTypeDataObject> SmartHomeDeployment::detachUeContextEventObject()
+std::shared_ptr<EventTypeNetworkDataObject> SmartHomeDeployment::detachUeContextEventObject()
 {
-	std::shared_ptr<EventTypeDataObject> l_event;
+	std::shared_ptr<EventTypeNetworkDataObject> l_event;
 	m_UeContextEventQueueMutex.lock();
 	if(m_UeContextEventQueue.empty() == false)
 	{
@@ -175,7 +175,7 @@ bool SmartHomeDeployment::isUeContextEventObjectNotEmpty()
 	return getUeContextEventObjectSize() > 0;
 }
 
-bool SmartHomeDeployment::UeContextRawDataCallback(std::shared_ptr<EventTypeDataObject> p_event)
+bool SmartHomeDeployment::UeContextRawDataCallback(std::shared_ptr<EventTypeNetworkDataObject> p_event)
 {
 	addUeContextEventObject(p_event);
 	LOG(INFO) << "add UDP raw event object to queue, current event number: " << getUeContextEventObjectSize();

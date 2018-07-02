@@ -4,6 +4,10 @@
 #include <string>
 #include <iostream>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 enum class ANDLINKDeviceDataType
 {
@@ -35,5 +39,24 @@ struct EventTypeDataObject
 	char* m_rawData;
 };
 
-std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj);
+struct EventTypeNetworkDataObject
+{
+	EventTypeNetworkDataObject(struct sockaddr_in p_cliAddr, int p_sockfd, std::string p_rawData)
+		: m_clientAddr(p_cliAddr), m_cliSockLength(sizeof(struct sockaddr_in)), m_serverSocketFd(p_sockfd),
+		  m_rawData(p_rawData), m_eventType(EventType::E_EVENT_TYPE_ANDLINK_DEVICE)
+	{
 
+	}
+	~EventTypeNetworkDataObject()
+	{
+
+	}
+	struct sockaddr_in m_clientAddr;
+	socklen_t m_cliSockLength;
+	int m_serverSocketFd;
+	std::string m_rawData;
+	EventType m_eventType;
+};
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj);
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeNetworkDataObject> obj);

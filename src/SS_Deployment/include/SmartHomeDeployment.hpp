@@ -19,7 +19,7 @@ public:
 	bool shutdown(int p_signum);
 
 	bool TerminalRawDataCallback(std::shared_ptr<EventTypeDataObject> p_event);
-	bool UeContextRawDataCallback(std::shared_ptr<EventTypeDataObject> p_event);
+	bool UeContextRawDataCallback(std::shared_ptr<EventTypeNetworkDataObject> p_event);
 
 private:
 	bool createUeContextThread(int p_threadNumber);
@@ -42,11 +42,11 @@ private:
 
 	// Uecontext event
 	std::shared_ptr<MasterThreadNetworkUnit> m_udpNetworkUnit;
-	std::vector<std::shared_ptr<EventTypeDataObject>> m_UeContextEventQueue;
+	std::vector<std::shared_ptr<EventTypeNetworkDataObject>> m_UeContextEventQueue;
 	std::mutex m_UeContextEventQueueMutex;
 	SystemNotify m_UeContextEventQueueNotify;
-	void addUeContextEventObject(std::shared_ptr<EventTypeDataObject> p_event);
-	std::shared_ptr<EventTypeDataObject> detachUeContextEventObject();
+	void addUeContextEventObject(std::shared_ptr<EventTypeNetworkDataObject> p_event);
+	std::shared_ptr<EventTypeNetworkDataObject> detachUeContextEventObject();
 	int getUeContextEventObjectSize();
 	bool isUeContextEventObjectNotEmpty();
 };
