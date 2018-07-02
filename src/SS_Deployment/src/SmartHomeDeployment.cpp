@@ -14,8 +14,6 @@ SmartHomeDeployment::SmartHomeDeployment()
 	l_regster.registerSignal(SIGINT, l_sigintTask);
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
-	m_cmdHandler = std::make_shared<TerminalCommnadHandler>(std::shared_ptr<SmartHomeDeployment>(this));
-
 	std::function<bool(std::shared_ptr<EventTypeNetworkDataObject>)> l_UDPDataCallback =
 			std::bind(&SmartHomeDeployment::UeContextRawDataCallback,
 			this, std::placeholders::_1);

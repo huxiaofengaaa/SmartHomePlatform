@@ -28,8 +28,6 @@ private:
 	bool m_deploymentShouldExit;
 	std::vector<std::thread> m_UeContextThreadList;
 
-	std::shared_ptr<TerminalCommnadHandler> m_cmdHandler;
-
 	// terminal event
 	std::shared_ptr<TerminalThreadUnit> m_terminalUnit;
 	std::vector<std::shared_ptr<EventTypeDataObject>> m_TerminalEventQueue;
