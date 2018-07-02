@@ -1,3 +1,5 @@
+set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
+
 include_directories(include)
 include_directories(${CMAKE_SOURCE_DIR}/library/glog/src/)
 
