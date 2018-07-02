@@ -26,3 +26,4 @@ int createTCPClientSocket(std::string p_host, int p_port);
 std::string readDataFromFdWithTimeout(int p_fd, int p_timeoutSec, int p_timeoutUsec);
 std::shared_ptr<NetworkData> readDataFromSocketFdWithTimeout(int p_fd, int p_timeoutSec, int p_timeoutUsec);
 ssize_t writeDataToFd(int p_fd, std::string p_data);
+ssize_t writeDataToSocketFd(int p_fd, struct sockaddr_in p_addr, std::string p_data);

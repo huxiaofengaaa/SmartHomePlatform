@@ -177,6 +177,11 @@ std::string readDataFromFdWithTimeout(int p_fd, int p_timeoutSec, int p_timeoutU
 	return std::string("CodeError");
 }
 
+ssize_t writeDataToSocketFd(int p_fd, struct sockaddr_in p_addr, std::string p_data)
+{
+	return sendto(p_fd, p_data.c_str(), p_data.size(), 0, (struct sockaddr*)&p_addr, sizeof(struct sockaddr_in));
+}
+
 ssize_t writeDataToFd(int p_fd, std::string p_data)
 {
 	return write(p_fd, p_data.c_str(), p_data.size());
