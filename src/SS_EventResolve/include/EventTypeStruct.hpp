@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
 #include <string.h>
 
 enum class ANDLINKDeviceDataType
@@ -33,4 +34,6 @@ struct EventTypeDataObject
 	EventType m_eventType;
 	char* m_rawData;
 };
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj);
 

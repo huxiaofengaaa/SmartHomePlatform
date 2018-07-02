@@ -24,3 +24,27 @@ EventTypeDataObject::~EventTypeDataObject()
 		m_rawData = NULL;
 	}
 }
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj)
+{
+	switch(obj->m_eventType)
+	{
+	case EventType::E_EVENT_TYPE_UNKNOWN:
+		os << "type:unknown";
+		break;
+
+	case EventType::E_EVENT_TYPE_ANDLINK_DEVICE:
+		os << "type:andlink device";
+		break;
+
+	case EventType::E_EVENT_TYPE_TERMINAL_INPUT:
+		os << "type:termnal input";
+		break;
+	default:
+		break;
+	}
+	os << ",size: " << strlen(obj->m_rawData);
+
+	return os;
+}
+
