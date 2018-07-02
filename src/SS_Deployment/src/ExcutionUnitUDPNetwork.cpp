@@ -4,10 +4,11 @@
 #include "ContainerNetwork.hpp"
 #include "glog/logging.h"
 
-MasterThreadNetworkUnit::MasterThreadNetworkUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
-	: m_ThreadShouldExit(false), m_dataCallback(p_callback)
+MasterThreadNetworkUnit::MasterThreadNetworkUnit(std::string p_host, int p_port,
+		std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
+	: m_host(p_host), m_port(p_port), m_ThreadShouldExit(false), m_dataCallback(p_callback)
 {
-	LOG(INFO) << "Construct MasterThreadNetworkUnit";
+	LOG(INFO) << "Construct MasterThreadNetworkUnit - " << m_host << ":" << m_port;
 }
 
 MasterThreadNetworkUnit::~MasterThreadNetworkUnit()
@@ -19,7 +20,7 @@ MasterThreadNetworkUnit::~MasterThreadNetworkUnit()
 
 bool MasterThreadNetworkUnit::run()
 {
-	m_udpContainer = std::make_shared<UDPNetworkContainer>();
+	m_udpContainer = std::make_shared<UDPNetworkContainer>(m_host, m_port);
 
 	std::function<bool()> l_threadtask = std::bind(&MasterThreadNetworkUnit::masterThreadTask, this);
 	m_masterThread = std::thread(l_threadtask);
@@ -39,7 +40,7 @@ bool MasterThreadNetworkUnit::isErrorOccurred(std::string p_data)
 
 bool MasterThreadNetworkUnit::masterThreadTask()
 {
-	LOG(INFO) << "MasterThreadNetworkUnit::masterThreadTask start";
+	LOG(INFO) << "MasterThreadNetworkUnit main loop start";
 	if(false == m_udpContainer->create())
 	{
 		LOG(WARNING) << "MasterThreadNetworkUnit call UDPContainer::create failed";
@@ -48,26 +49,26 @@ bool MasterThreadNetworkUnit::masterThreadTask()
 
 	while(m_ThreadShouldExit == false)
 	{
-		std::string l_data = m_udpContainer->read(1, 0);
-		if(true == isErrorOccurred(l_data))
+		std::shared_ptr<NetworkData> l_data = m_udpContainer->read(1, 0);
+		if(true == isErrorOccurred(l_data->m_rawData))
 		{
 			LOG(WARNING) << "TerminalContainer read data failed: " << l_data;
 		}
-		else if(l_data == std::string("timeout"))
+		else if(l_data->m_rawData == std::string("timeout"))
 		{
 
 		}
 		else
 		{
-			if(l_data.empty() == false)
+			if(l_data->m_rawData.empty() == false)
 			{
-				LOG(INFO) << "UDPContainer read data :" << l_data;
+				LOG(INFO) << "UDPContainer read data :" << l_data->m_rawData;
 				auto l_eventobj = std::make_shared<EventTypeDataObject>(EventType::E_EVENT_TYPE_ANDLINK_DEVICE,
-						l_data.c_str(), l_data.size());
+						l_data->m_rawData.c_str(), l_data->m_rawData.size());
 				m_dataCallback(l_eventobj);
 			}
 		}
 	}
-	LOG(INFO) << "MasterThreadNetworkUnit::masterThreadTask start";
+	LOG(INFO) << "MasterThreadNetworkUnit main loop exit";
 	return true;
 }

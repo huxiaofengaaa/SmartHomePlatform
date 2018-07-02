@@ -9,7 +9,8 @@
 class MasterThreadNetworkUnit
 {
 public:
-	MasterThreadNetworkUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback);
+	MasterThreadNetworkUnit(std::string p_host, int p_port,
+			std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback);
 	~MasterThreadNetworkUnit();
 	bool run();
 private:
@@ -22,4 +23,7 @@ private:
 	std::function<bool(std::shared_ptr<EventTypeDataObject>)> m_dataCallback;
 
 	bool m_ThreadShouldExit;
+
+	std::string m_host;
+	int m_port;
 };
