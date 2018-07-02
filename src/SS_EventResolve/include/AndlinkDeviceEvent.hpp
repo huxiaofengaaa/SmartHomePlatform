@@ -61,10 +61,14 @@ struct Interface56_Online_Resp
 };
 
 
-char* build_register_response_success_msg(struct Interface56_Register_Resp* resp);
+bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
+
+std::string build_register_response_success_msg(struct Interface56_Register_Resp resp);
 char* build_register_response_failed_msg(struct Interface56_Register_Resp* resp);
 
-char* build_online_response_success_msg(struct Interface56_Online_Resp* resp);
-char* build_online_response_failed_msg(struct Interface56_Online_Resp* resp);
+bool resolve_if56_online_request_msg(std::string msg, struct Interface56_Online_Req* req);
+
+std::string build_online_response_success_msg(struct Interface56_Online_Resp resp);
+std::string build_online_response_failed_msg(struct Interface56_Online_Resp resp);
 
 

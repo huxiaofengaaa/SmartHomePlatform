@@ -9,20 +9,18 @@
 #include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
 
-bool resolve_if56_register_request_msg(const char* msg, struct Interface56_Register_Req* req)
+bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req)
 {
-	if(msg == NULL || req == NULL)
+	if(msg.empty() == true || req == NULL)
 	{
 		return false;
 	}
 
-	cJSON* obj = cJSON_Parse(msg);
+	cJSON* obj = cJSON_Parse(msg.c_str());
 	if(obj == NULL)
 	{
 		return false;
 	}
-
-	memset(req, 0, sizeof(struct Interface56_Register_Req));
 
 	cJSON* c_deviceMac = cJSON_GetObjectItem(obj, "deviceMac");
 	cJSON* c_deviceType = cJSON_GetObjectItem(obj, "deviceType");
