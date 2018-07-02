@@ -9,5 +9,7 @@ add_library(eventResolve STATIC src/EventTypeStruct.cpp
                                 AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                                 AndlinkDeviceEvent/AndlinkDeviceRegisterResponse.cpp
                                 AndlinkDeviceEvent/AndlinkDeviceOnlineRequest.cpp
-                                AndlinkDeviceEvent/AndlinkDeviceOnlineResponse.cpp)
+                                AndlinkDeviceEvent/AndlinkDeviceOnlineResponse.cpp
+                                AndlinkDeviceEvent/AndlinkDeviceAuthRequest.cpp
+                                AndlinkDeviceEvent/AndlinkDeviceAuthResponse.cpp)
                            

@@ -60,6 +60,20 @@ struct Interface56_Online_Resp
 	std::string ServerIP;
 };
 
+struct Interface56_Auth_Req
+{
+	std::string RPCMethod;
+	std::string MAC;
+	std::string CheckSN;
+};
+
+struct Interface56_Auth_Resp
+{
+	int respCode;
+	long heartBeatTime;
+	std::string MessageServer;
+	std::string ServerIP;
+};
 
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
 
@@ -71,4 +85,6 @@ bool resolve_if56_online_request_msg(std::string msg, struct Interface56_Online_
 std::string build_online_response_success_msg(struct Interface56_Online_Resp resp);
 std::string build_online_response_failed_msg(struct Interface56_Online_Resp resp);
 
+bool resolve_if56_auth_request_msg(std::string msg, struct Interface56_Auth_Req* req);
+std::string build_auth_response_msg(struct Interface56_Auth_Resp resp);
 
