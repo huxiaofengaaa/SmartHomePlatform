@@ -22,7 +22,7 @@ public:
 	int getPort() const;
 
 	virtual bool create() = 0;
-	virtual std::string read(int p_timeoutSec, int p_timeoutUsec) = 0;
+	virtual std::shared_ptr<NetworkData> read(int p_timeoutSec, int p_timeoutUsec) = 0;
 
 private:
 	const std::string m_host;
@@ -42,7 +42,7 @@ public:
 
 	}
 	bool create() override;
-	std::string read(int p_timeoutSec, int p_timeoutUsec) override;
+	std::shared_ptr<NetworkData> read(int p_timeoutSec, int p_timeoutUsec) override;
 
 private:
 };

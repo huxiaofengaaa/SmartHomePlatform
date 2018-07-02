@@ -31,9 +31,9 @@ bool UDPNetworkContainer::create()
 	}
 	return false;
 }
-std::string UDPNetworkContainer::read(int p_timeoutSec, int p_timeoutUsec)
+std::shared_ptr<NetworkData> UDPNetworkContainer::read(int p_timeoutSec, int p_timeoutUsec)
 {
-	return readDataFromFdWithTimeout(getSocketfd(), p_timeoutSec, p_timeoutUsec);
+	return readDataFromSocketFdWithTimeout(getSocketfd(), p_timeoutSec, p_timeoutUsec);
 }
 
 

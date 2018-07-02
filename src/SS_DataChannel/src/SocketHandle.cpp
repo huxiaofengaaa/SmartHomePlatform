@@ -94,6 +94,53 @@ int createTCPClientSocket(std::string p_host, int p_port)
 	return sockfd;
 }
 
+std::shared_ptr<NetworkData> readDataFromSocketFdWithTimeout(int p_fd, int p_timeoutSec, int p_timeoutUsec)
+{
+	std::shared_ptr<NetworkData> l_data = std::make_shared<NetworkData>();
+	if(p_fd < 0)
+	{
+		return l_data;
+	}
+	fd_set l_sockfd_set;
+	FD_ZERO(&l_sockfd_set);
+	FD_SET(p_fd, &l_sockfd_set);
+	struct timeval l_timeout  = {p_timeoutSec, p_timeoutUsec};
+	switch(select(p_fd + 1, &l_sockfd_set, NULL, NULL, &l_timeout))
+	{
+	case -1:
+		l_data->m_rawData = std::string("selectError");
+		break;
+	case 0:
+		l_data->m_rawData = std::string("timeout");
+		break;
+	default:
+		if(FD_ISSET(p_fd, &l_sockfd_set))
+		{
+			char l_buffer[1024 * 8] = { 0 };
+			memset(l_buffer, 0, sizeof(l_buffer));
+
+			memset(&(l_data->m_clientAddr), 0, sizeof(struct sockaddr_in));
+			l_data->m_sockLength = sizeof(struct sockaddr_in);
+
+			ssize_t l_readNum = recvfrom(p_fd, l_buffer, sizeof(l_buffer), 0,
+					(struct sockaddr *)&(l_data->m_clientAddr), &(l_data->m_sockLength));
+			if(l_readNum > 0)
+			{
+				l_data->m_fd = p_fd;
+				l_data->m_rawData = std::string(l_buffer);
+				break;
+			}
+			else
+			{
+				l_data->m_rawData = std::string("readError");
+				break;
+			}
+		}
+	}
+
+	return l_data;
+}
+
 std::string readDataFromFdWithTimeout(int p_fd, int p_timeoutSec, int p_timeoutUsec)
 {
 	if(p_fd < 0)
