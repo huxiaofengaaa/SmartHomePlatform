@@ -12,7 +12,9 @@ set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceAuthRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceAuthResponse.cpp
                  AndlinkDeviceEvent/AndlinkDeviceRequestPlugInRequest.cpp
-                 AndlinkDeviceEvent/AndlinkDeviceRequestPlugInResponse.cpp)
+                 AndlinkDeviceEvent/AndlinkDeviceRequestPlugInResponse.cpp
+                 AndlinkDeviceEvent/AndlinkDeviceDisconnectRequest.cpp
+                 AndlinkDeviceEvent/AndlinkDeviceDisconnectResponse.cpp)
 
 add_library(eventResolve STATIC src/EventTypeStruct.cpp
                                 src/EventTerminal.cpp

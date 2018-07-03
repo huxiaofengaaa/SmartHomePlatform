@@ -104,6 +104,18 @@ struct Interface56_requestPlugIn_Resp
 	int DevRND;
 };
 
+struct Interface56_disconnect_req
+{
+	std::string RPCMethod;
+	std::string ID;
+};
+
+struct Interface56_disconnect_resp
+{
+	int respCode;
+	std::string ID;
+};
+
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
 
 std::string build_register_response_success_msg(struct Interface56_Register_Resp resp);
