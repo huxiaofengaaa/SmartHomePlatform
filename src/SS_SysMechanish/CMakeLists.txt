@@ -6,5 +6,6 @@ include_directories(${CMAKE_BINARY_DIR}/library/glog/)
 add_library(sysMechanish STATIC src/SystemNotify.cpp
                                 src/SignalRegister.cpp
                                 src/TerminalHandler.cpp
-                                src/UDPServerHandler.cpp)
+                                src/UDPServerHandler.cpp
+                                src/TCPListenerHandler.cpp)
                            
