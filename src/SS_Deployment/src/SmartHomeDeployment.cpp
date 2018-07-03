@@ -1,7 +1,6 @@
 #include "SmartHomeDeployment.hpp"
 #include "SignalRegister.hpp"
 #include "glog/logging.h"
-//#include "AndlinkDeviceEventHandler.hpp"
 #include <unistd.h>
 #include <functional>
 
@@ -43,6 +42,10 @@ void SmartHomeDeployment::start()
 bool SmartHomeDeployment::shutdown(int p_signum)
 {
 	LOG(INFO) << "call SmartHomeDeployment shutdown, signum = " <<  p_signum;
+	SignalRegister l_regster;
+	l_regster.ignoreSignal(SIGINT);
+	LOG(INFO) << "set signal SIGINT handler to ignore";
+
 	m_terminalExcutionUnit->shutdown();
 	m_andlinkExcutionUnit->shutdown();
 	m_deploymentShouldExit = true;

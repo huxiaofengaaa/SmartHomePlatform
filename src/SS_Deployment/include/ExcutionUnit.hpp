@@ -13,10 +13,11 @@
 #include <functional>
 #include "SystemNotify.hpp"
 
+template<class DataType>
 class ExcutionUnit
 {
 public:
-	ExcutionUnit(int p_threadNumber, std::function<bool(std::shared_ptr<EventTypeDataObjectBase>)> p_callback)
+	ExcutionUnit(int p_threadNumber, std::function<bool(DataType)> p_callback)
 		: m_threadNumber(p_threadNumber), m_excutionUnitExitFlag(false), m_callback(p_callback)
 	{
 		LOG(INFO) << "construct ExcutionUnit";
@@ -51,7 +52,7 @@ public:
 		m_threadList.clear();
 	}
 
-	bool addDataObject(std::shared_ptr<EventTypeDataObjectBase> p_obj)
+	bool addDataObject(DataType p_obj)
 	{
 		m_queueMutex.lock();
 		m_dataQueue.push_back(p_obj);
@@ -60,9 +61,9 @@ public:
 		return true;
 	}
 
-	std::shared_ptr<EventTypeDataObjectBase> detachDataObject()
+	DataType detachDataObject()
 	{
-		std::shared_ptr<EventTypeDataObjectBase> l_obj;
+		DataType l_obj;
 		m_queueMutex.lock();
 		if(m_dataQueue.empty() == false)
 		{
@@ -95,19 +96,19 @@ private:
 		{
 			if(true == m_queueNotify.wait(l_checker))
 			{
-				std::shared_ptr<EventTypeDataObjectBase> l_eventObj = detachDataObject();
+				DataType l_eventObj = detachDataObject();
 				m_callback(l_eventObj);
 			}
 		}
 		LOG(INFO) << "excution unit main loop exit";
 	}
 
-	std::vector<std::shared_ptr<EventTypeDataObjectBase>> m_dataQueue;
+	std::vector<DataType> m_dataQueue;
 	std::mutex m_queueMutex;
 	SystemNotify m_queueNotify;
 	std::vector<std::thread> m_threadList;
 	const int m_threadNumber;
 	bool m_excutionUnitExitFlag;
 
-	std::function<bool(std::shared_ptr<EventTypeDataObjectBase>)> m_callback;
+	std::function<bool(DataType)> m_callback;
 };

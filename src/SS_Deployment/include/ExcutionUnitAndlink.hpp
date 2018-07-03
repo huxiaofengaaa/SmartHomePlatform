@@ -15,7 +15,9 @@
 #include "ExcutionUnit.hpp"
 #include "UDPServerHandler.hpp"
 
-class ExcutionUnitAndlink: public ExcutionUnit, public AsynUDPServerHandler
+class ExcutionUnitAndlink:
+		public ExcutionUnit<std::shared_ptr<EventTypeUDPClientDataObject>>,
+		public AsynUDPServerHandler
 {
 public:
 	ExcutionUnitAndlink();
@@ -25,5 +27,5 @@ public:
 
 private:
 	bool asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj);
-	bool handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj);
+	bool handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj);
 };

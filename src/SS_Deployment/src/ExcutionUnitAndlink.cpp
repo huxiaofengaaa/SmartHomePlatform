@@ -38,11 +38,10 @@ void ExcutionUnitAndlink::shutdown()
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)
 {
 	LOG(INFO) << p_obj;
-	//return addDataObject(std::make_shared<EventTypeTerminalDataObject>(p_data));
-	return true;
+	return addDataObject(p_obj);
 }
 
-bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj)
+bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj)
 {
 	LOG(INFO) << p_eventObj;
 	return true;

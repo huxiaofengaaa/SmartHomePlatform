@@ -8,7 +8,9 @@
 #include "ExcutionUnit.hpp"
 #include "TerminalHandler.hpp"
 
-class ExcutionUnitTerminal: public ExcutionUnit, public AsynTerminalHandler
+class ExcutionUnitTerminal:
+		public ExcutionUnit<std::shared_ptr<EventTypeTerminalDataObject>>,
+		public AsynTerminalHandler
 {
 public:
 	ExcutionUnitTerminal();
@@ -18,5 +20,5 @@ public:
 
 private:
 	bool terminalAsycDataCallback(std::string p_data);
-	bool handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj);
+	bool handleDataObject(std::shared_ptr<EventTypeTerminalDataObject> p_eventObj);
 };

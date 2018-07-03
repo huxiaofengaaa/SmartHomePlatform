@@ -38,7 +38,7 @@ bool ExcutionUnitTerminal::terminalAsycDataCallback(std::string p_data)
 	return addDataObject(std::make_shared<EventTypeTerminalDataObject>(p_data));
 }
 
-bool ExcutionUnitTerminal::handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj)
+bool ExcutionUnitTerminal::handleDataObject(std::shared_ptr<EventTypeTerminalDataObject> p_eventObj)
 {
 	LOG(INFO) << p_eventObj;
 	writeTerminalString(PLATFORM_NAME);
