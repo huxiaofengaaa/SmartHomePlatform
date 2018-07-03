@@ -29,6 +29,7 @@ void SmartHomeDeployment::start()
 	LOG(INFO) << "SmartHomeDeployment start";
 
 	m_terminalExcutionUnit->start();
+	registerAllTerminalCmd();
 	m_andlinkExcutionUnit->start();
 
 	LOG(INFO) << "SmartHomeDeployment main loop start";
@@ -50,6 +51,12 @@ bool SmartHomeDeployment::shutdown(int p_signum)
 	m_andlinkExcutionUnit->shutdown();
 	m_deploymentShouldExit = true;
 	return true;
+}
+
+void SmartHomeDeployment::registerAllTerminalCmd()
+{
+	m_terminalExcutionUnit->registerCmd("help", std::make_shared<TerminalCmdHelp>(
+			std::bind(&SmartHomeDeployment::terminalCmdHelp, this)));
 }
 
 

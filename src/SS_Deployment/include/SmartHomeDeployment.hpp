@@ -19,6 +19,10 @@ public:
 	bool shutdown(int p_signum);
 
 private:
+	void registerAllTerminalCmd();
+
+	std::string terminalCmdHelp();
+
 	bool m_deploymentShouldExit;
 
 	std::shared_ptr<ExcutionUnitTerminal> m_terminalExcutionUnit;

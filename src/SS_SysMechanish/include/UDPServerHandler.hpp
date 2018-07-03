@@ -1,7 +1,7 @@
 /*
  * UDPServerHandler.hpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
 
@@ -13,6 +13,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
+#include <functional>
 #include "glog/logging.h"
 #include "EventTypeStruct.hpp"
 
