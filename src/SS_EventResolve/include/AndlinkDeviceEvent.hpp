@@ -90,6 +90,20 @@ struct Interface56_heartbeat_Resp
 	std::string ServerIP;
 };
 
+struct Interface56_requestPlugIn_Req
+{
+	std::string RPCMethod;
+	std::string Key;
+	std::string ServerAddr;
+	std::string ServerPort;
+};
+
+struct Interface56_requestPlugIn_Resp
+{
+	int respCode;
+	int DevRND;
+};
+
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
 
 std::string build_register_response_success_msg(struct Interface56_Register_Resp resp);
@@ -105,3 +119,6 @@ std::string build_auth_response_msg(struct Interface56_Auth_Resp resp);
 
 bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_heartbeat_Req* req);
 std::string build_heartbeat_response_msg(struct Interface56_heartbeat_Resp resp);
+
+std::string build_requestPlugIn_request_msg(struct Interface56_requestPlugIn_Req resp);
+bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56_requestPlugIn_Resp* req);
