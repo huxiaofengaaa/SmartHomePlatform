@@ -25,6 +25,7 @@ public:
 			std::function<bool(std::shared_ptr<EventTypeUDPClientDataObject>)> p_callback);
 	virtual ~AsynUDPServerHandler();
 	bool runUDPServer();
+	ssize_t writeUDPServerString(std::shared_ptr<EventTypeUDPClientDataObject> resp);
 	void shutdownUDPServer();
 private:
 	void mainloop();

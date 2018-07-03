@@ -88,6 +88,12 @@ void AsynUDPServerHandler::mainloop()
 	LOG(INFO) << "AsynUDPServerHandler::mainloop exit";
 }
 
+ssize_t AsynUDPServerHandler::writeUDPServerString(std::shared_ptr<EventTypeUDPClientDataObject> resp)
+{
+	return sendto(resp->m_serverSocketFd, resp->m_rawData.c_str(), resp->m_rawData.size(), 0,
+			(struct sockaddr*)&(resp->m_clientAddr), sizeof(struct sockaddr_in));
+}
+
 int AsynUDPServerHandler::createUDPServerSocket(std::string p_host, int p_port)
 {
 	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);

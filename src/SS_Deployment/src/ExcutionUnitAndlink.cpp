@@ -6,6 +6,7 @@
  */
 
 #include "ExcutionUnitAndlink.hpp"
+#include "AndlinkDeviceEventHandler.hpp"
 
 ExcutionUnitAndlink::ExcutionUnitAndlink():
 	ExcutionUnit(5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
@@ -43,6 +44,14 @@ bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDP
 
 bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj)
 {
-	LOG(INFO) << p_eventObj;
+	AndlinkDeviceEventHandler l_andlinkHandler;
+	std::string l_resp = l_andlinkHandler.run(p_eventObj);
+
+	p_eventObj->m_rawData = l_resp;
+	if(writeUDPServerString(p_eventObj))
+	{
+		LOG(INFO) << p_eventObj;
+	}
+
 	return true;
 }
