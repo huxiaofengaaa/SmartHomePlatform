@@ -1,77 +1,46 @@
 #include <iostream>
 #include <unistd.h>
 #include "ExcutionUnitTerminal.hpp"
-#include "ContainerTerminal.hpp"
 #include "EventTypeStruct.hpp"
 #include "glog/logging.h"
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
-TerminalThreadUnit::TerminalThreadUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback)
-	: m_dataCallback(p_callback), m_ThreadShouldExit(false)
+ExcutionUnitTerminal::ExcutionUnitTerminal():
+	ExcutionUnit(1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
+	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1))
 {
-	LOG(INFO) << "construct TerminalThreadUnit";
+	LOG(INFO) << "construct ExcutionUnitTerminal";
 }
 
-TerminalThreadUnit::~TerminalThreadUnit()
+ExcutionUnitTerminal::~ExcutionUnitTerminal()
 {
-	m_ThreadShouldExit = true;
-	m_masterThread.join();
-	LOG(INFO) << "de-construct TerminalThreadUnit";
+	LOG(INFO) << "de-construct ExcutionUnitTerminal";
 }
 
-bool TerminalThreadUnit::run()
+bool ExcutionUnitTerminal::start()
 {
-	m_terminalContainer = std::make_shared<TerminalContainer>();
-
-	std::function<bool()> l_threadtask = std::bind(&TerminalThreadUnit::masterThreadTask, this);
-	m_masterThread = std::thread(l_threadtask);
-	LOG(INFO) << "create TerminalContainer thread successfully";
+	LOG(INFO) << "ExcutionUnitTerminal start";
+	runTerminal();
+	startExcutionUnit();
+	writeTerminalString(PLATFORM_NAME);
 	return true;
 }
-
-bool TerminalThreadUnit::isErrorOccurred(std::string p_data)
+void ExcutionUnitTerminal::shutdown()
 {
-	if(p_data == std::string("selectError") || p_data == std::string("readError") ||
-			p_data == std::string("codeError"))
-	{
-		return true;
-	}
-	return false;
+	shutdownTerminal();
+	shutdownExcutionUnit();
+	LOG(INFO) << "ExcutionUnitTerminal shutdown";
 }
 
-bool TerminalThreadUnit::masterThreadTask()
+bool ExcutionUnitTerminal::terminalAsycDataCallback(std::string p_data)
 {
-	LOG(INFO) << "TerminalThreadUnit::masterThreadTask start";
-	m_terminalContainer->write(std::string(PLATFORM_NAME));
-	do
-	{
-		std::string l_data = m_terminalContainer->read(1, 0);
-		if(true == isErrorOccurred(l_data))
-		{
-			LOG(WARNING) << "TerminalContainer read data failed: " << l_data;
-		}
-		else if(l_data == std::string("timeout"))
-		{
+	return addDataObject(std::make_shared<EventTypeTerminalDataObject>(p_data));
+}
 
-		}
-		else if(l_data == std::string("\n"))
-		{
-			m_terminalContainer->write(std::string(PLATFORM_NAME));
-		}
-		else
-		{
-			if(l_data.empty() == false)
-			{
-				LOG(INFO) << "TerminalContainer read data :" << l_data;
-				auto l_eventobj = std::make_shared<EventTypeDataObject>(EventType::E_EVENT_TYPE_TERMINAL_INPUT,
-						l_data.c_str(), l_data.size());
-				m_dataCallback(l_eventobj);
-			}
-			m_terminalContainer->write(std::string(PLATFORM_NAME));
-		}
-	}
-	while(m_ThreadShouldExit == false);
-	LOG(INFO) << "TerminalThreadUnit::masterThreadTask exit";
+bool ExcutionUnitTerminal::handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj)
+{
+	LOG(INFO) << p_eventObj;
+	writeTerminalString(PLATFORM_NAME);
 	return true;
 }

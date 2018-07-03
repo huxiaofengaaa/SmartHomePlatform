@@ -3,23 +3,20 @@
 #include <memory>
 #include <thread>
 #include <functional>
-#include "ContainerTerminal.hpp"
 #include "EventTypeStruct.hpp"
+#include "glog/logging.h"
+#include "ExcutionUnit.hpp"
+#include "TerminalHandler.hpp"
 
-class TerminalThreadUnit
+class ExcutionUnitTerminal: public ExcutionUnit, public AsynTerminalHandler
 {
 public:
-	TerminalThreadUnit(std::function<bool(std::shared_ptr<EventTypeDataObject>)> p_callback);
-	~TerminalThreadUnit();
-	bool run();
+	ExcutionUnitTerminal();
+	~ExcutionUnitTerminal();
+	bool start();
+	void shutdown();
+
 private:
-	bool masterThreadTask();
-	bool dataCallback();
-	bool isErrorOccurred(std::string p_data);
-
-	std::shared_ptr<TerminalContainer> m_terminalContainer;
-	std::thread m_masterThread;
-	std::function<bool(std::shared_ptr<EventTypeDataObject>)> m_dataCallback;
-
-	bool m_ThreadShouldExit;
+	bool terminalAsycDataCallback(std::string p_data);
+	bool handleDataObject(std::shared_ptr<EventTypeDataObjectBase> p_eventObj);
 };

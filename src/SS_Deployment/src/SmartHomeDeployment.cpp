@@ -1,7 +1,7 @@
 #include "SmartHomeDeployment.hpp"
 #include "SignalRegister.hpp"
 #include "glog/logging.h"
-#include "AndlinkDeviceEventHandler.hpp"
+//#include "AndlinkDeviceEventHandler.hpp"
 #include <unistd.h>
 #include <functional>
 
@@ -14,85 +14,28 @@ SmartHomeDeployment::SmartHomeDeployment()
 	l_regster.registerSignal(SIGINT, l_sigintTask);
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
-	std::function<bool(std::shared_ptr<EventTypeNetworkDataObject>)> l_UDPDataCallback =
-			std::bind(&SmartHomeDeployment::UeContextRawDataCallback,
-			this, std::placeholders::_1);
-	m_udpNetworkUnit = std::make_shared<MasterThreadNetworkUnit>("127.0.0.1", 6887, l_UDPDataCallback);
-
-	std::function<bool(std::shared_ptr<EventTypeDataObject>)> l_terminalDataCallback =
-			std::bind(&SmartHomeDeployment::TerminalRawDataCallback,
-			this, std::placeholders::_1);
-	m_terminalUnit = std::make_shared<TerminalThreadUnit>(l_terminalDataCallback);
+	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>();
+	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>();
 
 	LOG(INFO) << "construct SmartHomeDeployment";
 }
 
 SmartHomeDeployment::~SmartHomeDeployment()
 {
-	LOG(INFO) << "de-constructor SmartHomeDeployment";
-
-	for(auto l_thread = m_UeContextThreadList.begin() ; l_thread != m_UeContextThreadList.end(); l_thread++)
-	{
-		l_thread->join();
-	}
-	m_UeContextThreadList.clear();
-	m_UeContextEventQueue.clear();
-	m_TerminalEventQueue.clear();
-
 	LOG(INFO) << "Good Bye SmartHomePlatform...";
-}
-
-void SmartHomeDeployment::UeContextThreadTaskMainLoop()
-{
-	LOG(INFO) << "UeContextThreadTask main loop start";
-	std::function<bool()> l_checker = std::bind(&SmartHomeDeployment::isUeContextEventObjectNotEmpty,this);
-	while(m_deploymentShouldExit == false)
-	{
-		if(getUeContextEventObjectSize() <= 0)
-		{
-			m_UeContextEventQueueNotify.wait(l_checker);
-		}
-		else
-		{
-			auto l_event = detachUeContextEventObject();
-			AndlinkDeviceEventHandler l_handler;
-			std::string resp = l_handler.run(l_event);
-			if(resp.empty() == false)
-			{
-				int l_serverSockfd = l_event->m_serverSocketFd;
-				struct sockaddr_in l_cliAddr = l_event->m_clientAddr;
-				writeDataToSocketFd(l_serverSockfd, l_cliAddr, resp);
-				LOG(INFO) << "send msg to IP:" << inet_ntoa(l_cliAddr.sin_addr)
-						<< ":Port" << ntohs(l_cliAddr.sin_port) << ", msg: " << resp;
-			}
-		}
-	}
-	LOG(INFO) << "UeContextThreadTask main loop exit";
-
 }
 
 void SmartHomeDeployment::start()
 {
 	LOG(INFO) << "SmartHomeDeployment start";
-	m_udpNetworkUnit->run();
-	m_terminalUnit->run();
+
+	m_terminalExcutionUnit->start();
+	m_andlinkExcutionUnit->start();
 
 	LOG(INFO) << "SmartHomeDeployment main loop start";
-
-	createUeContextThread(5);
-
-	std::function<bool()> l_checker = std::bind(&SmartHomeDeployment::isTerminalEventObjectNotEmpty,this);
 	while(m_deploymentShouldExit == false)
 	{
-		if(getTerminalEventObjectSize() <= 0)
-		{
-			m_terminalEventQueueNotify.wait(l_checker);
-		}
-		else
-		{
-			auto l_event = detachTerminalEventObject();
-			//LOG(INFO) << l_event;
-		}
+		sleep(1);
 	}
 	LOG(INFO) << "SmartHomeDeployment main loop exit";
 }
@@ -100,106 +43,9 @@ void SmartHomeDeployment::start()
 bool SmartHomeDeployment::shutdown(int p_signum)
 {
 	LOG(INFO) << "call SmartHomeDeployment shutdown, signum = " <<  p_signum;
+	m_terminalExcutionUnit->shutdown();
+	m_andlinkExcutionUnit->shutdown();
 	m_deploymentShouldExit = true;
-	m_terminalEventQueueNotify.notifyAll();
-	m_UeContextEventQueueNotify.notifyAll();
-	return true;
-}
-
-void SmartHomeDeployment::addTerminalEventObject(std::shared_ptr<EventTypeDataObject> p_event)
-{
-	m_TerminalEventQueueMutex.lock();
-	m_TerminalEventQueue.push_back(p_event);
-	m_TerminalEventQueueMutex.unlock();
-	m_terminalEventQueueNotify.notifyAll();
-}
-
-std::shared_ptr<EventTypeDataObject> SmartHomeDeployment::detachTerminalEventObject()
-{
-	std::shared_ptr<EventTypeDataObject> l_event;
-	m_TerminalEventQueueMutex.lock();
-	if(m_TerminalEventQueue.empty() == false)
-	{
-		l_event = m_TerminalEventQueue.front();
-		m_TerminalEventQueue.erase(m_TerminalEventQueue.begin());
-	}
-	m_TerminalEventQueueMutex.unlock();
-	return l_event;
-}
-
-int SmartHomeDeployment::getTerminalEventObjectSize()
-{
-	int l_queueSize = 0;
-	m_TerminalEventQueueMutex.lock();
-	l_queueSize = m_TerminalEventQueue.size();
-	m_TerminalEventQueueMutex.unlock();
-	return l_queueSize;
-}
-
-bool SmartHomeDeployment::isTerminalEventObjectNotEmpty()
-{
-	return getTerminalEventObjectSize() > 0;
-}
-
-bool SmartHomeDeployment::TerminalRawDataCallback(std::shared_ptr<EventTypeDataObject> p_event)
-{
-	addTerminalEventObject(p_event);
-	LOG(INFO) << "Current Quene size " << getUeContextEventObjectSize() << ", recv msg : " << p_event;
-	return true;
-}
-
-void SmartHomeDeployment::addUeContextEventObject(std::shared_ptr<EventTypeNetworkDataObject> p_event)
-{
-	m_UeContextEventQueueMutex.lock();
-	m_UeContextEventQueue.push_back(p_event);
-	m_UeContextEventQueueMutex.unlock();
-	m_UeContextEventQueueNotify.notifyAll();
-}
-
-std::shared_ptr<EventTypeNetworkDataObject> SmartHomeDeployment::detachUeContextEventObject()
-{
-	std::shared_ptr<EventTypeNetworkDataObject> l_event;
-	m_UeContextEventQueueMutex.lock();
-	if(m_UeContextEventQueue.empty() == false)
-	{
-		l_event = m_UeContextEventQueue.front();
-		m_UeContextEventQueue.erase(m_UeContextEventQueue.begin());
-	}
-	m_UeContextEventQueueMutex.unlock();
-	return l_event;
-}
-
-int SmartHomeDeployment::getUeContextEventObjectSize()
-{
-	int l_queueSize = 0;
-	m_UeContextEventQueueMutex.lock();
-	l_queueSize = m_UeContextEventQueue.size();
-	m_UeContextEventQueueMutex.unlock();
-	return l_queueSize;
-}
-
-bool SmartHomeDeployment::isUeContextEventObjectNotEmpty()
-{
-	return getUeContextEventObjectSize() > 0;
-}
-
-bool SmartHomeDeployment::UeContextRawDataCallback(std::shared_ptr<EventTypeNetworkDataObject> p_event)
-{
-	addUeContextEventObject(p_event);
-	LOG(INFO) << "Current Quene size " << getUeContextEventObjectSize() << ", recv msg : " << p_event;
-	return true;
-}
-
-bool SmartHomeDeployment::createUeContextThread(int p_threadNumber)
-{
-	std::function<void()> l_UecontextThreadTaskObject =
-			std::bind(&SmartHomeDeployment::UeContextThreadTaskMainLoop, this);
-	for(auto i = 0 ; i < p_threadNumber ; i++)
-	{
-		std::thread l_thread(l_UecontextThreadTaskObject);
-		m_UeContextThreadList.push_back(std::move(l_thread));
-	}
-	LOG(INFO) << "create UeContext thread " << p_threadNumber << " successfully";
 	return true;
 }
 
