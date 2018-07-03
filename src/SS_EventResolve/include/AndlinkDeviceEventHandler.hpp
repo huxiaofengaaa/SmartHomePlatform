@@ -13,7 +13,7 @@
 class AndlinkDeviceEventHandler
 {
 public:
-	std::string run(std::shared_ptr<EventTypeNetworkDataObject> p_event);
+	std::string run(std::shared_ptr<EventTypeUDPClientDataObject> p_event);
 private:
 
 };

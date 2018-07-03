@@ -10,7 +10,7 @@
 #include "cJSON.h"
 #include <string>
 
-std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeNetworkDataObject> p_event)
+std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDataObject> p_event)
 {
 	std::string l_rawData = p_event->m_rawData;
 

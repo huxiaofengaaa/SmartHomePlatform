@@ -9,20 +9,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-enum class ANDLINKDeviceDataType
-{
-	E_ANDLINK_DEVICE_REGISTER_REQ,
-	E_ANDLINK_DEVICE_REGISTER_RESP,
-	E_ANDLINK_DEVICE_ONLINE_REQ,
-	E_ANDLINK_DEVICE_ONLINE_RESP,
-	E_ANDLINK_DEVICE_AUTH_REQ,
-	E_ANDLINK_DEVICE_AUTH_RESP,
-	E_ANDLINK_DEVICE_HEARTBEAT_REQ,
-	E_ANDLINK_DEVICE_HEARTBEAT_RESP,
-	E_ANDLINK_DEVICE_REQUESTPLUGIN_REQ,
-	E_ANDLINK_DEVICE_REQUESTPLUGIN_RESP
-};
-
 enum class EventType
 {
 	E_EVENT_TYPE_UNKNOWN,
@@ -30,24 +16,35 @@ enum class EventType
 	E_EVENT_TYPE_TERMINAL_INPUT
 };
 
-struct EventTypeDataObject
+struct EventTypeDataObjectBase
 {
-	EventTypeDataObject(EventType p_type, const char* p_rawdata, int p_size);
-	~EventTypeDataObject();
-
-	EventType m_eventType;
-	char* m_rawData;
+	EventTypeDataObjectBase() = default;
+	virtual ~EventTypeDataObjectBase(){ }
 };
 
-struct EventTypeNetworkDataObject
+struct EventTypeTerminalDataObject: public EventTypeDataObjectBase
 {
-	EventTypeNetworkDataObject(struct sockaddr_in p_cliAddr, int p_sockfd, std::string p_rawData)
-		: m_clientAddr(p_cliAddr), m_cliSockLength(sizeof(struct sockaddr_in)), m_serverSocketFd(p_sockfd),
-		  m_rawData(p_rawData), m_eventType(EventType::E_EVENT_TYPE_ANDLINK_DEVICE)
+	EventTypeTerminalDataObject(std::string& p_rawData): m_rawData(p_rawData)
+	{
+		m_eventType = EventType::E_EVENT_TYPE_TERMINAL_INPUT;
+	}
+	~EventTypeTerminalDataObject()
 	{
 
 	}
-	~EventTypeNetworkDataObject()
+	EventType m_eventType;
+	std::string m_rawData;
+};
+
+struct EventTypeUDPClientDataObject: public EventTypeDataObjectBase
+{
+	EventTypeUDPClientDataObject(struct sockaddr_in p_cliAddr, int p_sockfd, std::string p_rawData)
+		: m_clientAddr(p_cliAddr), m_serverSocketFd(p_sockfd), m_rawData(p_rawData)
+	{
+		m_cliSockLength = sizeof(struct sockaddr_in);
+		m_eventType = EventType::E_EVENT_TYPE_ANDLINK_DEVICE;
+	}
+	~EventTypeUDPClientDataObject()
 	{
 
 	}
@@ -58,5 +55,5 @@ struct EventTypeNetworkDataObject
 	EventType m_eventType;
 };
 
-std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj);
-std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeNetworkDataObject> obj);
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeTerminalDataObject> obj);
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeUDPClientDataObject> obj);

@@ -1,31 +1,6 @@
 #include "EventTypeStruct.hpp"
 
-EventTypeDataObject::EventTypeDataObject(EventType p_type, const char* p_rawdata, int p_size)
-{
-	m_eventType = p_type;
-	if(p_rawdata && p_size > 0)
-	{
-		m_rawData = new char[p_size];
-		memcpy(m_rawData, p_rawdata, p_size);
-	}
-	else
-	{
-		m_eventType = EventType::E_EVENT_TYPE_UNKNOWN;
-		m_rawData = NULL;
-
-	}
-}
-
-EventTypeDataObject::~EventTypeDataObject()
-{
-	if(m_rawData)
-	{
-		delete m_rawData;
-		m_rawData = NULL;
-	}
-}
-
-std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> obj)
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeTerminalDataObject> obj)
 {
 	switch(obj->m_eventType)
 	{
@@ -43,13 +18,13 @@ std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeDataObject> 
 	default:
 		break;
 	}
-	os << ", size: " << strlen(obj->m_rawData);
+	os << ", size: " << obj->m_rawData.size();
 	os << ", msg: " << obj->m_rawData;
 
 	return os;
 }
 
-std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeNetworkDataObject> obj)
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeUDPClientDataObject> obj)
 {
 	switch(obj->m_eventType)
 	{
