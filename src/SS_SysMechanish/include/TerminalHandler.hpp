@@ -15,9 +15,9 @@ class SyncTerminalHandler
 {
 public:
 	SyncTerminalHandler() = default;
-	~SyncTerminalHandler() = default;
-	int writeString(std::string p_str);
-	std::string readString(int p_timeoutSec, int p_timeoutUsec);
+	virtual ~SyncTerminalHandler() = default;
+	int writeTerminalString(std::string p_str);
+	std::string readTerminalString(int p_timeoutSec, int p_timeoutUsec);
 private:
 
 };
@@ -26,9 +26,10 @@ class AsynTerminalHandler
 {
 public:
 	AsynTerminalHandler(std::function<bool(std::string)> p_callback);
-	~AsynTerminalHandler();
-	bool run();
-	int writeString(std::string p_str);
+	virtual ~AsynTerminalHandler();
+	bool runTerminal();
+	int writeTerminalString(std::string p_str);
+	void shutdownTerminal();
 private:
 	void mainloop();
 	std::thread m_thread;
