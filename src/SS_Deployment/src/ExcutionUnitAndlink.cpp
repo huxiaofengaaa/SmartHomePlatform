@@ -8,10 +8,11 @@
 #include "ExcutionUnitAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
 
-ExcutionUnitAndlink::ExcutionUnitAndlink():
+ExcutionUnitAndlink::ExcutionUnitAndlink(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
 	ExcutionUnit("Andlink", 5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
 	AsynUDPServerHandler("127.0.0.1", 6887,
-			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback, this, std::placeholders::_1))
+			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback, this, std::placeholders::_1)),
+	m_ueContextHolder(p_ueContextHolder)
 {
 	LOG(INFO) << "construct ExcutionUnitAndlink";
 }
@@ -44,13 +45,17 @@ bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDP
 
 bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj)
 {
-	AndlinkDeviceEventHandler l_andlinkHandler;
-	std::string l_resp = l_andlinkHandler.run(p_eventObj);
+	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+	std::string l_resp = l_andlinkHandler->run(p_eventObj);
 
 	p_eventObj->m_rawData = l_resp;
 	if(writeUDPServerString(p_eventObj))
 	{
 		LOG(INFO) << p_eventObj;
+	}
+	else
+	{
+		LOG(INFO) << "writeUDPServerString failed";
 	}
 
 	return true;

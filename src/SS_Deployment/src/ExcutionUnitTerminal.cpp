@@ -6,9 +6,10 @@
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
-ExcutionUnitTerminal::ExcutionUnitTerminal():
+ExcutionUnitTerminal::ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
 	ExcutionUnit("Terminal", 1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
-	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1))
+	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1)),
+	m_ueContextHolder(p_ueContextHolder)
 {
 	LOG(INFO) << "construct ExcutionUnitTerminal";
 }
@@ -23,6 +24,7 @@ bool ExcutionUnitTerminal::start()
 	LOG(INFO) << "ExcutionUnitTerminal start";
 	runTerminal();
 	startExcutionUnit();
+	registerAllCmd();
 	writeTerminalString(PLATFORM_NAME);
 	return true;
 }
@@ -72,7 +74,7 @@ std::string ExcutionUnitTerminal::runTerminalCmd(std::string p_cmd)
 	}
 	else
 	{
-		return std::string("Unknow Terminal Cmd ") + p_cmd + getAllTerminalCmdUsage();
+		return std::string("Unknow Terminal Cmd ") + p_cmd + terminalCmdCallback_help();
 	}
 }
 
@@ -82,7 +84,15 @@ void ExcutionUnitTerminal::registerCmd(std::string p_cmdName, std::shared_ptr<Te
 	m_cmdList.insert({p_cmdName, p_cmdObj});
 }
 
-std::string ExcutionUnitTerminal::getAllTerminalCmdUsage()
+void ExcutionUnitTerminal::registerAllCmd()
+{
+	registerCmd("help", std::make_shared<TerminalCmdHelp>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_help, this)));
+	registerCmd("list", std::make_shared<TerminalCmdList>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_list, this, std::placeholders::_1)));
+}
+
+std::string ExcutionUnitTerminal::terminalCmdCallback_help()
 {
 	std::string l_result = "Usage:\n";
 	for(auto l_cmd = m_cmdList.begin() ; l_cmd != m_cmdList.end() ; l_cmd++)
@@ -92,3 +102,14 @@ std::string ExcutionUnitTerminal::getAllTerminalCmdUsage()
 	return l_result;
 }
 
+std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
+{
+	std::string l_result = "\n";
+	auto l_devicelist = m_ueContextHolder->getDeviceList();
+	for(auto l_device: l_devicelist)
+	{
+		l_result += "\t" + l_device + "\n";
+	}
+
+	return l_result;
+}

@@ -13,8 +13,9 @@ SmartHomeDeployment::SmartHomeDeployment()
 	l_regster.registerSignal(SIGINT, l_sigintTask);
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
-	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>();
-	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>();
+	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>();
+	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(m_ueContextAndlinkHolder);
+	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>(m_ueContextAndlinkHolder);
 	m_andlinkPlugInExcutionUnit = std::make_shared<ExcutionUnitAndlinkPlugIn>();
 
 	LOG(INFO) << "construct SmartHomeDeployment";
@@ -30,7 +31,6 @@ void SmartHomeDeployment::start()
 	LOG(INFO) << "SmartHomeDeployment start";
 
 	m_terminalExcutionUnit->start();
-	registerAllTerminalCmd();
 	m_andlinkExcutionUnit->start();
 	m_andlinkPlugInExcutionUnit->start();
 
@@ -54,12 +54,6 @@ bool SmartHomeDeployment::shutdown(int p_signum)
 	m_andlinkPlugInExcutionUnit->shutdown();
 	m_deploymentShouldExit = true;
 	return true;
-}
-
-void SmartHomeDeployment::registerAllTerminalCmd()
-{
-	m_terminalExcutionUnit->registerCmd("help", std::make_shared<TerminalCmdHelp>(
-			std::bind(&SmartHomeDeployment::terminalCmdHelp, this)));
 }
 
 

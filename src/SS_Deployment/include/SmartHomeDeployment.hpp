@@ -10,6 +10,9 @@
 #include "EventTypeStruct.hpp"
 #include "SystemNotify.hpp"
 #include "EventTerminal.hpp"
+//#include "UeContextHolder.hpp"
+//#include "UeContextAndlink.hpp"
+#include "UeContextHolderAndlink.hpp"
 
 class SmartHomeDeployment
 {
@@ -20,12 +23,9 @@ public:
 	bool shutdown(int p_signum);
 
 private:
-	void registerAllTerminalCmd();
-
-	std::string terminalCmdHelp();
-
 	bool m_deploymentShouldExit;
 
+	std::shared_ptr<UeContextHolderAndlink> m_ueContextAndlinkHolder;
 	std::shared_ptr<ExcutionUnitTerminal> m_terminalExcutionUnit;
 	std::shared_ptr<ExcutionUnitAndlink> m_andlinkExcutionUnit;
 	std::shared_ptr<ExcutionUnitAndlinkPlugIn> m_andlinkPlugInExcutionUnit;
