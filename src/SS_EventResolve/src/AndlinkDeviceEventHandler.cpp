@@ -24,7 +24,17 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 		std::string l_deviceID = m_ueContextHolder->DeviceRegister(
 				l_registerReq.deviceMac, l_registerReq.deviceType, l_registerReq.productToken);
 
-		struct Interface56_Register_Resp l_registerResp;
+		auto l_uecontext = m_ueContextHolder->getRef(l_deviceID);
+		l_uecontext->host = p_event->m_host;
+		l_uecontext->port = p_event->m_port;
+
+		struct Interface56_Register_Resp l_registerResp =
+		{
+				l_uecontext->gwToken,
+				l_uecontext->deviceId,
+				l_uecontext->deviceToken,
+				l_uecontext->andlinkToken
+		};
 		l_registerResp.deviceId = l_deviceID;
 		return build_register_response_success_msg(l_registerResp);
 	}

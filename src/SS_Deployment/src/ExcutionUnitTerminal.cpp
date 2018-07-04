@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <unistd.h>
 #include "ExcutionUnitTerminal.hpp"
 #include "EventTypeStruct.hpp"
@@ -108,7 +109,11 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 	auto l_devicelist = m_ueContextHolder->getDeviceList();
 	for(auto l_device: l_devicelist)
 	{
-		l_result += "\t" + l_device + "\n";
+		auto l_uecontext = m_ueContextHolder->getRef(l_device);
+		l_result += "\t" + l_uecontext->deviceId;
+		l_result += "\t\t" + l_uecontext->host + ":" + std::to_string(l_uecontext->port);
+		l_result += "\t\t" + l_uecontext->deviceMac;
+		l_result += "\n";
 	}
 
 	return l_result;

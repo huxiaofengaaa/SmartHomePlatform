@@ -44,8 +44,10 @@ std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeUDPClientDat
 	}
 	os << ", fd:" << obj->m_serverSocketFd;
 	os << ", size:" << obj->m_rawData.size();
-	os << ", IP:" << inet_ntoa(obj->m_clientAddr.sin_addr);
-	os << ", Port:" << ntohs(obj->m_clientAddr.sin_port);
+	os << ", IP:" << obj->m_host;
+	os << ", Port:" << obj->m_port;
+//	os << ", IP:" << inet_ntoa(obj->m_clientAddr.sin_addr);
+//	os << ", Port:" << ntohs(obj->m_clientAddr.sin_port);
 	os << ", msg: " << obj->m_rawData;
 	return os;
 }

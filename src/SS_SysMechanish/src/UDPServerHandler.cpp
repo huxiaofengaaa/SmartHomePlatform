@@ -71,7 +71,8 @@ void AsynUDPServerHandler::mainloop()
 				ssize_t l_readNum = recvfrom(m_sockfd, l_buffer, sizeof(l_buffer), 0, (struct sockaddr *)&(cli_addr), &(len));
 				if(l_readNum > 0)
 				{
-					l_data = std::make_shared<EventTypeUDPClientDataObject>(cli_addr, m_sockfd, std::string(l_buffer));
+					l_data = std::make_shared<EventTypeUDPClientDataObject>(
+							inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), m_sockfd, std::string(l_buffer));
 					break;
 				}
 				else
@@ -90,8 +91,14 @@ void AsynUDPServerHandler::mainloop()
 
 ssize_t AsynUDPServerHandler::writeUDPServerString(std::shared_ptr<EventTypeUDPClientDataObject> resp)
 {
+	struct sockaddr_in cli_addr;
+	bzero(&cli_addr, sizeof(struct sockaddr_in));
+	cli_addr.sin_family = AF_INET;
+	cli_addr.sin_port = htons(resp->m_port);
+	cli_addr.sin_addr.s_addr = inet_addr(resp->m_host.c_str());
+
 	return sendto(resp->m_serverSocketFd, resp->m_rawData.c_str(), resp->m_rawData.size(), 0,
-			(struct sockaddr*)&(resp->m_clientAddr), sizeof(struct sockaddr_in));
+			(struct sockaddr*)&(cli_addr), sizeof(struct sockaddr_in));
 }
 
 int AsynUDPServerHandler::createUDPServerSocket(std::string p_host, int p_port)

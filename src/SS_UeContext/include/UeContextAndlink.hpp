@@ -13,6 +13,10 @@ struct UeContextAndlink
 {
 	UeContextAndlink() = default;
 	~UeContextAndlink() = default;
+
+	std::string host;
+	int port;
+
 	std::string deviceMac;
 	std::string deviceType;
 	std::string productToken;

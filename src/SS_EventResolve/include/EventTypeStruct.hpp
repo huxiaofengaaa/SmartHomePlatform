@@ -38,18 +38,17 @@ struct EventTypeTerminalDataObject: public EventTypeDataObjectBase
 
 struct EventTypeUDPClientDataObject: public EventTypeDataObjectBase
 {
-	EventTypeUDPClientDataObject(struct sockaddr_in p_cliAddr, int p_sockfd, std::string p_rawData)
-		: m_clientAddr(p_cliAddr), m_serverSocketFd(p_sockfd), m_rawData(p_rawData)
+	EventTypeUDPClientDataObject(std::string p_host, int p_port, int p_sockfd, std::string p_rawData)
+		: m_host(p_host), m_port(p_port), m_serverSocketFd(p_sockfd), m_rawData(p_rawData)
 	{
-		m_cliSockLength = sizeof(struct sockaddr_in);
 		m_eventType = EventType::E_EVENT_TYPE_ANDLINK_DEVICE;
 	}
 	~EventTypeUDPClientDataObject()
 	{
 
 	}
-	struct sockaddr_in m_clientAddr;
-	socklen_t m_cliSockLength;
+	std::string m_host;
+	int m_port;
 	int m_serverSocketFd;
 	std::string m_rawData;
 	EventType m_eventType;
