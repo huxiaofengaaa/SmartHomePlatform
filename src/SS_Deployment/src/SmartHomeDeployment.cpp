@@ -14,8 +14,8 @@ SmartHomeDeployment::SmartHomeDeployment()
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
 	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>();
-	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(m_ueContextAndlinkHolder);
 	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>(m_ueContextAndlinkHolder);
+	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(m_ueContextAndlinkHolder, m_andlinkExcutionUnit);
 	m_andlinkPlugInExcutionUnit = std::make_shared<ExcutionUnitAndlinkPlugIn>();
 
 	LOG(INFO) << "construct SmartHomeDeployment";

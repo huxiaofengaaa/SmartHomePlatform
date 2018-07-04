@@ -37,6 +37,25 @@ void ExcutionUnitAndlink::shutdown()
 	LOG(INFO) << "ExcutionUnitAndlink shutdown";
 }
 
+bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::string p_deviceid)
+{
+	LOG(INFO) << "ExcutionUnitAndlink::triggerPlugIn " << p_deviceid;
+	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+
+	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
+			p_host, p_port, -1, l_andlinkHandler->buildPlugIuRequest(p_deviceid));
+
+	if(writeUDPServerString(l_eventObj))
+	{
+		LOG(INFO) << l_eventObj;
+	}
+	else
+	{
+		LOG(INFO) << "writeUDPServerString failed";
+	}
+	return true;
+}
+
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)
 {
 	LOG(INFO) << p_obj;

@@ -97,7 +97,7 @@ ssize_t AsynUDPServerHandler::writeUDPServerString(std::shared_ptr<EventTypeUDPC
 	cli_addr.sin_port = htons(resp->m_port);
 	cli_addr.sin_addr.s_addr = inet_addr(resp->m_host.c_str());
 
-	return sendto(resp->m_serverSocketFd, resp->m_rawData.c_str(), resp->m_rawData.size(), 0,
+	return sendto(m_sockfd, resp->m_rawData.c_str(), resp->m_rawData.size(), 0,
 			(struct sockaddr*)&(cli_addr), sizeof(struct sockaddr_in));
 }
 

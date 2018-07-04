@@ -49,3 +49,20 @@ public:
 private:
 	std::function<std::string(std::string)> m_action;
 };
+
+class TerminalCmdPlugIn: public TerminalCmd
+{
+public:
+	TerminalCmdPlugIn(std::function<std::string(std::string)> p_action): m_action(p_action){ }
+	std::string run(std::string p_cmd) override
+	{
+		return m_action(p_cmd);
+	}
+	std::string help() override
+	{
+		return "\tplugin deviceid\t\ttrigger andlink device connect to TCP server\n";
+	}
+private:
+	std::function<std::string(std::string)> m_action;
+};
+

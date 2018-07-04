@@ -57,4 +57,10 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 	return std::string();
 }
 
+std::string AndlinkDeviceEventHandler::buildPlugIuRequest(std::string p_deviceid)
+{
+	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
+	struct Interface56_requestPlugIn_Req resp;
+	return build_requestPlugIn_request_msg(resp);
+}
 

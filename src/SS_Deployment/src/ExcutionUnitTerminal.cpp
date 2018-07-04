@@ -7,10 +7,11 @@
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
-ExcutionUnitTerminal::ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
+ExcutionUnitTerminal::ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
+		std::shared_ptr<ExcutionUnitAndlink> p_euAndlink):
 	ExcutionUnit("Terminal", 1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
 	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1)),
-	m_ueContextHolder(p_ueContextHolder)
+	m_ueContextHolder(p_ueContextHolder), m_euAndlink(p_euAndlink)
 {
 	LOG(INFO) << "construct ExcutionUnitTerminal";
 }
@@ -89,8 +90,47 @@ void ExcutionUnitTerminal::registerAllCmd()
 {
 	registerCmd("help", std::make_shared<TerminalCmdHelp>(
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_help, this)));
+
 	registerCmd("list", std::make_shared<TerminalCmdList>(
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_list, this, std::placeholders::_1)));
+
+	registerCmd("plugin", std::make_shared<TerminalCmdPlugIn>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_plugin, this, std::placeholders::_1)));
+}
+
+std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cmd)
+{
+	std::vector<std::string> l_result;
+	int start = 0;
+	while(start < p_cmd.size())
+	{
+		int position = p_cmd.find_first_of(' ', start);
+		if(position == std::string::npos)
+		{
+			int sublen = p_cmd.size()-start;
+			if(p_cmd.back() == '\n')
+			{
+				sublen -= 1;
+			}
+			if(sublen > 0)
+			{
+				std::string substr = p_cmd.substr(start, sublen);
+				l_result.push_back(substr);
+			}
+			break;
+		}
+		else
+		{
+			int sublen = position - start;
+			if(sublen > 0)
+			{
+				std::string substr = p_cmd.substr(start, sublen);
+				l_result.push_back(substr);
+			}
+			start = position + 1;
+		}
+	}
+	return l_result;
 }
 
 std::string ExcutionUnitTerminal::terminalCmdCallback_help()
@@ -117,4 +157,21 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 	}
 
 	return l_result;
+}
+
+std::string ExcutionUnitTerminal::terminalCmdCallback_plugin(std::string p_cmd)
+{
+	auto l_parameterlist = resolveParameter(p_cmd);
+	if(l_parameterlist.size() < 2)
+	{
+		return "Error, Usage:\n" + m_cmdList["plugin"]->help();
+	}
+	std::string l_deviceid = l_parameterlist[1];
+	if(false == m_ueContextHolder->isExist(l_deviceid))
+	{
+		return "Error, " + l_deviceid + " not exist\n";
+	}
+	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
+	m_euAndlink->triggerPlugIn(l_uecontext->host, l_uecontext->port, l_deviceid);
+	return std::string();
 }
