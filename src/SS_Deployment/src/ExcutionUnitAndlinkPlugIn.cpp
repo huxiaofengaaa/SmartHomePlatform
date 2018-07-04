@@ -14,7 +14,7 @@ ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn()
 			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1)),
 	AsynTCPServerHandler(
 			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler, this, std::placeholders::_1),
-			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1))
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler, this, std::placeholders::_1))
 {
 	LOG(INFO) << "construct ExcutionUnitAndlinkPlugIn";
 }
@@ -64,7 +64,7 @@ bool ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler(std::shared_ptr<ClientC
 
 bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo)
 {
-	// TODO
+	LOG(INFO) << "Close, " << p_closeInfo;
 	return true;
 }
 

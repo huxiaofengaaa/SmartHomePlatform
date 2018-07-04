@@ -1,7 +1,7 @@
 /*
  * TCPListenerHandler.cpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
 
@@ -120,7 +120,7 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 
 std::ostream& operator<<(std::ostream& os, std::shared_ptr<ClientConnectInfo> p_connectionInfo)
 {
-	os << "AsynTCPListenerHandler listen client connect, IP:" << p_connectionInfo->m_ip
+	os << "client connect infomation, IP:" << p_connectionInfo->m_ip
 			<< " Port:" << p_connectionInfo->m_port
 			<< " Sockfd:" << p_connectionInfo->m_sockfd;
 	return os;
