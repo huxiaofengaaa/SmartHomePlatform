@@ -15,6 +15,7 @@ SmartHomeDeployment::SmartHomeDeployment()
 
 	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>();
 	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>();
+	m_andlinkPlugInExcutionUnit = std::make_shared<ExcutionUnitAndlinkPlugIn>();
 
 	LOG(INFO) << "construct SmartHomeDeployment";
 }
@@ -31,6 +32,7 @@ void SmartHomeDeployment::start()
 	m_terminalExcutionUnit->start();
 	registerAllTerminalCmd();
 	m_andlinkExcutionUnit->start();
+	m_andlinkPlugInExcutionUnit->start();
 
 	LOG(INFO) << "SmartHomeDeployment main loop start";
 	while(m_deploymentShouldExit == false)
@@ -49,6 +51,7 @@ bool SmartHomeDeployment::shutdown(int p_signum)
 
 	m_terminalExcutionUnit->shutdown();
 	m_andlinkExcutionUnit->shutdown();
+	m_andlinkPlugInExcutionUnit->shutdown();
 	m_deploymentShouldExit = true;
 	return true;
 }

@@ -117,3 +117,11 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 	}
 	return l_socketfd;
 }
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<ClientConnectInfo> p_connectionInfo)
+{
+	os << "AsynTCPListenerHandler listen client connect, IP:" << p_connectionInfo->m_ip
+			<< " Port:" << p_connectionInfo->m_port
+			<< " Sockfd:" << p_connectionInfo->m_sockfd;
+	return os;
+}

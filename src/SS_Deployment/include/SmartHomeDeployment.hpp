@@ -6,6 +6,7 @@
 #include <thread>
 #include "ExcutionUnitTerminal.hpp"
 #include "ExcutionUnitAndlink.hpp"
+#include "ExcutionUnitAndlinkPlugIn.hpp"
 #include "EventTypeStruct.hpp"
 #include "SystemNotify.hpp"
 #include "EventTerminal.hpp"
@@ -27,6 +28,7 @@ private:
 
 	std::shared_ptr<ExcutionUnitTerminal> m_terminalExcutionUnit;
 	std::shared_ptr<ExcutionUnitAndlink> m_andlinkExcutionUnit;
+	std::shared_ptr<ExcutionUnitAndlinkPlugIn> m_andlinkPlugInExcutionUnit;
 };
 
 

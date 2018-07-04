@@ -30,6 +30,8 @@ struct ClientConnectInfo
 	int m_port;
 };
 
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<ClientConnectInfo> p_connectionInfo);
+
 class AsynTCPListenerHandler
 {
 public:
