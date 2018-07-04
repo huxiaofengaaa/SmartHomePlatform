@@ -41,6 +41,7 @@ public:
 private:
 	void mainloop();
 	int createTCPServerSocket(std::string p_host, int p_port, int p_blockNumber);
+	int triggerMainloopAcceptNotBlock(std::string p_host, int p_port);
 
 	const std::string m_host;
 	const int m_port;

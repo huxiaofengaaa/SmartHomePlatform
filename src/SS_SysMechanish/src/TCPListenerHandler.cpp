@@ -34,6 +34,15 @@ bool AsynTCPListenerHandler::runTCPListener()
 void AsynTCPListenerHandler::shutdownTCPListener()
 {
 	m_threadExitFlag = true;
+	int l_tmpSocket = triggerMainloopAcceptNotBlock(m_host, m_port);
+	if(l_tmpSocket >= 0)
+	{
+		close(l_tmpSocket);
+	}
+	else
+	{
+		LOG(INFO) << "AsynTCPListenerHandler::shutdownTCPListener triggerMainloopAcceptNotBlock failed";
+	}
 	m_thread.join();
 	if(m_sockfd > 0)
 	{
@@ -81,6 +90,27 @@ int AsynTCPListenerHandler::createTCPServerSocket(std::string p_host, int p_port
 	}
 
 	if(0 != listen(l_socketfd, p_blockNumber))
+	{
+		close(l_socketfd);
+		return -1;
+	}
+	return l_socketfd;
+}
+
+int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, int p_port)
+{
+	int l_socketfd = socket(AF_INET, SOCK_STREAM, 0);
+	if(l_socketfd < 0)
+	{
+		return -1;
+	}
+	struct sockaddr_in ser_addr;
+	bzero(&ser_addr, sizeof(struct sockaddr_in));
+	ser_addr.sin_family = AF_INET;
+	ser_addr.sin_port = htons(p_port);
+	ser_addr.sin_addr.s_addr = inet_addr(p_host.c_str());
+
+	if(0 != connect(l_socketfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
 		close(l_socketfd);
 		return -1;
