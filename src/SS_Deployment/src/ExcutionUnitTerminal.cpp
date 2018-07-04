@@ -7,7 +7,7 @@
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
 ExcutionUnitTerminal::ExcutionUnitTerminal():
-	ExcutionUnit(1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
+	ExcutionUnit("Terminal", 1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
 	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1))
 {
 	LOG(INFO) << "construct ExcutionUnitTerminal";

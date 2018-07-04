@@ -12,24 +12,28 @@
 #include <mutex>
 #include <functional>
 #include "SystemNotify.hpp"
+#include "glog/logging.h"
 
 template<class DataType>
 class ExcutionUnit
 {
 public:
-	ExcutionUnit(int p_threadNumber, std::function<bool(DataType)> p_callback)
-		: m_threadNumber(p_threadNumber), m_excutionUnitExitFlag(false), m_callback(p_callback)
+	ExcutionUnit(std::string p_ExcutionUnitName, int p_threadNumber, std::function<bool(DataType)> p_callback)
+		: m_ExcutionUnitName(p_ExcutionUnitName),
+		  m_threadNumber(p_threadNumber),
+		  m_excutionUnitExitFlag(false),
+		  m_callback(p_callback)
 	{
-		LOG(INFO) << "construct ExcutionUnit";
+		LOG(INFO) << "construct Excution Unit " << m_ExcutionUnitName;
 	}
 	virtual ~ExcutionUnit()
 	{
-		LOG(INFO) << "de-construct ExcutionUnit";
+		LOG(INFO) << "de-construct Excution Unit " << m_ExcutionUnitName;
 	}
 
 	bool startExcutionUnit()
 	{
-		LOG(INFO) << "start ExcutionUnit";
+		LOG(INFO) << "start Excution Unit " << m_ExcutionUnitName;
 		std::function<void()> l_excutionUnitTask = std::bind(&ExcutionUnit::excutionMainLoop, this);
 		for(auto i = 0 ; i < m_threadNumber ; i++)
 		{
@@ -41,7 +45,7 @@ public:
 
 	void shutdownExcutionUnit()
 	{
-		LOG(INFO) << "shutdown ExcutionUnit";
+		LOG(INFO) << "shutdown Excution Unit " << m_ExcutionUnitName;
 		m_excutionUnitExitFlag = true;
 		m_queueNotify.notifyAll();
 
@@ -90,7 +94,7 @@ public:
 private:
 	void excutionMainLoop()
 	{
-		LOG(INFO) << "excution unit main loop start";
+		LOG(INFO) << "Excution Unit " << m_ExcutionUnitName << " main loop start";
 		std::function<bool()> l_checker = std::bind(&ExcutionUnit::isDataObjectNotEmpty, this);
 		while(m_excutionUnitExitFlag == false)
 		{
@@ -100,7 +104,7 @@ private:
 				m_callback(l_eventObj);
 			}
 		}
-		LOG(INFO) << "excution unit main loop exit";
+		LOG(INFO) << "Excution Unit " << m_ExcutionUnitName << " main loop exit";
 	}
 
 	std::vector<DataType> m_dataQueue;
@@ -111,4 +115,5 @@ private:
 	bool m_excutionUnitExitFlag;
 
 	std::function<bool(DataType)> m_callback;
+	const std::string m_ExcutionUnitName;
 };

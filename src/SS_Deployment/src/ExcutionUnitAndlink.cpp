@@ -9,7 +9,7 @@
 #include "AndlinkDeviceEventHandler.hpp"
 
 ExcutionUnitAndlink::ExcutionUnitAndlink():
-	ExcutionUnit(5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
+	ExcutionUnit("Andlink", 5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
 	AsynUDPServerHandler("127.0.0.1", 6887,
 			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback, this, std::placeholders::_1))
 {
