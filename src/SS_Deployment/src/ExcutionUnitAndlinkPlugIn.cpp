@@ -1,17 +1,19 @@
 /*
  * ExcutionUnitAndlinkPlugIn.cpp
  *
- *  Created on: 2018Äê7ÔÂ4ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½4ï¿½ï¿½
  *      Author: Administrator
  */
 
 #include "ExcutionUnitAndlinkPlugIn.hpp"
 
-
 ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn()
 	:ExcutionUnit("AndlinkPlugIn", 5,
 			std::bind(&ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject, this, std::placeholders::_1)),
 	AsynTCPListenerHandler("127.0.0.1", 6888,
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1)),
+	AsynTCPServerHandler(
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler, this, std::placeholders::_1),
 			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1))
 {
 	LOG(INFO) << "construct ExcutionUnitAndlinkPlugIn";
@@ -25,26 +27,45 @@ ExcutionUnitAndlinkPlugIn::~ExcutionUnitAndlinkPlugIn()
 bool ExcutionUnitAndlinkPlugIn::start()
 {
 	LOG(INFO) << "ExcutionUnitAndlinkPlugIn start";
-	runTCPListener();
 	startExcutionUnit();
+	runTCPServer();
+	runTCPListener();
 	return true;
 }
 
 void ExcutionUnitAndlinkPlugIn::shutdown()
 {
 	shutdownTCPListener();
+	shutdownTCPServer();
 	shutdownExcutionUnit();
 	LOG(INFO) << "ExcutionUnitAndlinkPlugIn shutdown";
 }
 
-bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj)
+bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
 {
-
+	LOG(INFO) << p_eventObj;
+	//TODO
+	writeTCPServerString(p_eventObj);
 	return true;
+}
+
+bool ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
+{
+	LOG(INFO) << p_eventObj;
+	return addDataObject(p_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler(std::shared_ptr<ClientConnectInfo> p_connectionInfo)
 {
 	LOG(INFO) << p_connectionInfo;
-	close(p_connectionInfo->m_sockfd);
+	addClient(p_connectionInfo);
+	return true;
 }
+
+bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo)
+{
+	// TODO
+	return true;
+}
+
+

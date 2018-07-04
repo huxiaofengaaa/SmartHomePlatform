@@ -7,5 +7,6 @@ add_library(sysMechanish STATIC src/SystemNotify.cpp
                                 src/SignalRegister.cpp
                                 src/TerminalHandler.cpp
                                 src/UDPServerHandler.cpp
-                                src/TCPListenerHandler.cpp)
+                                src/TCPListenerHandler.cpp
+                                src/TCPServerHandler.cpp)
                            

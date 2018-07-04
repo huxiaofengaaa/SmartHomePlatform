@@ -10,13 +10,15 @@
 AsynUDPServerHandler::AsynUDPServerHandler(std::string p_host, int p_port,
 		std::function<bool(std::shared_ptr<EventTypeUDPClientDataObject>)> p_callback)
 	: m_sockfd(-1), m_host(p_host), m_port(p_port), m_callback(p_callback), m_threadExitFlag(false)
-  {
+{
 	LOG(INFO) << "construct AsynUDPServerHandler";
-  }
+}
+
 AsynUDPServerHandler::~AsynUDPServerHandler()
 {
 	LOG(INFO) << "de-construct AsynUDPServerHandler";
 }
+
 bool AsynUDPServerHandler::runUDPServer()
 {
 	m_sockfd = createUDPServerSocket(m_host, m_port);
@@ -28,6 +30,7 @@ bool AsynUDPServerHandler::runUDPServer()
 	m_thread = std::move(std::thread(l_threadTask));
 	return true;
 }
+
 void AsynUDPServerHandler::shutdownUDPServer()
 {
 	m_threadExitFlag = true;

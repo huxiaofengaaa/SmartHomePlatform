@@ -11,10 +11,12 @@
 #include "glog/logging.h"
 #include "UDPServerHandler.hpp"
 #include "TCPListenerHandler.hpp"
+#include "TCPServerHandler.hpp"
 
 class ExcutionUnitAndlinkPlugIn:
-		public ExcutionUnit<std::shared_ptr<EventTypeUDPClientDataObject>>,
-		public AsynTCPListenerHandler
+		public ExcutionUnit<std::shared_ptr<EventTypeTCPClientDataObject>>,
+		public AsynTCPListenerHandler,
+		public AsynTCPServerHandler
 {
 public:
 	ExcutionUnitAndlinkPlugIn();
@@ -22,6 +24,8 @@ public:
 	bool start();
 	void shutdown();
 private:
-	bool excutionUnitHandleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj);
+	bool excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
+	bool asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
 	bool asycTcpConnectionHandler(std::shared_ptr<ClientConnectInfo> p_connectionInfo);
+	bool asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo);
 };
