@@ -15,9 +15,27 @@
 #include <thread>
 #include <functional>
 #include "glog/logging.h"
-#include "EventTypeStruct.hpp"
 
 #pragma once
+
+struct EventTypeUDPClientDataObject
+{
+	EventTypeUDPClientDataObject(std::string p_host, int p_port, int p_sockfd, std::string p_rawData)
+		: m_host(p_host), m_port(p_port), m_serverSocketFd(p_sockfd), m_rawData(p_rawData)
+	{
+
+	}
+	~EventTypeUDPClientDataObject()
+	{
+
+	}
+	std::string m_host;
+	int m_port;
+	int m_serverSocketFd;
+	std::string m_rawData;
+};
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeUDPClientDataObject> obj);
 
 class AsynUDPServerHandler
 {
@@ -40,3 +58,5 @@ private:
 	std::function<bool(std::shared_ptr<EventTypeUDPClientDataObject>)> m_callback;
 	bool m_threadExitFlag;
 };
+
+

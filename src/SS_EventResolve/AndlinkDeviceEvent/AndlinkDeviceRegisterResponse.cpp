@@ -1,12 +1,10 @@
 /*
  * AndlinkDeviceRegisterResponse.cpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
-#include <string>
 
 std::string build_register_response_success_msg(struct Interface56_Register_Resp resp)
 {

@@ -1,10 +1,9 @@
 /*
  * AndlinkDeviceOnlineResponse.cpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
 
 std::string build_online_response_success_msg(struct Interface56_Online_Resp resp)

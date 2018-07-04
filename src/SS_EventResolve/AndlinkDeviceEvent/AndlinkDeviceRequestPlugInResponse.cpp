@@ -1,13 +1,11 @@
 /*
  * AndlinkDeviceRequestPlugInResponse.cpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
 
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
-#include <string>
 
 bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56_requestPlugIn_Resp* req)
 {

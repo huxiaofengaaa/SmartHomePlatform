@@ -1,18 +1,15 @@
 #pragma once
 
 #include <memory>
-#include <vector>
-#include <mutex>
-#include <thread>
+#include <unistd.h>
+#include <functional>
 #include "ExcutionUnitTerminal.hpp"
 #include "ExcutionUnitAndlink.hpp"
 #include "ExcutionUnitAndlinkPlugIn.hpp"
-#include "EventTypeStruct.hpp"
-#include "SystemNotify.hpp"
-#include "EventTerminal.hpp"
-//#include "UeContextHolder.hpp"
-//#include "UeContextAndlink.hpp"
 #include "UeContextHolderAndlink.hpp"
+#include "SignalRegister.hpp"
+#include "glog/logging.h"
+
 
 class SmartHomeDeployment
 {

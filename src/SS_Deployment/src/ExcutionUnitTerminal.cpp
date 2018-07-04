@@ -1,9 +1,4 @@
-#include <iostream>
-#include <string>
-#include <unistd.h>
 #include "ExcutionUnitTerminal.hpp"
-#include "EventTypeStruct.hpp"
-#include "glog/logging.h"
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
@@ -39,15 +34,15 @@ void ExcutionUnitTerminal::shutdown()
 
 bool ExcutionUnitTerminal::terminalAsycDataCallback(std::string p_data)
 {
-	return addDataObject(std::make_shared<EventTypeTerminalDataObject>(p_data));
+	return addDataObject(p_data);
 }
 
-bool ExcutionUnitTerminal::handleDataObject(std::shared_ptr<EventTypeTerminalDataObject> p_eventObj)
+bool ExcutionUnitTerminal::handleDataObject(std::string p_str)
 {
-	if(p_eventObj->m_rawData != std::string("\n"))
+	if(p_str != std::string("\n"))
 	{
-		LOG(INFO) << p_eventObj;
-		std::string l_result = runTerminalCmd(p_eventObj->m_rawData);
+		LOG(INFO) << "Terminal input, size:" << p_str.size() << ", msg:" << p_str;
+		std::string l_result = runTerminalCmd(p_str);
 		if(l_result.empty() == false)
 		{
 			writeTerminalString(l_result);

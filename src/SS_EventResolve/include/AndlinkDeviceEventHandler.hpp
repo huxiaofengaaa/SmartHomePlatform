@@ -1,15 +1,17 @@
 /*
  * AndlinkDeviceEventHandler.hpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
 
 #pragma once
 
 #include <memory>
-#include "EventTypeStruct.hpp"
+#include <string>
+#include "AndlinkDeviceEvent.hpp"
 #include "UeContextHolderAndlink.hpp"
+#include "UDPServerHandler.hpp"
 
 class AndlinkDeviceEventHandler
 {

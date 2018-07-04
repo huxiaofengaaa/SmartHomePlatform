@@ -1,12 +1,9 @@
 /*
  * AndlinkDeviceRegisterRequest.cpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
-#include <stdio.h>
-#include <string.h>
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
 
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req)

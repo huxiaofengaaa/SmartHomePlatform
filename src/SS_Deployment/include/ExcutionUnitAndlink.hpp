@@ -1,20 +1,19 @@
 /*
  * ExcutionUnitAndlink.hpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
 
 #pragma once
 
 #include <memory>
-#include <thread>
 #include <functional>
-#include "EventTypeStruct.hpp"
 #include "glog/logging.h"
 #include "ExcutionUnit.hpp"
 #include "UDPServerHandler.hpp"
 #include "UeContextHolderAndlink.hpp"
+#include "AndlinkDeviceEventHandler.hpp"
 
 class ExcutionUnitAndlink:
 		public ExcutionUnit<std::shared_ptr<EventTypeUDPClientDataObject>>,

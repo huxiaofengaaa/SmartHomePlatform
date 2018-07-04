@@ -1,7 +1,7 @@
 /*
  * UDPServerHandler.cpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
 
@@ -120,4 +120,15 @@ int AsynUDPServerHandler::createUDPServerSocket(std::string p_host, int p_port)
 		return -1;
 	}
 	return sockfd;
+}
+
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeUDPClientDataObject> obj)
+{
+	os << "Type:Andlink Device";
+	os << ", fd:" << obj->m_serverSocketFd;
+	os << ", size:" << obj->m_rawData.size();
+	os << ", IP:" << obj->m_host;
+	os << ", Port:" << obj->m_port;
+	os << ", msg: " << obj->m_rawData;
+	return os;
 }

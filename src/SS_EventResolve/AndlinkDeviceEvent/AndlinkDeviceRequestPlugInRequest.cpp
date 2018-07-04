@@ -1,14 +1,9 @@
 /*
  * AndlinkDeviceRequestPlugInRequest.cpp
  *
- *  Created on: 2018Äê7ÔÂ3ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½3ï¿½ï¿½
  *      Author: Administrator
  */
-
-
-#include <stdio.h>
-#include <string.h>
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
 
 std::string build_requestPlugIn_request_msg(struct Interface56_requestPlugIn_Req resp)

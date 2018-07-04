@@ -1,10 +1,11 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <unistd.h>
 #include <memory>
-#include <thread>
 #include <functional>
 #include <map>
-#include "EventTypeStruct.hpp"
 #include "glog/logging.h"
 #include "ExcutionUnit.hpp"
 #include "ExcutionUnitAndlink.hpp"
@@ -13,7 +14,7 @@
 #include "UeContextHolderAndlink.hpp"
 
 class ExcutionUnitTerminal:
-		public ExcutionUnit<std::shared_ptr<EventTypeTerminalDataObject>>,
+		public ExcutionUnit<std::string>,
 		public AsynTerminalHandler
 {
 public:
@@ -35,7 +36,7 @@ private:
 	std::string terminalCmdCallback_plugin(std::string p_cmd);
 
 	bool terminalAsycDataCallback(std::string p_data);
-	bool handleDataObject(std::shared_ptr<EventTypeTerminalDataObject> p_eventObj);
+	bool handleDataObject(std::string p_eventObj);
 
 	std::map<std::string, std::shared_ptr<TerminalCmd>> m_cmdList;
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;

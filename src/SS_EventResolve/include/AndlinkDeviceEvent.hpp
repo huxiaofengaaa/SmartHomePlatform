@@ -1,13 +1,15 @@
 /*
  * AndlinkDeviceEvent.hpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
 
 #pragma once
 
 #include <iostream>
+#include <string.h>
+#include "cJSON.h"
 
 enum class ANDLINKDeviceDataType
 {

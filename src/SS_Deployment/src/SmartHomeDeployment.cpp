@@ -1,8 +1,4 @@
 #include "SmartHomeDeployment.hpp"
-#include "SignalRegister.hpp"
-#include "glog/logging.h"
-#include <unistd.h>
-#include <functional>
 
 SmartHomeDeployment::SmartHomeDeployment()
 {

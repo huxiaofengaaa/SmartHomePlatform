@@ -1,14 +1,12 @@
 /*
  * AndlinkDeviceEventHandler.cpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
 
 #include "AndlinkDeviceEventHandler.hpp"
-#include "AndlinkDeviceEvent.hpp"
-#include "cJSON.h"
-#include <string>
+
 
 std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDataObject> p_event)
 {

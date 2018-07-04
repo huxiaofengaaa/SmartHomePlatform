@@ -1,13 +1,11 @@
 /*
  * AndlinkDeviceHeartbeatResponse.cpp
  *
- *  Created on: 2018Äê7ÔÂ2ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½2ï¿½ï¿½
  *      Author: Administrator
  */
 
-#include "cJSON.h"
 #include "AndlinkDeviceEvent.hpp"
-#include <string>
 
 std::string build_heartbeat_response_msg(struct Interface56_heartbeat_Resp resp)
 {
