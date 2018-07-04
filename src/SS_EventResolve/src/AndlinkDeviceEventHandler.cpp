@@ -21,7 +21,11 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 
 	if(true == resolve_if56_register_request_msg(l_rawData, &l_registerReq))
 	{
+		std::string l_deviceID = m_ueContextHolder->DeviceRegister(
+				l_registerReq.deviceMac, l_registerReq.deviceType, l_registerReq.productToken);
+
 		struct Interface56_Register_Resp l_registerResp;
+		l_registerResp.deviceId = l_deviceID;
 		return build_register_response_success_msg(l_registerResp);
 	}
 	else if(true == resolve_if56_online_request_msg(l_rawData, &l_onlineReq))

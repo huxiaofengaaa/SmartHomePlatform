@@ -3,6 +3,7 @@ set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
 include_directories(include)
 include_directories(${CMAKE_SOURCE_DIR}/src/SS_Deployment/include)
 include_directories(${CMAKE_SOURCE_DIR}/library/cJSON)
+include_directories(${CMAKE_BINARY_DIR}/library/glog/)
 
 
 set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
