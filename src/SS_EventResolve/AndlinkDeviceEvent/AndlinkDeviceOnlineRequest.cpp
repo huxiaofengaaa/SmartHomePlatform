@@ -85,5 +85,45 @@ bool resolve_if56_online_request_msg(std::string msg, struct Interface56_Online_
 	return false;
 }
 
+std::string build_if56_online_request_msg(struct Interface56_Online_Req req)
+{
+	std::string l_result;
+	cJSON *regJs = cJSON_CreateObject();
+	if(regJs == NULL)
+	{
+		return l_result;
+	}
 
+	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "DevRND", req.DevRND.c_str());
+	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
+	cJSON_AddStringToObject(regJs, "deviceMac", req.deviceMac.c_str());
+	cJSON_AddStringToObject(regJs, "deviceType", req.deviceType.c_str());
+	cJSON_AddStringToObject(regJs, "firmwareVersion", req.firmwareVersion.c_str());
+	cJSON_AddStringToObject(regJs, "softwareVersion", req.softwareVersion.c_str());
+	cJSON_AddStringToObject(regJs, "ipAddress", req.ipAddress.c_str());
+	cJSON_AddNumberToObject(regJs, "timestamp", req.timestamp);
+
+	cJSON *regJs_xdata = cJSON_CreateObject();
+	if(regJs_xdata == NULL)
+	{
+		cJSON_Delete(regJs);
+		return l_result;
+	}
+	cJSON_AddStringToObject(regJs_xdata, "deviceVendor", req.deviceVendor.c_str());
+	cJSON_AddStringToObject(regJs_xdata, "deviceModel", req.deviceModel.c_str());
+	cJSON_AddStringToObject(regJs_xdata, "deviceSn", req.deviceSn.c_str());
+	cJSON_AddStringToObject(regJs_xdata, "apUplinkType", req.apUplinkType.c_str());
+	cJSON_AddNumberToObject(regJs_xdata, "radio5", req.radio5);
+	cJSON_AddStringToObject(regJs_xdata, "user_key", req.user_key.c_str());
+	cJSON_AddStringToObject(regJs_xdata, "SyncCode", req.SyncCode.c_str());
+	cJSON_AddItemToObject(regJs, "XData", regJs_xdata);
+
+	char* regch = cJSON_Print(regJs);
+	l_result = std::string(regch);
+	cJSON_Delete(regJs);
+	free(regch);
+
+	return l_result;
+}
 

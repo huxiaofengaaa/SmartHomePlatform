@@ -1,13 +1,6 @@
-/*
- * AndlinkDeviceHeartbeatRequest.cpp
- *
- *  Created on: 2018��7��2��
- *      Author: Administrator
- */
-
 #include "AndlinkDeviceEvent.hpp"
 
-bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_heartbeat_Req* req)
+bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_Heartbeat_Req* req)
 {
 	if(msg.empty() == true || req == NULL)
 	{
@@ -38,4 +31,24 @@ bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_hear
 	return false;
 }
 
+std::string build_if56_heartbeat_request_msg(struct Interface56_Heartbeat_Req req)
+{
+	std::string l_result;
+	cJSON *regJs = cJSON_CreateObject();
+	if(regJs == NULL)
+	{
+		return l_result;
+	}
 
+	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
+	cJSON_AddStringToObject(regJs, "MAC", req.MAC.c_str());
+	cJSON_AddStringToObject(regJs, "IPAddr", req.IPAddr.c_str());
+
+	char* regch = cJSON_Print(regJs);
+	l_result = std::string(regch);
+	cJSON_Delete(regJs);
+	free(regch);
+
+	return l_result;
+}

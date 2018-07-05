@@ -6,7 +6,48 @@
  */
 #include "AndlinkDeviceEvent.hpp"
 
-std::string build_register_response_success_msg(struct Interface56_Register_Resp resp)
+bool resolve_if56_register_response_msg(std::string msg, struct Interface56_Register_Resp* resp)
+{
+	if(msg.empty() == true || resp == NULL)
+	{
+		return false;
+	}
+
+	cJSON* obj = cJSON_Parse(msg.c_str());
+	if(obj == NULL)
+	{
+		return false;
+	}
+
+	cJSON* gwToken = cJSON_GetObjectItem(obj, "gwToken");
+	cJSON* deviceId = cJSON_GetObjectItem(obj, "deviceId");
+	cJSON* deviceToken = cJSON_GetObjectItem(obj, "deviceToken");
+	cJSON* andlinkToken = cJSON_GetObjectItem(obj, "andlinkToken");
+	if(gwToken && deviceId && deviceToken && andlinkToken)
+	{
+		resp->gwToken = gwToken->valuestring;
+		resp->deviceId = deviceId->valuestring;
+		resp->deviceToken = deviceToken->valuestring;
+		resp->andlinkToken = andlinkToken->valuestring;
+		cJSON_Delete(obj);
+		return true;
+	}
+
+	cJSON* respCode = cJSON_GetObjectItem(obj, "respCode");
+	cJSON* respCont = cJSON_GetObjectItem(obj, "respCont");
+	if(respCode && respCont)
+	{
+		resp->respCode = respCode->valueint;
+		resp->respCont = respCont->valuestring;
+		cJSON_Delete(obj);
+		return true;
+	}
+
+	cJSON_Delete(obj);
+	return false;
+}
+
+std::string build_if56_register_response_success_msg(struct Interface56_Register_Resp resp)
 {
 	std::string l_result;
 	cJSON *regJs = cJSON_CreateObject();
@@ -28,7 +69,7 @@ std::string build_register_response_success_msg(struct Interface56_Register_Resp
 	return l_result;
 }
 
-std::string build_register_response_failed_msg(struct Interface56_Register_Resp resp)
+std::string build_if56_register_response_failed_msg(struct Interface56_Register_Resp resp)
 {
 	std::string l_result;
 	cJSON *regJs = cJSON_CreateObject();

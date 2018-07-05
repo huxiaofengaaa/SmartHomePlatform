@@ -1,15 +1,8 @@
-/*
- * AndlinkDeviceRequestPlugInResponse.cpp
- *
- *  Created on: 2018��7��3��
- *      Author: Administrator
- */
-
 #include "AndlinkDeviceEvent.hpp"
 
-bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56_requestPlugIn_Resp* req)
+bool resolve_if56_requestPlugIn_response_msg(std::string msg, struct Interface56_RequestPlugIn_Resp* resp)
 {
-	if(msg.empty() == true || req == NULL)
+	if(msg.empty() == true || resp == NULL)
 	{
 		return false;
 	}
@@ -24,8 +17,8 @@ bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56
 	cJSON* DevRND = cJSON_GetObjectItem(obj, "DevRND");
 	if(respCode && DevRND)
 	{
-		req->respCode = respCode->valueint;
-		req->DevRND = DevRND->valueint;
+		resp->respCode = respCode->valueint;
+		resp->DevRND = DevRND->valueint;
 		cJSON_Delete(obj);
 		return true;
 	}
@@ -34,5 +27,23 @@ bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56
 	return false;
 }
 
+std::string build_if56_requestPlugIn_response_msg(struct Interface56_RequestPlugIn_Resp resp)
+{
+	std::string l_result;
+	cJSON *regJs = cJSON_CreateObject();
+	if(regJs == NULL)
+	{
+		return l_result;
+	}
 
+	cJSON_AddNumberToObject(regJs, "respCode", resp.respCode);
+	cJSON_AddNumberToObject(regJs, "DevRND", resp.DevRND);
+
+	char* regch = cJSON_Print(regJs);
+	l_result = std::string(regch);
+	free(regch);
+	cJSON_Delete(regJs);
+
+	return l_result;
+}
 

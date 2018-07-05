@@ -7,7 +7,38 @@
 
 #include "AndlinkDeviceEvent.hpp"
 
-std::string build_auth_response_msg(struct Interface56_Auth_Resp resp)
+bool resolve_if56_auth_response_msg(std::string msg, struct Interface56_Auth_Resp* resp)
+{
+	if(msg.empty() == true || resp == NULL)
+	{
+		return false;
+	}
+
+	cJSON* obj = cJSON_Parse(msg.c_str());
+	if(obj == NULL)
+	{
+		return false;
+	}
+
+	cJSON* respCode = cJSON_GetObjectItem(obj, "respCode");
+	cJSON* heartBeatTime = cJSON_GetObjectItem(obj, "heartBeatTime");
+	cJSON* MessageServer = cJSON_GetObjectItem(obj, "MessageServer");
+	cJSON* ServerIP = cJSON_GetObjectItem(obj, "ServerIP");
+	if(respCode && heartBeatTime && MessageServer && ServerIP)
+	{
+		resp->respCode = respCode->valueint;
+		resp->heartBeatTime = heartBeatTime->valueint;
+		resp->MessageServer = MessageServer->valuestring;
+		resp->ServerIP = ServerIP->valuestring;
+		cJSON_Delete(obj);
+		return true;
+	}
+
+	cJSON_Delete(obj);
+	return false;
+}
+
+std::string build_if56_auth_response_msg(struct Interface56_Auth_Resp resp)
 {
 	std::string l_result;
 	cJSON *regJs = cJSON_CreateObject();

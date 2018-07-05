@@ -1,13 +1,35 @@
-/*
- * AndlinkDeviceHeartbeatResponse.cpp
- *
- *  Created on: 2018��7��2��
- *      Author: Administrator
- */
-
 #include "AndlinkDeviceEvent.hpp"
 
-std::string build_heartbeat_response_msg(struct Interface56_heartbeat_Resp resp)
+bool resolve_if56_heartbeat_response_msg(std::string msg, struct Interface56_Heartbeat_Resp* resp)
+{
+	if(msg.empty() == true || resp == NULL)
+	{
+		return false;
+	}
+
+	cJSON* obj = cJSON_Parse(msg.c_str());
+	if(obj == NULL)
+	{
+		return false;
+	}
+
+	cJSON* respCode = cJSON_GetObjectItem(obj, "respCode");
+	cJSON* heartBeatTime = cJSON_GetObjectItem(obj, "heartBeatTime");
+	cJSON* ServerIP = cJSON_GetObjectItem(obj, "ServerIP");
+	if(respCode && heartBeatTime && ServerIP)
+	{
+		resp->respCode = respCode->valueint;
+		resp->heartBeatTime = heartBeatTime->valueint;
+		resp->ServerIP = ServerIP->valuestring;
+		cJSON_Delete(obj);
+		return true;
+	}
+
+	cJSON_Delete(obj);
+	return false;
+}
+
+std::string build_if56_heartbeat_response_msg(struct Interface56_Heartbeat_Resp resp)
 {
 	std::string l_result;
 	cJSON *regJs = cJSON_CreateObject();

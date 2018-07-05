@@ -37,4 +37,25 @@ bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Regis
 	return false;
 }
 
+std::string build_if56_register_request_msg(struct Interface56_Register_Req msg)
+{
+	std::string l_result;
+	cJSON *regJs = cJSON_CreateObject();
+	if(regJs == NULL)
+	{
+		return l_result;
+	}
+
+	cJSON_AddStringToObject(regJs, "deviceMac", msg.deviceMac.c_str());
+	cJSON_AddStringToObject(regJs, "deviceType", msg.deviceType.c_str());
+	cJSON_AddStringToObject(regJs, "productToken", msg.productToken.c_str());
+	cJSON_AddNumberToObject(regJs, "timestamp", msg.timestamp);
+
+	char* regch = cJSON_Print(regJs);
+	l_result = std::string(regch);
+	cJSON_Delete(regJs);
+	free(regch);
+
+	return l_result;
+}
 
