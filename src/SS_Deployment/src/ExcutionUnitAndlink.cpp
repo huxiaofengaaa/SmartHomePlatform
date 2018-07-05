@@ -47,12 +47,13 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 	if(writeUDPServerString(l_eventObj))
 	{
 		LOG(INFO) << l_eventObj;
+		return true;
 	}
 	else
 	{
 		LOG(INFO) << "writeUDPServerString failed";
+		return false;
 	}
-	return true;
 }
 
 bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid)
@@ -66,12 +67,13 @@ bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std:
 	if(writeUDPServerString(l_eventObj))
 	{
 		LOG(INFO) << l_eventObj;
+		return true;
 	}
 	else
 	{
 		LOG(INFO) << "writeUDPServerString failed";
+		return false;
 	}
-	return true;
 }
 
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)

@@ -28,7 +28,7 @@ public:
 	}
 	std::string help() override
 	{
-		return "\thelp\t\tshow all terminal cmd\n";
+		return "show all terminal cmd";
 	}
 private:
 	std::function<std::string()> m_action;
@@ -44,7 +44,7 @@ public:
 	}
 	std::string help() override
 	{
-		return "\tlist\t\tlist device information cmd\n";
+		return "list device information cmd";
 	}
 private:
 	std::function<std::string(std::string)> m_action;
@@ -60,7 +60,7 @@ public:
 	}
 	std::string help() override
 	{
-		return "\tplugin deviceid\t\ttrigger andlink device connect to TCP server\n";
+		return "trigger andlink device connect to TCP server, for example: plugin deviceID";
 	}
 private:
 	std::function<std::string(std::string)> m_action;
@@ -76,7 +76,7 @@ public:
 	}
 	std::string help() override
 	{
-		return "\tdisconnect deviceid\t\ttrigger andlink device disconnect to TCP server\n";
+		return "trigger andlink device disconnect to TCP server, for example: disconnect deviceID";
 	}
 private:
 	std::function<std::string(std::string)> m_action;

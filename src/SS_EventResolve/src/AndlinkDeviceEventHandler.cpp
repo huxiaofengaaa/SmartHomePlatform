@@ -10,6 +10,11 @@
 
 std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDataObject> p_event)
 {
+	if(!p_event)
+	{
+		return std::string();
+	}
+
 	std::string l_rawData = p_event->m_rawData;
 
 	struct Interface56_Register_Req l_registerReq;

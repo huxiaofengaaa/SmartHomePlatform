@@ -132,27 +132,43 @@ std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cm
 
 std::string ExcutionUnitTerminal::terminalCmdCallback_help()
 {
-	std::string l_result = "Usage:\n";
+	char buffer[128] = { 0 };
+	std::string l_result = "\nUsage:\n";
 	for(auto l_cmd = m_cmdList.begin() ; l_cmd != m_cmdList.end() ; l_cmd++)
 	{
-		l_result += l_cmd->second->help();
+		memset(buffer, 0, sizeof(buffer));
+		snprintf(buffer, sizeof(buffer), "\t%-16s    %s\n", l_cmd->first.c_str(), l_cmd->second->help().c_str());
+		l_result += std::string(buffer);
 	}
+	l_result += "\n";
 	return l_result;
 }
 
 std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 {
-	std::string l_result = "\n";
+	char buffer[512] = { 0 };
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\n\t%-24s | %-21s | %-17s\n",
+			"DeviceID", "IPaddress", "MAC");
+
+	std::string l_result = std::string(buffer);
+
 	auto l_devicelist = m_ueContextHolder->getDeviceList();
 	for(auto l_device: l_devicelist)
 	{
 		auto l_uecontext = m_ueContextHolder->getRef(l_device);
-		l_result += "\t" + l_uecontext->deviceId;
-		l_result += "\t\t" + l_uecontext->host + ":" + std::to_string(l_uecontext->port);
-		l_result += "\t\t" + l_uecontext->deviceMac;
-		l_result += "\n";
-	}
+		memset(buffer, 0, sizeof(buffer));
 
+		std::string ipaddress = l_uecontext->host + ":" + std::to_string(l_uecontext->port);
+
+		snprintf(buffer, sizeof(buffer), "\t%-24s | %-21s | %-17s\n",
+				l_uecontext->deviceId.c_str(),
+				ipaddress.c_str(),
+				l_uecontext->deviceMac.c_str());
+		l_result += std::string(buffer);
+	}
+	l_result += "\n";
 	return l_result;
 }
 
@@ -161,16 +177,25 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_plugin(std::string p_cmd)
 	auto l_parameterlist = resolveParameter(p_cmd);
 	if(l_parameterlist.size() < 2)
 	{
-		return "Error, Usage:\n" + m_cmdList["plugin"]->help();
+		return "\n\tError, Usage:" + m_cmdList["plugin"]->help() + "\n\n";
 	}
 	std::string l_deviceid = l_parameterlist[1];
-	if(false == m_ueContextHolder->isExist(l_deviceid))
-	{
-		return "Error, " + l_deviceid + " not exist\n";
-	}
 	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
-	m_euAndlink->triggerPlugIn(l_uecontext->host, l_uecontext->port, l_deviceid);
-	return std::string();
+	if(l_uecontext)
+	{
+		if(true == m_euAndlink->triggerPlugIn(l_uecontext->host, l_uecontext->port, l_deviceid))
+		{
+			return "\n\t" + l_deviceid + " trigger plugin success\n\n";
+		}
+		else
+		{
+			return "\n\t" + l_deviceid + " trigger plugin failed\n\n";
+		}
+	}
+	else
+	{
+		return "\n\t" + l_deviceid + " Not Exist\n\n";
+	}
 }
 
 std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_cmd)
@@ -178,14 +203,23 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_c
 	auto l_parameterlist = resolveParameter(p_cmd);
 	if(l_parameterlist.size() < 2)
 	{
-		return "Error, Usage:\n" + m_cmdList["disconnect"]->help();
+		return "\n\tError, Usage:" + m_cmdList["disconnect"]->help() + "\n\n";
 	}
 	std::string l_deviceid = l_parameterlist[1];
-	if(false == m_ueContextHolder->isExist(l_deviceid))
-	{
-		return "Error, " + l_deviceid + " not exist\n";
-	}
 	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
-	m_euAndlink->triggerDisconnect(l_uecontext->host, l_uecontext->port, l_deviceid);
-	return std::string();
+	if(l_uecontext)
+	{
+		if(true == m_euAndlink->triggerDisconnect(l_uecontext->host, l_uecontext->port, l_deviceid))
+		{
+			return "\n\t" + l_deviceid + " trigger disconnect success\n\n";
+		}
+		else
+		{
+			return "\n\t" + l_deviceid + " trigger disconnect failed\n\n";
+		}
+	}
+	else
+	{
+		return "\n\t" + l_deviceid + std::string(" Not Exist\n\n");
+	}
 }
