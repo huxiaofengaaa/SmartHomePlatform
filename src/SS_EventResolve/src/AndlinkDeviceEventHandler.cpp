@@ -43,8 +43,23 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 	}
 	else if(true == resolve_if56_online_request_msg(l_rawData, &l_onlineReq))
 	{
-		struct Interface56_Online_Resp l_onlineResp;
-		return build_if56_online_response_success_msg(l_onlineResp);
+		if(true == m_ueContextHolder->DeviceOnline(l_onlineReq))
+		{
+			auto l_deviceid = l_onlineReq.deviceId;
+			auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
+
+			struct Interface56_Online_Resp l_onlineResp =
+			{
+					0, l_uecontext->encrypt, l_uecontext->ChallengeCode,
+					0, ""
+			};
+			return build_if56_online_response_success_msg(l_onlineResp);
+		}
+		else
+		{
+			struct Interface56_Online_Resp l_onlineResp;
+			return build_if56_online_response_failed_msg(l_onlineResp);
+		}
 	}
 	else if(true == resolve_if56_auth_request_msg(l_rawData, &l_authReq))
 	{

@@ -14,8 +14,13 @@ struct UeContextAndlink
 	UeContextAndlink() = default;
 	~UeContextAndlink() = default;
 
+	bool isRegister = false;
+	bool isOnline = false;
+	bool isAuth = false;
+	bool isPlugIn = false;
+
 	std::string host;
-	int port;
+	int port = -1;
 
 	std::string deviceMac;         // device, register req
 	std::string deviceType;        // device, register req
@@ -34,13 +39,12 @@ struct UeContextAndlink
 	std::string deviceModel;
 	std::string deviceSn;
 	std::string apUplinkType;
-	bool radio5;
+	int radio5 = 0;
 	std::string user_key;
 	std::string SyncCode;
 
 	int heartBeatTime;             // server setting,
-	bool  encrypt;                 // server setting
+	int encrypt = 0;                   // server setting
 	std::string ChallengeCode;     // server setting, 16 bytes
 	std::string ServerIP;          // server setting, 0.0.0.0:1234
-
 };

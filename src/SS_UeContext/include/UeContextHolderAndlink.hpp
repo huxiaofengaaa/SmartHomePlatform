@@ -1,7 +1,7 @@
 /*
  * UeContextHolderAndlink.hpp
  *
- *  Created on: 2018Äê7ÔÂ4ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½4ï¿½ï¿½
  *      Author: Administrator
  */
 
@@ -21,6 +21,7 @@ public:
 
 	std::vector<std::string> getDeviceList();
 	std::string DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken);
+	bool DeviceOnline(struct Interface56_Online_Req& onlinereq);
 
 private:
 	std::string generatorGwToken();
