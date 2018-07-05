@@ -26,6 +26,7 @@ public:
 	void shutdown();
 
 	bool triggerPlugIn(std::string p_host, int p_port, std::string p_deviceid);
+	bool triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid);
 
 private:
 	bool asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj);

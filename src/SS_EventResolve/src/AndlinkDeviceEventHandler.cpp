@@ -58,7 +58,16 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 std::string AndlinkDeviceEventHandler::buildPlugIuRequest(std::string p_deviceid)
 {
 	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
-	struct Interface56_requestPlugIn_Req resp;
-	return build_requestPlugIn_request_msg(resp);
+	struct Interface56_requestPlugIn_Req req;
+	req.ServerAddr = "127.0.0.1";
+	req.ServerPort = "6888";
+	return build_requestPlugIn_request_msg(req);
+}
+
+std::string AndlinkDeviceEventHandler::buildDisconnectRequest(std::string p_deviceid)
+{
+	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
+	struct Interface56_disconnect_req req;
+	return build_disconnect_request_msg(req);
 }
 

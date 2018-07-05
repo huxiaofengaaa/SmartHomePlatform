@@ -91,6 +91,8 @@ void ExcutionUnitTerminal::registerAllCmd()
 
 	registerCmd("plugin", std::make_shared<TerminalCmdPlugIn>(
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_plugin, this, std::placeholders::_1)));
+	registerCmd("disconnect", std::make_shared<TerminalCmdDisconnect>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_disconnect, this, std::placeholders::_1)));
 }
 
 std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cmd)
@@ -168,5 +170,22 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_plugin(std::string p_cmd)
 	}
 	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
 	m_euAndlink->triggerPlugIn(l_uecontext->host, l_uecontext->port, l_deviceid);
+	return std::string();
+}
+
+std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_cmd)
+{
+	auto l_parameterlist = resolveParameter(p_cmd);
+	if(l_parameterlist.size() < 2)
+	{
+		return "Error, Usage:\n" + m_cmdList["disconnect"]->help();
+	}
+	std::string l_deviceid = l_parameterlist[1];
+	if(false == m_ueContextHolder->isExist(l_deviceid))
+	{
+		return "Error, " + l_deviceid + " not exist\n";
+	}
+	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
+	m_euAndlink->triggerDisconnect(l_uecontext->host, l_uecontext->port, l_deviceid);
 	return std::string();
 }

@@ -150,3 +150,5 @@ std::string build_heartbeat_response_msg(struct Interface56_heartbeat_Resp resp)
 
 std::string build_requestPlugIn_request_msg(struct Interface56_requestPlugIn_Req resp);
 bool resolve_if56_requestPlugIn_Response_msg(std::string msg, struct Interface56_requestPlugIn_Resp* req);
+
+std::string build_disconnect_request_msg(struct Interface56_disconnect_req req);

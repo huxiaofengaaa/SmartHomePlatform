@@ -55,6 +55,25 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 	return true;
 }
 
+bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid)
+{
+	LOG(INFO) << "ExcutionUnitAndlink::triggerDisconnect " << p_deviceid;
+	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+
+	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
+			p_host, p_port, -1, l_andlinkHandler->buildDisconnectRequest(p_deviceid));
+
+	if(writeUDPServerString(l_eventObj))
+	{
+		LOG(INFO) << l_eventObj;
+	}
+	else
+	{
+		LOG(INFO) << "writeUDPServerString failed";
+	}
+	return true;
+}
+
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)
 {
 	LOG(INFO) << p_obj;
@@ -66,15 +85,19 @@ bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDat
 	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
 	std::string l_resp = l_andlinkHandler->run(p_eventObj);
 
-	p_eventObj->m_rawData = l_resp;
-	if(writeUDPServerString(p_eventObj))
+	if(l_resp.empty() == false)
 	{
-		LOG(INFO) << p_eventObj;
+		p_eventObj->m_rawData = l_resp;
+		if(writeUDPServerString(p_eventObj))
+		{
+			LOG(INFO) << p_eventObj;
+			return true;
+		}
+		else
+		{
+			LOG(INFO) << "writeUDPServerString failed";
+			return false;
+		}
 	}
-	else
-	{
-		LOG(INFO) << "writeUDPServerString failed";
-	}
-
 	return true;
 }
