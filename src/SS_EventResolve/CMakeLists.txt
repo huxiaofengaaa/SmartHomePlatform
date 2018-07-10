@@ -17,9 +17,13 @@ set(ANDLINK_CONTROL_SRCS AndlinkDeviceControlEvent/AndlinkDeviceWiFiParameterSyn
                          AndlinkDeviceControlEvent/AndlinkDeviceControlCommonResp.cpp)
 
 set(ANDLINK_QUERY_SRCS AndlinkDeviceQueryEvent/AndlinkDeviceApConfigInfoQueryResp.cpp
+                       AndlinkDeviceQueryEvent/AndlinkDeviceApConfigInfoQueryReq.cpp
                        AndlinkDeviceQueryEvent/AndlinkDeviceSTAInfoQueryResp.cpp
+                       AndlinkDeviceQueryEvent/AndlinkDeviceSTAInfoQueryReq.cpp
                        AndlinkDeviceQueryEvent/AndlinkDeviceUplinkStatusQueryResp.cpp
-                       AndlinkDeviceQueryEvent/AndlinkDeviceWiFiStatsQueryResp.cpp)
+                       AndlinkDeviceQueryEvent/AndlinkDeviceUplinkStatusQueryReq.cpp
+                       AndlinkDeviceQueryEvent/AndlinkDeviceWiFiStatsQueryResp.cpp
+                       AndlinkDeviceQueryEvent/AndlinkDeviceWiFiStatsQueryReq.cpp)
 
 set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceRegisterResponse.cpp

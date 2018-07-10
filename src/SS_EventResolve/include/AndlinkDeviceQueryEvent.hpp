@@ -131,3 +131,23 @@ struct Interface56_WiFiStats_Resp
 	int StatusNumber;
 };
 
+bool resolveAndlinkDeviceApConfigInfoQueryReq(std::string msg, struct Interface56_CommonQuery_Req* req);
+std::string buildAndlinkDeviceApConfigInfoQueryReq(std::string ID);
+bool resolveAndlinkDeviceApConfigInfoQueryResp(std::string msg, struct Interface56_ApConfigInfo_Resp* resp);
+std::string buildAndlinkDeviceApConfigInfoQueryResp(struct Interface56_ApConfigInfo_Resp resp);
+
+bool resolveAndlinkDeviceSTAInfoQueryReq(std::string msg, struct Interface56_CommonQuery_Req* req);
+std::string buildAndlinkDeviceSTAInfoQueryReq(std::string ID);
+bool resolveAndlinkDeviceSTAInfoQueryResp(std::string msg, struct Interface56_STAInfo_Resp* resp);
+std::string buildAndlinkDeviceSTAInfoQueryResp(struct Interface56_STAInfo_Resp resp);
+
+bool resolveAndlinkDeviceUplinkStatusQueryReq(std::string msg, struct Interface56_CommonQuery_Req* req);
+std::string buildAndlinkDeviceUplinkStatusQueryReq(std::string ID);
+bool resolveAndlinkDeviceUplinkStatusQueryResp(std::string msg, struct Interface56_UplinkStatus_Resp* resp);
+std::string buildAndlinkDeviceUplinkStatusQueryResp(struct Interface56_UplinkStatus_Resp resp);
+
+bool resolveAndlinkDeviceWiFiStatsQueryReq(std::string msg, struct Interface56_CommonQuery_Req* req);
+std::string buildAndlinkDeviceWiFiStatsQueryReq(std::string ID);
+bool resolveAndlinkDeviceWiFiStatsQueryResp(std::string msg, struct Interface56_WiFiStats_Resp* resp);
+std::string buildAndlinkDeviceWiFiStatsQueryResp(struct Interface56_WiFiStats_Resp resp);
+
