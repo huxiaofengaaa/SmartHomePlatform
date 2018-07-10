@@ -10,6 +10,8 @@
 #include "SignalRegister.hpp"
 #include "glog/logging.h"
 
+#define MANAGER_SERVER_IP	"10.96.17.50"
+#define MANAGER_SERVER_PORT	6887
 
 class SmartHomeDeployment
 {

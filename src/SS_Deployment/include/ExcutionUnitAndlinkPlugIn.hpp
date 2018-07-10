@@ -19,7 +19,7 @@ class ExcutionUnitAndlinkPlugIn:
 		public AsynTCPServerHandler
 {
 public:
-	ExcutionUnitAndlinkPlugIn();
+	ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port);
 	~ExcutionUnitAndlinkPlugIn();
 	bool start();
 	void shutdown();
@@ -28,4 +28,7 @@ private:
 	bool asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
 	bool asycTcpConnectionHandler(std::shared_ptr<ClientConnectInfo> p_connectionInfo);
 	bool asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo);
+
+	std::string m_host;
+	int m_port;
 };

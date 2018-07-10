@@ -87,12 +87,13 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 	return std::string();
 }
 
-std::string AndlinkDeviceEventHandler::buildPlugIuRequest(std::string p_deviceid)
+std::string AndlinkDeviceEventHandler::buildPlugIuRequest(std::string p_deviceid,
+		std::string p_host, int p_port)
 {
 	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
 	struct Interface56_RequestPlugIn_Req req;
-	req.ServerAddr = "127.0.0.1";
-	req.ServerPort = "6888";
+	req.ServerAddr = p_host;
+	req.ServerPort = std::to_string(p_port);
 	return build_if56_requestPlugIn_request_msg(req);
 }
 

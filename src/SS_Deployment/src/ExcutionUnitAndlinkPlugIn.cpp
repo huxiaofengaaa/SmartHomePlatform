@@ -7,14 +7,28 @@
 
 #include "ExcutionUnitAndlinkPlugIn.hpp"
 
-ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn()
-	:ExcutionUnit("AndlinkPlugIn", 5,
-			std::bind(&ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject, this, std::placeholders::_1)),
-	AsynTCPListenerHandler("10.96.17.50", 6888,
-			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1)),
+ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port):
+	m_host(p_host),
+	m_port(p_port),
+	ExcutionUnit(
+			"AndlinkPlugIn",
+			5,
+			std::bind(&ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject,
+					this,
+					std::placeholders::_1)),
+	AsynTCPListenerHandler(
+			p_host,
+			p_port,
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler,
+					this,
+					std::placeholders::_1)),
 	AsynTCPServerHandler(
-			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler, this, std::placeholders::_1),
-			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler, this, std::placeholders::_1))
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler,
+					this,
+					std::placeholders::_1),
+			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler,
+					this,
+					std::placeholders::_1))
 {
 	LOG(INFO) << "construct ExcutionUnitAndlinkPlugIn";
 }

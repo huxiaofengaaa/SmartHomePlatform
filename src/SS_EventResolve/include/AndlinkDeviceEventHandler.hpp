@@ -24,7 +24,7 @@ public:
 	~AndlinkDeviceEventHandler() = default;
 	std::string run(std::shared_ptr<EventTypeUDPClientDataObject> p_event);
 
-	std::string buildPlugIuRequest(std::string p_deviceid);
+	std::string buildPlugIuRequest(std::string p_deviceid, std::string p_host, int p_port);
 	std::string buildDisconnectRequest(std::string p_deviceid);
 private:
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;

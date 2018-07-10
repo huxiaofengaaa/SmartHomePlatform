@@ -22,7 +22,8 @@ class ExcutionUnitAndlink:
 		public PacketStatistician
 {
 public:
-	ExcutionUnitAndlink(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder);
+	ExcutionUnitAndlink(std::string p_host, int p_port,
+			std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder);
 	~ExcutionUnitAndlink();
 	bool start();
 	void shutdown();
@@ -35,4 +36,7 @@ private:
 	bool handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj);
 
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;
+
+	std::string m_host;
+	int m_port;
 };

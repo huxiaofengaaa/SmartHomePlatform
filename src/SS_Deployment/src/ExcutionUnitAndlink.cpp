@@ -7,10 +7,21 @@
 
 #include "ExcutionUnitAndlink.hpp"
 
-ExcutionUnitAndlink::ExcutionUnitAndlink(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
-	ExcutionUnit("Andlink", 5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
-	AsynUDPServerHandler("10.96.17.50", 6887,
-			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback, this, std::placeholders::_1)),
+ExcutionUnitAndlink::ExcutionUnitAndlink(std::string p_host, int p_port,
+		std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
+	m_host(p_host), m_port(p_port),
+	ExcutionUnit(
+			"Andlink",
+			5,
+			std::bind(&ExcutionUnitAndlink::handleDataObject,
+					this,
+					std::placeholders::_1)),
+	AsynUDPServerHandler(
+			p_host,
+			p_port,
+			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback,
+					this,
+					std::placeholders::_1)),
 	m_ueContextHolder(p_ueContextHolder)
 {
 	LOG(INFO) << "construct ExcutionUnitAndlink";
@@ -42,7 +53,7 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
 
 	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
-			p_host, p_port, -1, l_andlinkHandler->buildPlugIuRequest(p_deviceid));
+			p_host, p_port, -1, l_andlinkHandler->buildPlugIuRequest(p_deviceid, m_host, m_port+1));
 
 	if(writeUDPServerString(l_eventObj))
 	{
