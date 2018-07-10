@@ -117,7 +117,7 @@ struct Interface56_STAInfo_Resp
 	std::string respCont;
 
 	struct DeviceStatus* Devices;
-	int DeviceNumber;
+	int DevicesNumber;
 };
 
 struct Interface56_WiFiStats_Resp
