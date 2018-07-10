@@ -24,7 +24,8 @@ add_executable(SmartHomePlatform SmartHomeMain.cpp
                                  SS_Deployment/src/SmartHomeDeployment.cpp
                                  SS_Deployment/src/ExcutionUnitAndlink.cpp
                                  SS_Deployment/src/ExcutionUnitAndlinkPlugIn.cpp
-                                 SS_Deployment/src/ExcutionUnitTerminal.cpp)
+                                 SS_Deployment/src/ExcutionUnitTerminal.cpp
+                                 SS_Deployment/src/ExcutionUnitTerminalCmdCallback.cpp)
                                  
 target_link_libraries(SmartHomePlatform terminalCmd eventResolve ueContext sysMechanish pthread glog cJSON)
 
