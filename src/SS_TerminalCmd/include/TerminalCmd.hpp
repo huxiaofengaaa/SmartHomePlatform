@@ -50,6 +50,22 @@ private:
 	std::function<std::string(std::string)> m_action;
 };
 
+class TerminalCmdStatistics: public TerminalCmd
+{
+public:
+	TerminalCmdStatistics(std::function<std::string()> p_action): m_action(p_action){ }
+	std::string run(std::string p_cmd) override
+	{
+		return m_action();
+	}
+	std::string help() override
+	{
+		return "show packet send and recv";
+	}
+private:
+	std::function<std::string()> m_action;
+};
+
 class TerminalCmdPlugIn: public TerminalCmd
 {
 public:

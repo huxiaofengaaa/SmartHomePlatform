@@ -9,7 +9,7 @@
 
 ExcutionUnitAndlink::ExcutionUnitAndlink(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
 	ExcutionUnit("Andlink", 5, std::bind(&ExcutionUnitAndlink::handleDataObject, this, std::placeholders::_1)),
-	AsynUDPServerHandler("127.0.0.1", 6887,
+	AsynUDPServerHandler("10.96.17.50", 6887,
 			std::bind(&ExcutionUnitAndlink::asycUDPServerDataCallback, this, std::placeholders::_1)),
 	m_ueContextHolder(p_ueContextHolder)
 {
@@ -46,14 +46,14 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 
 	if(writeUDPServerString(l_eventObj))
 	{
+		countSendPacket(l_eventObj->m_rawData.size());
 		LOG(INFO) << l_eventObj;
-		return true;
 	}
 	else
 	{
 		LOG(INFO) << "writeUDPServerString failed";
-		return false;
 	}
+	return true;
 }
 
 bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid)
@@ -66,19 +66,20 @@ bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std:
 
 	if(writeUDPServerString(l_eventObj))
 	{
+		countSendPacket(l_eventObj->m_rawData.size());
 		LOG(INFO) << l_eventObj;
-		return true;
 	}
 	else
 	{
 		LOG(INFO) << "writeUDPServerString failed";
-		return false;
 	}
+	return true;
 }
 
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)
 {
 	LOG(INFO) << p_obj;
+	countRecvPacket(p_obj->m_rawData.size());
 	return addDataObject(p_obj);
 }
 
@@ -92,6 +93,7 @@ bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDat
 		p_eventObj->m_rawData = l_resp;
 		if(writeUDPServerString(p_eventObj))
 		{
+			countSendPacket(p_eventObj->m_rawData.size());
 			LOG(INFO) << p_eventObj;
 			return true;
 		}

@@ -10,7 +10,7 @@
 ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn()
 	:ExcutionUnit("AndlinkPlugIn", 5,
 			std::bind(&ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject, this, std::placeholders::_1)),
-	AsynTCPListenerHandler("127.0.0.1", 6888,
+	AsynTCPListenerHandler("10.96.17.50", 6888,
 			std::bind(&ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler, this, std::placeholders::_1)),
 	AsynTCPServerHandler(
 			std::bind(&ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler, this, std::placeholders::_1),

@@ -12,10 +12,12 @@
 #include "TerminalHandler.hpp"
 #include "TerminalCmd.hpp"
 #include "UeContextHolderAndlink.hpp"
+#include "PacketStatistician.hpp"
 
 class ExcutionUnitTerminal:
 		public ExcutionUnit<std::string>,
-		public AsynTerminalHandler
+		public AsynTerminalHandler,
+		public PacketStatistician
 {
 public:
 	ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
@@ -33,6 +35,7 @@ private:
 
 	std::string terminalCmdCallback_help();
 	std::string terminalCmdCallback_list(std::string p_cmd);
+	std::string terminalCmdCallback_statistics();
 	std::string terminalCmdCallback_plugin(std::string p_cmd);
 	std::string terminalCmdCallback_disconnect(std::string p_cmd);
 

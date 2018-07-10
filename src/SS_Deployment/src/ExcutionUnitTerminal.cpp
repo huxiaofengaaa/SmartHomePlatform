@@ -34,6 +34,7 @@ void ExcutionUnitTerminal::shutdown()
 
 bool ExcutionUnitTerminal::terminalAsycDataCallback(std::string p_data)
 {
+	countRecvPacket(p_data.size());
 	return addDataObject(p_data);
 }
 
@@ -45,6 +46,7 @@ bool ExcutionUnitTerminal::handleDataObject(std::string p_str)
 		std::string l_result = runTerminalCmd(p_str);
 		if(l_result.empty() == false)
 		{
+			countSendPacket(l_result.size());
 			writeTerminalString(l_result);
 		}
 	}
@@ -88,6 +90,9 @@ void ExcutionUnitTerminal::registerAllCmd()
 
 	registerCmd("list", std::make_shared<TerminalCmdList>(
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_list, this, std::placeholders::_1)));
+
+	registerCmd("statistics", std::make_shared<TerminalCmdStatistics>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_statistics, this)));
 
 	registerCmd("plugin", std::make_shared<TerminalCmdPlugIn>(
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_plugin, this, std::placeholders::_1)));
@@ -149,8 +154,8 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 	char buffer[512] = { 0 };
 
 	memset(buffer, 0, sizeof(buffer));
-	snprintf(buffer, sizeof(buffer), "\n\t%-24s | %-21s | %-17s\n",
-			"DeviceID", "IPaddress", "MAC");
+	snprintf(buffer, sizeof(buffer), "\n\t%-24s | %-21s | %-17s | %-16s | %-16s | %-16s\n",
+			"DeviceID", "IPaddress", "MAC", "firmwareVersion", "softwareVersion", "deviceVendor");
 
 	std::string l_result = std::string(buffer);
 
@@ -162,12 +167,55 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 
 		std::string ipaddress = l_uecontext->host + ":" + std::to_string(l_uecontext->port);
 
-		snprintf(buffer, sizeof(buffer), "\t%-24s | %-21s | %-17s\n",
+		snprintf(buffer, sizeof(buffer), "\t%-24s | %-21s | %-17s | %-16s | %-16s | %-16s\n",
 				l_uecontext->deviceId.c_str(),
 				ipaddress.c_str(),
-				l_uecontext->deviceMac.c_str());
+				l_uecontext->deviceMac.c_str(),
+				l_uecontext->firmwareVersion.c_str(),
+				l_uecontext->softwareVersion.c_str(),
+				l_uecontext->deviceVendor.c_str());
 		l_result += std::string(buffer);
 	}
+	l_result += "\n";
+	return l_result;
+}
+
+std::string ExcutionUnitTerminal::terminalCmdCallback_statistics()
+{
+	std::string l_result = "\n";
+	char buffer[512] = { 0 };
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\tTerminal Send Packets: %d\n", getSendPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Packets: %d\n", getRecvPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Send Bytes  : %d\n", getSendBytes());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Bytes  : %d\n", getRecvBytes());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\tAndlink  Send Packets: %d\n", m_euAndlink->getSendPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Packets: %d\n", m_euAndlink->getRecvPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Send Bytes  : %d\n", m_euAndlink->getSendBytes());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Bytes  : %d\n", m_euAndlink->getRecvBytes());
+	l_result += std::string(buffer);
+
 	l_result += "\n";
 	return l_result;
 }

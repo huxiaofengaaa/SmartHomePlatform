@@ -14,10 +14,12 @@
 #include "UDPServerHandler.hpp"
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
+#include "PacketStatistician.hpp"
 
 class ExcutionUnitAndlink:
 		public ExcutionUnit<std::shared_ptr<EventTypeUDPClientDataObject>>,
-		public AsynUDPServerHandler
+		public AsynUDPServerHandler,
+		public PacketStatistician
 {
 public:
 	ExcutionUnitAndlink(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder);
