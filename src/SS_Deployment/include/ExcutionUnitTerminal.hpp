@@ -33,9 +33,9 @@ private:
 
 	std::vector<std::string> resolveParameter(std::string p_cmd);
 
-	std::string terminalCmdCallback_help();
+	std::string terminalCmdCallback_help(std::string p_cmd);
 	std::string terminalCmdCallback_list(std::string p_cmd);
-	std::string terminalCmdCallback_statistics();
+	std::string terminalCmdCallback_statistics(std::string p_cmd);
 	std::string terminalCmdCallback_plugin(std::string p_cmd);
 	std::string terminalCmdCallback_disconnect(std::string p_cmd);
 

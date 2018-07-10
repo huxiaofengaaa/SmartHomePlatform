@@ -73,7 +73,7 @@ std::string ExcutionUnitTerminal::runTerminalCmd(std::string p_cmd)
 	}
 	else
 	{
-		return std::string("Unknow Terminal Cmd ") + p_cmd + terminalCmdCallback_help();
+		return std::string("Unknow Terminal Cmd ") + p_cmd + terminalCmdCallback_help(p_cmd);
 	}
 }
 
@@ -85,19 +85,35 @@ void ExcutionUnitTerminal::registerCmd(std::string p_cmdName, std::shared_ptr<Te
 
 void ExcutionUnitTerminal::registerAllCmd()
 {
-	registerCmd("help", std::make_shared<TerminalCmdHelp>(
-				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_help, this)));
+	registerCmd("help", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_help,
+						this,
+						std::placeholders::_1),
+				"show all terminal cmd"));
 
-	registerCmd("list", std::make_shared<TerminalCmdList>(
-				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_list, this, std::placeholders::_1)));
+	registerCmd("list", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_list,
+						this,
+						std::placeholders::_1),
+				"list device information cmd"));
 
-	registerCmd("statistics", std::make_shared<TerminalCmdStatistics>(
-				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_statistics, this)));
+	registerCmd("statistics", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_statistics,
+						this,
+						std::placeholders::_1),
+				"show packet send and recv"));
 
-	registerCmd("plugin", std::make_shared<TerminalCmdPlugIn>(
-				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_plugin, this, std::placeholders::_1)));
-	registerCmd("disconnect", std::make_shared<TerminalCmdDisconnect>(
-				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_disconnect, this, std::placeholders::_1)));
+	registerCmd("plugin", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_plugin,
+						this,
+						std::placeholders::_1),
+				"trigger andlink device connect to TCP server, for example: plugin deviceID"));
+
+	registerCmd("disconnect", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_disconnect,
+						this,
+						std::placeholders::_1),
+				"trigger andlink device disconnect to TCP server, for example: disconnect deviceID"));
 }
 
 std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cmd)
@@ -135,7 +151,7 @@ std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cm
 	return l_result;
 }
 
-std::string ExcutionUnitTerminal::terminalCmdCallback_help()
+std::string ExcutionUnitTerminal::terminalCmdCallback_help(std::string p_cmd)
 {
 	char buffer[128] = { 0 };
 	std::string l_result = "\nUsage:\n";
@@ -180,7 +196,7 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 	return l_result;
 }
 
-std::string ExcutionUnitTerminal::terminalCmdCallback_statistics()
+std::string ExcutionUnitTerminal::terminalCmdCallback_statistics(std::string p_cmd)
 {
 	std::string l_result = "\n";
 	char buffer[512] = { 0 };
