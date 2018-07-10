@@ -14,6 +14,8 @@ set(ANDLINK_CONTROL_SRCS AndlinkDeviceControlEvent/AndlinkDeviceWiFiParameterSyn
                          AndlinkDeviceControlEvent/AndlinkDeviceRadioConfigReq.cpp
                          AndlinkDeviceControlEvent/AndlinkDeviceMacFilterReq.cpp
                          AndlinkDeviceControlEvent/AndlinkDeviceLEDControlReq.cpp
+                         AndlinkDeviceControlEvent/AndlinkDeviceUnbindReq.cpp
+                         AndlinkDeviceControlEvent/AndlinkDeviceUpgradeReq.cpp
                          AndlinkDeviceControlEvent/AndlinkDeviceControlCommonResp.cpp)
 
 set(ANDLINK_QUERY_SRCS AndlinkDeviceQueryEvent/AndlinkDeviceApConfigInfoQueryResp.cpp

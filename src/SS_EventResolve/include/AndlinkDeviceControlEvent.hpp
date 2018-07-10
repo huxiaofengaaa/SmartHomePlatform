@@ -110,6 +110,26 @@ struct Interface56_ControlCommon_Resp
 	std::string restCont;
 };
 
+struct Interface56_Unbind_Req
+{
+	std::string RPCMethod;
+	std::string ID;
+	std::string deviceId;
+	std::string childDeviceId;
+};
+
+struct Interface56_Upgrade_Req
+{
+	std::string RPCMethod;
+	std::string ID;
+	std::string deviceId;
+
+	std::string childDeviceId;
+	std::string fileMode;
+	std::string fileType;
+	std::string fileUrl;
+	int downMode;
+};
 
 bool resolveAndlinkDeviceControlCommonResp(std::string msg, struct Interface56_ControlCommon_Resp* req);
 std::string buildAndlinkDeviceControlCommonResp(struct Interface56_ControlCommon_Resp req);
@@ -138,3 +158,8 @@ std::string buildAndlinkDeviceWiFiSwitchReq(struct Interface56_WiFiSwitch_Req re
 bool resolveAndlinkDeviceWPSReq(std::string msg, struct Interface56_WPS_Req* req);
 std::string buildAndlinkDeviceWPSReq(struct Interface56_WPS_Req req);
 
+bool resolveAndlinkDeviceUnbindReq(std::string msg, struct Interface56_Unbind_Req* req);
+std::string buildAndlinkDeviceUnbindReq(struct Interface56_Unbind_Req req);
+
+bool resolveAndlinkDeviceUpgradeReq(std::string msg, struct Interface56_Upgrade_Req* req);
+std::string buildAndlinkDeviceUpgradeReq(struct Interface56_Upgrade_Req req);
