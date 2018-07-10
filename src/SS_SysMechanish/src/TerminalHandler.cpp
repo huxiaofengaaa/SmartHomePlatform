@@ -57,9 +57,16 @@ bool AsynTerminalHandler::runTerminal()
 
 void AsynTerminalHandler::shutdownTerminal()
 {
-	std::fclose(stdin);
-	m_threadExitFlag = true;
-	m_thread.join();
+	try
+	{
+		std::fclose(stdin);
+		m_threadExitFlag = true;
+		m_thread.join();
+	}
+	catch(std::exception& e)
+	{
+		LOG(INFO) << "AsynUDPServerHandler::shutdownUDPServer catch exception, " << e.what();
+	}
 }
 
 int AsynTerminalHandler::writeTerminalString(std::string p_str)

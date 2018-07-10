@@ -28,18 +28,26 @@ bool AsynTCPServerHandler::runTCPServer()
 
 void AsynTCPServerHandler::shutdownTCPServer()
 {
-	m_threadExitFlag = true;
-	m_thread.join();
-	m_clientInfoMutex.lock();
-	for(auto l_cli = m_clientInfoMap.begin(); l_cli != m_clientInfoMap.end(); l_cli++)
+	LOG(INFO) << "AsynTCPServerHandler::shutdownTCPServer";
+	try
 	{
-		if(l_cli->first > 0)
+		m_threadExitFlag = true;
+		m_thread.join();
+		m_clientInfoMutex.lock();
+		for(auto l_cli = m_clientInfoMap.begin(); l_cli != m_clientInfoMap.end(); l_cli++)
 		{
-			close(l_cli->first);
+			if(l_cli->first > 0)
+			{
+				close(l_cli->first);
+			}
 		}
+		m_clientInfoMutex.unlock();
+		m_clientInfoMap.clear();
 	}
-	m_clientInfoMutex.unlock();
-	m_clientInfoMap.clear();
+	catch(std::exception& e)
+	{
+		LOG(INFO) << "AsynUDPServerHandler::shutdownUDPServer catch exception, " << e.what();
+	}
 }
 
 bool AsynTCPServerHandler::addClient(std::shared_ptr<ClientConnectInfo> p_cli)

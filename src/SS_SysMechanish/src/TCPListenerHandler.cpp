@@ -33,22 +33,30 @@ bool AsynTCPListenerHandler::runTCPListener()
 
 void AsynTCPListenerHandler::shutdownTCPListener()
 {
-	m_threadExitFlag = true;
-	int l_tmpSocket = triggerMainloopAcceptNotBlock(m_host, m_port);
-	if(l_tmpSocket >= 0)
+	try
 	{
-		close(l_tmpSocket);
+		m_threadExitFlag = true;
+		int l_tmpSocket = triggerMainloopAcceptNotBlock(m_host, m_port);
+		if(l_tmpSocket >= 0)
+		{
+			m_thread.join();
+			close(l_tmpSocket);
+		}
+		else
+		{
+			LOG(INFO) << "AsynTCPListenerHandler::shutdownTCPListener triggerMainloopAcceptNotBlock failed";
+		}
+		if(m_sockfd > 0)
+		{
+			close(m_sockfd);
+			m_sockfd = -1;
+		}
 	}
-	else
+	catch(std::exception& e)
 	{
-		LOG(INFO) << "AsynTCPListenerHandler::shutdownTCPListener triggerMainloopAcceptNotBlock failed";
+		LOG(INFO) << "AsynUDPServerHandler::shutdownUDPServer catch exception, " << e.what();
 	}
-	m_thread.join();
-	if(m_sockfd > 0)
-	{
-		close(m_sockfd);
-		m_sockfd = -1;
-	}
+	LOG(INFO) << "AsynTCPListenerHandler shutdown";
 }
 
 void AsynTCPListenerHandler::mainloop()

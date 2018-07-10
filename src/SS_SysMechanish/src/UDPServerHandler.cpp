@@ -33,12 +33,19 @@ bool AsynUDPServerHandler::runUDPServer()
 
 void AsynUDPServerHandler::shutdownUDPServer()
 {
-	m_threadExitFlag = true;
-	m_thread.join();
-	if(m_sockfd > 0)
+	try
 	{
-		close(m_sockfd);
-		m_sockfd = -1;
+		m_threadExitFlag = true;
+		m_thread.join();
+		if(m_sockfd > 0)
+		{
+			close(m_sockfd);
+			m_sockfd = -1;
+		}
+	}
+	catch(std::exception& e)
+	{
+		LOG(INFO) << "AsynUDPServerHandler::shutdownUDPServer catch exception, " << e.what();
 	}
 }
 
