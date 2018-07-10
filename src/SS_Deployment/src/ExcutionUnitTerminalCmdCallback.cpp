@@ -1,7 +1,7 @@
 /*
  * ExcutionUnitTerminalCmdCallback.cpp
  *
- *  Created on: 2018Äê7ÔÂ10ÈÕ
+ *  Created on: 2018ï¿½ï¿½7ï¿½ï¿½10ï¿½ï¿½
  *      Author: Administrator
  */
 #include "ExcutionUnitTerminal.hpp"
@@ -178,5 +178,18 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_c
 	}
 }
 
+std::string ExcutionUnitTerminal::terminalCmdCallback_query(std::string p_cmd)
+{
+	auto l_parameterlist = resolveParameter(p_cmd);
+	if(l_parameterlist.size() != 3)
+	{
+		return "\n\tError, Usage:" + m_cmdList["query"]->help() + "\n\n";
+	}
+	std::string l_deviceid = l_parameterlist[1];
+	std::string l_param = l_parameterlist[2];
 
+
+
+	return std::string();
+}
 

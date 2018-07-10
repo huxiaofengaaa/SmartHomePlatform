@@ -45,7 +45,6 @@ public:
 
 	void shutdownExcutionUnit()
 	{
-		LOG(INFO) << "shutdown ExcutionUnit " << m_ExcutionUnitName;
 		m_excutionUnitExitFlag = true;
 		m_queueNotify.notifyAll();
 
@@ -54,6 +53,7 @@ public:
 			(*l_thread).join();
 		}
 		m_threadList.clear();
+		LOG(INFO) << "shutdown ExcutionUnit " << m_ExcutionUnitName;
 	}
 
 	bool addDataObject(DataType p_obj)
