@@ -24,6 +24,10 @@ bool resolve_if56_heartbeat_request_msg(std::string msg, struct Interface56_Hear
 		req->MAC = MAC->valuestring;
 		req->IPAddr = IPAddr->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "heartbeat")
+		{
+			return false;
+		}
 		return true;
 	}
 

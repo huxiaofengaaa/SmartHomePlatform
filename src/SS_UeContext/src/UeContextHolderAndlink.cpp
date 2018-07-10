@@ -1,7 +1,7 @@
 /*
  * UeContextHolderAndlink.cpp
  *
- *  Created on: 2018��7��4��
+ *  Created on: 2018锟斤拷7锟斤拷4锟斤拷
  *      Author: Administrator
  */
 
@@ -123,8 +123,8 @@ std::string UeContextHolderAndlink::generatorAndlinkToken()
 
 std::string UeContextHolderAndlink::generatorRandomCharString(int length)
 {
-	std::random_device rd;  // ������Ϊ���������������
-	std::mt19937 gen(rd()); // �Բ��ֱ�׼ mersenne_twister_engine
+	std::random_device rd;
+	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, 'Z'-'A');
 
 	char* buf = new char[length];
@@ -142,8 +142,8 @@ std::string UeContextHolderAndlink::generatorRandomCharString(int length)
 
 std::string UeContextHolderAndlink::generatorRandomNumberString(int length)
 {
-	std::random_device rd;  // ������Ϊ���������������
-	std::mt19937 gen(rd()); // �Բ��ֱ�׼ mersenne_twister_engine
+	std::random_device rd;
+	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, 9);
 
 	char* buf = new char[length];

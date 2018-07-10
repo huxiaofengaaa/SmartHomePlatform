@@ -69,6 +69,18 @@ std::string AndlinkDeviceEventHandler::run(std::shared_ptr<EventTypeUDPClientDat
 	else if(true == resolve_if56_heartbeat_request_msg(l_rawData, &l_heartbeatReq))
 	{
 		struct Interface56_Heartbeat_Resp l_heartbeatResp;
+		auto l_deviceid = l_heartbeatReq.deviceId;
+		auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
+		if(!l_uecontext || l_uecontext->deviceMac != l_heartbeatReq.MAC)
+		{
+			l_heartbeatResp.respCode = -5;
+		}
+		else
+		{
+			l_uecontext->lastHeartbeat = time(NULL);
+			l_heartbeatResp.respCode = 0;
+			l_heartbeatResp.heartBeatTime = 15;
+		}
 		return build_if56_heartbeat_response_msg(l_heartbeatResp);
 	}
 
