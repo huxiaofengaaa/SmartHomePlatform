@@ -7,9 +7,11 @@
 
 #include "ExcutionUnitAndlinkPlugIn.hpp"
 
-ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port):
+ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port,
+		std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
 	m_host(p_host),
 	m_port(p_port),
+	m_ueContextHolder(p_ueContextHolder),
 	ExcutionUnit(
 			"AndlinkPlugIn",
 			5,
@@ -57,9 +59,23 @@ void ExcutionUnitAndlinkPlugIn::shutdown()
 
 bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
 {
-	LOG(INFO) << p_eventObj;
-	//TODO
-	writeTCPServerString(p_eventObj);
+	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+	std::string l_resp = l_andlinkHandler->run(p_eventObj);
+
+	if(l_resp.empty() == false)
+	{
+		p_eventObj->m_rawData = l_resp;
+		if(writeTCPServerString(p_eventObj))
+		{
+			LOG(INFO) << p_eventObj;
+			return true;
+		}
+		else
+		{
+			LOG(INFO) << "writeTCPServerString failed";
+			return false;
+		}
+	}
 	return true;
 }
 

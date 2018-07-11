@@ -14,6 +14,7 @@
 #include "UDPServerHandler.hpp"
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
+#include "AndlinkDeviceEventBuilder.hpp"
 #include "PacketStatistician.hpp"
 
 class ExcutionUnitAndlink:

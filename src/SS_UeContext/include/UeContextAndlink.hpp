@@ -18,9 +18,16 @@ struct UeContextAndlink
 	bool isOnline = false;
 	bool isAuth = false;
 	bool isPlugIn = false;
+	// device heartbeat req
+	long lastHeartbeat = 0;
 
-	std::string host;
-	int port = -1;
+	std::string peerUDPHost;// socket peer address, not device address
+	int peerUDPPort = -1;
+	int UDPSocketfd = -1;
+
+	std::string peerTCPHost;// socket peer address, not device address
+	int peerTCPPort;
+	int TCPSocketfd = -1;
 
 	// deviec register req
 	std::string deviceMac;         // device, register req
@@ -51,7 +58,4 @@ struct UeContextAndlink
 	int encrypt = 0;               // server setting
 	std::string ChallengeCode;     // server setting, 16 bytes
 	std::string ServerIP;          // server setting, 0.0.0.0:1234
-
-	// device heartbeat req
-	long lastHeartbeat = 0;
 };

@@ -12,6 +12,8 @@
 #include "UDPServerHandler.hpp"
 #include "TCPListenerHandler.hpp"
 #include "TCPServerHandler.hpp"
+#include "UeContextHolderAndlink.hpp"
+#include "AndlinkDeviceEventHandler.hpp"
 
 class ExcutionUnitAndlinkPlugIn:
 		public ExcutionUnit<std::shared_ptr<EventTypeTCPClientDataObject>>,
@@ -19,7 +21,8 @@ class ExcutionUnitAndlinkPlugIn:
 		public AsynTCPServerHandler
 {
 public:
-	ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port);
+	ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port,
+			std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder);
 	~ExcutionUnitAndlinkPlugIn();
 	bool start();
 	void shutdown();
@@ -31,4 +34,5 @@ private:
 
 	std::string m_host;
 	int m_port;
+	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;
 };

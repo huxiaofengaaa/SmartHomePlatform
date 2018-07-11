@@ -71,7 +71,7 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 		auto l_uecontext = m_ueContextHolder->getRef(l_device);
 		memset(buffer, 0, sizeof(buffer));
 
-		std::string ipaddress = l_uecontext->host + ":" + std::to_string(l_uecontext->port);
+		std::string ipaddress = l_uecontext->peerUDPHost + ":" + std::to_string(l_uecontext->peerUDPPort);
 
 		snprintf(buffer, sizeof(buffer), "\t%-24s | %-21s | %-17s | %-16s | %-16s | %-16s\n",
 				l_uecontext->deviceId.c_str(),
@@ -137,7 +137,7 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_plugin(std::string p_cmd)
 	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
 	if(l_uecontext)
 	{
-		if(true == m_euAndlink->triggerPlugIn(l_uecontext->host, l_uecontext->port, l_deviceid))
+		if(true == m_euAndlink->triggerPlugIn(l_uecontext->peerUDPHost, l_uecontext->peerUDPPort, l_deviceid))
 		{
 			return "\n\t" + l_deviceid + " trigger plugin success\n\n";
 		}
@@ -163,7 +163,7 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_c
 	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
 	if(l_uecontext)
 	{
-		if(true == m_euAndlink->triggerDisconnect(l_uecontext->host, l_uecontext->port, l_deviceid))
+		if(true == m_euAndlink->triggerDisconnect(l_uecontext->peerUDPHost, l_uecontext->peerUDPPort, l_deviceid))
 		{
 			return "\n\t" + l_deviceid + " trigger disconnect success\n\n";
 		}

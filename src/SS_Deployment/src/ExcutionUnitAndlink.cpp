@@ -50,10 +50,10 @@ void ExcutionUnitAndlink::shutdown()
 bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::string p_deviceid)
 {
 	LOG(INFO) << "ExcutionUnitAndlink::triggerPlugIn " << p_deviceid;
-	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 
 	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
-			p_host, p_port, -1, l_andlinkHandler->buildPlugIuRequest(p_deviceid, m_host, m_port+1));
+			p_host, p_port, -1, l_andlinkBuilder->buildPlugIuRequest(p_deviceid, m_host, m_port+1));
 
 	if(writeUDPServerString(l_eventObj))
 	{
@@ -70,10 +70,10 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid)
 {
 	LOG(INFO) << "ExcutionUnitAndlink::triggerDisconnect " << p_deviceid;
-	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 
 	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
-			p_host, p_port, -1, l_andlinkHandler->buildDisconnectRequest(p_deviceid));
+			p_host, p_port, -1, l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
 
 	if(writeUDPServerString(l_eventObj))
 	{

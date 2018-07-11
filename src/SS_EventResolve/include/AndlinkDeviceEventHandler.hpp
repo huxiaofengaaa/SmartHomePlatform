@@ -12,6 +12,7 @@
 #include "AndlinkDeviceEvent.hpp"
 #include "UeContextHolderAndlink.hpp"
 #include "UDPServerHandler.hpp"
+#include "TCPServerHandler.hpp"
 
 class AndlinkDeviceEventHandler
 {
@@ -23,9 +24,11 @@ public:
 	}
 	~AndlinkDeviceEventHandler() = default;
 	std::string run(std::shared_ptr<EventTypeUDPClientDataObject> p_event);
-
-	std::string buildPlugIuRequest(std::string p_deviceid, std::string p_host, int p_port);
-	std::string buildDisconnectRequest(std::string p_deviceid);
+	std::string run(std::shared_ptr<EventTypeTCPClientDataObject> p_event);
 private:
+	std::string run(std::string& p_rawData,
+			std::string& p_host, int p_port, int p_sockfd, bool isTCP = false);
+	bool updateNetAddress(std::string p_deviceID, std::string p_host, int p_port, int p_sockfd, bool isTCP);
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;
 };
+

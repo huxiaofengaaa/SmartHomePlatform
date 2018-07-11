@@ -131,6 +131,21 @@ struct Interface56_WiFiStats_Resp
 	int StatusNumber;
 };
 
+struct Interface56_DataReport_Req
+{
+	std::string RPCMethod;
+	std::string MAC;
+	std::string eventType;
+	long timestamp;
+	int respCode;
+	std::string restCont;
+};
+
+struct Interface56_DataReport_Resp
+{
+	int respCode;
+};
+
 bool resolveAndlinkDeviceApConfigInfoQueryReq(std::string msg, struct Interface56_CommonQuery_Req* req);
 std::string buildAndlinkDeviceApConfigInfoQueryReq(std::string ID);
 bool resolveAndlinkDeviceApConfigInfoQueryResp(std::string msg, struct Interface56_ApConfigInfo_Resp* resp);
@@ -151,3 +166,7 @@ std::string buildAndlinkDeviceWiFiStatsQueryReq(std::string ID);
 bool resolveAndlinkDeviceWiFiStatsQueryResp(std::string msg, struct Interface56_WiFiStats_Resp* resp);
 std::string buildAndlinkDeviceWiFiStatsQueryResp(struct Interface56_WiFiStats_Resp resp);
 
+bool resolveAndlinkDeviceDataReportReq(std::string msg, struct Interface56_DataReport_Req* req);
+std::string buildAndlinkDeviceDataReportReq(struct Interface56_DataReport_Req req);
+bool resolveAndlinkDeviceDataReportResp(std::string msg, struct Interface56_DataReport_Resp* resp);
+std::string buildAndlinkDeviceDataReportResp(struct Interface56_DataReport_Resp resp);

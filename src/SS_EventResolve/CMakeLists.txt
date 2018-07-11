@@ -43,6 +43,7 @@ set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp)
 
 add_library(eventResolve STATIC src/AndlinkDeviceEventHandler.cpp
+                                src/AndlinkDeviceEventBuilder.cpp
                                 ${ANDLINK_SRCS}
                                 ${ANDLINK_CONTROL_SRCS}
                                 ${ANDLINK_QUERY_SRCS})
