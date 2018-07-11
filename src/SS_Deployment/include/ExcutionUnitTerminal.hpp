@@ -9,6 +9,7 @@
 #include "glog/logging.h"
 #include "ExcutionUnit.hpp"
 #include "ExcutionUnitAndlink.hpp"
+#include "ExcutionUnitAndlinkPlugIn.hpp"
 #include "TerminalHandler.hpp"
 #include "TerminalCmd.hpp"
 #include "UeContextHolderAndlink.hpp"
@@ -20,8 +21,10 @@ class ExcutionUnitTerminal:
 		public PacketStatistician
 {
 public:
-	ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
-			std::shared_ptr<ExcutionUnitAndlink> p_euAndlink);
+	ExcutionUnitTerminal(
+			std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
+			std::shared_ptr<ExcutionUnitAndlink> p_euAndlink,
+			std::shared_ptr<ExcutionUnitAndlinkPlugIn> p_euAndlinkPlugin);
 	~ExcutionUnitTerminal();
 	bool start();
 	void shutdown();
@@ -46,4 +49,5 @@ private:
 	std::map<std::string, std::shared_ptr<TerminalCmd>> m_cmdList;
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;
 	std::shared_ptr<ExcutionUnitAndlink> m_euAndlink;
+	std::shared_ptr<ExcutionUnitAndlinkPlugIn> m_euAndlinkPlugin;
 };

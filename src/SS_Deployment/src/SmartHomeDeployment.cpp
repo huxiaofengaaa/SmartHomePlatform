@@ -16,14 +16,15 @@ SmartHomeDeployment::SmartHomeDeployment()
 			MANAGER_SERVER_PORT,
 			m_ueContextAndlinkHolder);
 
-	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(
-			m_ueContextAndlinkHolder,
-			m_andlinkExcutionUnit);
-
 	m_andlinkPlugInExcutionUnit = std::make_shared<ExcutionUnitAndlinkPlugIn>(
 			MANAGER_SERVER_IP,
 			MANAGER_SERVER_PORT+1,
 			m_ueContextAndlinkHolder);
+
+	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(
+			m_ueContextAndlinkHolder,
+			m_andlinkExcutionUnit,
+			m_andlinkPlugInExcutionUnit);
 
 	LOG(INFO) << "construct SmartHomeDeployment";
 }

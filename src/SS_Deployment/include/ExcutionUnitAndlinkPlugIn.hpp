@@ -14,6 +14,7 @@
 #include "TCPServerHandler.hpp"
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
+#include "AndlinkDeviceEventBuilder.hpp"
 
 class ExcutionUnitAndlinkPlugIn:
 		public ExcutionUnit<std::shared_ptr<EventTypeTCPClientDataObject>>,
@@ -26,6 +27,7 @@ public:
 	~ExcutionUnitAndlinkPlugIn();
 	bool start();
 	void shutdown();
+	bool triggerDisconnect(std::string p_deviceid);
 private:
 	bool excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
 	bool asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);

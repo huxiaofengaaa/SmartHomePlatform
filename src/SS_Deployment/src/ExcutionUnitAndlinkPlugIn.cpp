@@ -98,4 +98,29 @@ bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnec
 	return true;
 }
 
+bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
+{
+	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerDisconnect " << p_deviceid;
+	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
+	if(!l_uecontext)
+	{
+		return false;
+	}
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	auto l_eventObj = std::make_shared<EventTypeTCPClientDataObject>(
+			l_uecontext->TCPSocketfd,
+			l_uecontext->peerTCPHost,
+			l_uecontext->peerTCPPort,
+			l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
 
+	if(writeTCPServerString(l_eventObj))
+	{
+		LOG(INFO) << l_eventObj;
+		return true;
+	}
+	else
+	{
+		LOG(INFO) << "writeTCPServerString failed";
+		return false;
+	}
+}

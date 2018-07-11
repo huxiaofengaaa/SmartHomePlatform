@@ -67,26 +67,6 @@ bool ExcutionUnitAndlink::triggerPlugIn(std::string p_host, int p_port, std::str
 	return true;
 }
 
-bool ExcutionUnitAndlink::triggerDisconnect(std::string p_host, int p_port, std::string p_deviceid)
-{
-	LOG(INFO) << "ExcutionUnitAndlink::triggerDisconnect " << p_deviceid;
-	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
-
-	auto l_eventObj = std::make_shared<EventTypeUDPClientDataObject>(
-			p_host, p_port, -1, l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
-
-	if(writeUDPServerString(l_eventObj))
-	{
-		countSendPacket(l_eventObj->m_rawData.size());
-		LOG(INFO) << l_eventObj;
-	}
-	else
-	{
-		LOG(INFO) << "writeUDPServerString failed";
-	}
-	return true;
-}
-
 bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDPClientDataObject> p_obj)
 {
 	LOG(INFO) << p_obj;

@@ -160,21 +160,13 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_disconnect(std::string p_c
 		return "\n\tError, Usage:" + m_cmdList["disconnect"]->help() + "\n\n";
 	}
 	std::string l_deviceid = l_parameterlist[1];
-	auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
-	if(l_uecontext)
+	if(true == m_euAndlinkPlugin->triggerDisconnect(l_deviceid))
 	{
-		if(true == m_euAndlink->triggerDisconnect(l_uecontext->peerUDPHost, l_uecontext->peerUDPPort, l_deviceid))
-		{
-			return "\n\t" + l_deviceid + " trigger disconnect success\n\n";
-		}
-		else
-		{
-			return "\n\t" + l_deviceid + " trigger disconnect failed\n\n";
-		}
+		return "\n\t" + l_deviceid + " trigger disconnect success\n\n";
 	}
 	else
 	{
-		return "\n\t" + l_deviceid + std::string(" Not Exist\n\n");
+		return "\n\t" + l_deviceid + " trigger disconnect failed\n\n";
 	}
 }
 

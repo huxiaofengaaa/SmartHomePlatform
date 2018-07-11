@@ -2,11 +2,22 @@
 
 #define PLATFORM_NAME	"SmartHomePlatform # "
 
-ExcutionUnitTerminal::ExcutionUnitTerminal(std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
-		std::shared_ptr<ExcutionUnitAndlink> p_euAndlink):
-	ExcutionUnit("Terminal", 1, std::bind(&ExcutionUnitTerminal::handleDataObject, this, std::placeholders::_1)),
-	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback, this, std::placeholders::_1)),
-	m_ueContextHolder(p_ueContextHolder), m_euAndlink(p_euAndlink)
+ExcutionUnitTerminal::ExcutionUnitTerminal(
+		std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
+		std::shared_ptr<ExcutionUnitAndlink> p_euAndlink,
+		std::shared_ptr<ExcutionUnitAndlinkPlugIn> p_euAndlinkPlugin):
+	ExcutionUnit(
+			"Terminal",
+			1,
+			std::bind(&ExcutionUnitTerminal::handleDataObject,
+					this,
+					std::placeholders::_1)),
+	AsynTerminalHandler(std::bind(&ExcutionUnitTerminal::terminalAsycDataCallback,
+			this,
+			std::placeholders::_1)),
+	m_ueContextHolder(p_ueContextHolder),
+	m_euAndlink(p_euAndlink),
+	m_euAndlinkPlugin(p_euAndlinkPlugin)
 {
 	LOG(INFO) << "construct ExcutionUnitTerminal";
 }
