@@ -7,9 +7,17 @@
 
 #include "TCPListenerHandler.hpp"
 
-AsynTCPListenerHandler::AsynTCPListenerHandler(std::string p_host, int p_port,
-		std::function<bool(std::shared_ptr<ClientConnectInfo>)> p_callback)
-	: m_host(p_host), m_port(p_port), m_sockfd(-1), m_threadExitFlag(false), m_callback(p_callback)
+AsynTCPListenerHandler::AsynTCPListenerHandler(
+		std::string p_host,
+		int p_port,
+		std::function<bool(std::shared_ptr<ClientConnectInfo>)> p_callback,
+		int p_blockListNumber)
+	: m_host(p_host),
+	  m_port(p_port),
+	  m_callback(p_callback),
+	  m_blockListNumber(p_blockListNumber),
+	  m_sockfd(-1),
+	  m_threadExitFlag(false)
 {
 	LOG(INFO) << "construct AsynTCPListenerHandler";
 }
@@ -21,7 +29,7 @@ AsynTCPListenerHandler::~AsynTCPListenerHandler()
 
 bool AsynTCPListenerHandler::runTCPListener()
 {
-	m_sockfd = createTCPServerSocket(m_host, m_port, 20);
+	m_sockfd = createTCPServerSocket(m_host, m_port, m_blockListNumber);
 	if(m_sockfd < 0)
 	{
 		return false;

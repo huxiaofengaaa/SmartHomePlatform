@@ -35,7 +35,11 @@ std::ostream& operator<<(std::ostream& os, std::shared_ptr<ClientConnectInfo> p_
 class AsynTCPListenerHandler
 {
 public:
-	AsynTCPListenerHandler(std::string p_host, int p_port, std::function<bool(std::shared_ptr<ClientConnectInfo>)> p_callback);
+	AsynTCPListenerHandler(
+			std::string p_host,
+			int p_port,
+			std::function<bool(std::shared_ptr<ClientConnectInfo>)> p_callback,
+			int p_blockListNumber = 20);
 	virtual ~AsynTCPListenerHandler();
 	bool runTCPListener();
 	void shutdownTCPListener();
@@ -47,6 +51,8 @@ private:
 
 	const std::string m_host;
 	const int m_port;
+	const int m_blockListNumber;
+
 	std::thread m_thread;
 	bool m_threadExitFlag;
 	std::function<bool(std::shared_ptr<ClientConnectInfo>)> m_callback;
