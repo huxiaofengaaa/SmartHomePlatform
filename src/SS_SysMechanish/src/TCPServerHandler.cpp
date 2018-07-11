@@ -143,21 +143,25 @@ void AsynTCPServerHandler::mainloop()
 				if(fds[i].revents & POLLRDNORM)
 				{
 					memset(readbuffer, 0, sizeof(readbuffer));
-					struct sockaddr_in l_cliaddr;
-					socklen_t l_len = sizeof(struct sockaddr_in);
-					ssize_t l_nready = recvfrom(fds[i].fd, readbuffer, sizeof(readbuffer)-1, 0,
-							(struct sockaddr*)&l_cliaddr, &l_len);
+					ssize_t l_nready = recv(fds[i].fd, readbuffer, sizeof(readbuffer)-1, 0);
 					if(l_nready <= 0)
 					{
 						delClient(fds[i].fd);
 					}
 					else
 					{
+						struct sockaddr_in l_cliaddr;
+						socklen_t l_len = sizeof(struct sockaddr_in);
+						std::string l_peerHost;
+						int l_peerPort = -1;
+						if(0 == getpeername(fds[i].fd, (struct sockaddr*)&l_cliaddr, &l_len))
+						{
+							l_peerHost = inet_ntoa(l_cliaddr.sin_addr);
+							l_peerPort = ntohs(l_cliaddr.sin_port);
+						}
+
 						auto l_data = std::make_shared<EventTypeTCPClientDataObject>(
-								fds[i].fd,
-								inet_ntoa(l_cliaddr.sin_addr),
-								ntohs(l_cliaddr.sin_port),
-								std::string(readbuffer));
+								fds[i].fd, l_peerHost, l_peerPort, std::string(readbuffer));
 						m_datacallback(l_data);
 					}
 				}
