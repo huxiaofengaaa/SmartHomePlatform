@@ -128,3 +128,56 @@ bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
 		return false;
 	}
 }
+
+bool ExcutionUnitAndlinkPlugIn::triggerQuery(std::string p_deviceid, std::string p_param)
+{
+	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerQuery " << p_deviceid << " " << p_param;
+	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
+	if(!l_uecontext)
+	{
+		return false;
+	}
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	std::string l_queryRawData;
+	if(p_param == "apinfo")
+	{
+		l_queryRawData = l_andlinkBuilder->buildApConfigInfoQueryRequest(p_deviceid);
+	}
+	else if(p_param == "stainfo")
+	{
+		l_queryRawData = l_andlinkBuilder->buildSTAInfoQueryRequest(p_deviceid);
+	}
+	else if(p_param == "upsts")
+	{
+		l_queryRawData = l_andlinkBuilder->buildUplinkStatusQueryRequest(p_deviceid);
+	}
+	else if(p_param == "wifists")
+	{
+		l_queryRawData = l_andlinkBuilder->buildWiFiStatsQueryRequest(p_deviceid);
+	}
+	else
+	{
+		return false;
+	}
+	if(l_queryRawData.empty() == true)
+	{
+		return false;
+	}
+
+	auto l_eventObj = std::make_shared<EventTypeTCPClientDataObject>(
+			l_uecontext->TCPSocketfd,
+			l_uecontext->peerTCPHost,
+			l_uecontext->peerTCPPort,
+			l_queryRawData);
+	if(writeTCPServerString(l_eventObj))
+	{
+		LOG(INFO) << l_eventObj;
+		countRecvPacket(l_eventObj->m_rawData.size());
+		return true;
+	}
+	else
+	{
+		LOG(INFO) << "writeTCPServerString failed";
+		return false;
+	}
+}

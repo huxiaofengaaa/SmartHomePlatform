@@ -130,6 +130,6 @@ void ExcutionUnitTerminal::registerAllCmd()
 				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_query,
 						this,
 						std::placeholders::_1),
-				"[query deviceID paramName], query device parameter."));
+				"[query deviceID paramName], query device parameter(apinfo/stainfo/upsts/wifists)."));
 }
 

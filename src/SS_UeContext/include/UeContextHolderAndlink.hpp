@@ -23,13 +23,11 @@ public:
 	std::string DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken);
 	bool DeviceOnline(struct Interface56_Online_Req& onlinereq);
 
+	std::string generatorRandomCharString(int length);
+	std::string generatorRandomNumberString(int length);
 private:
 	std::string generatorGwToken();
 	std::string generatorDeviceID();
 	std::string generatorDeviceToken();
 	std::string generatorAndlinkToken();
-
-
-	std::string generatorRandomCharString(int length);
-	std::string generatorRandomNumberString(int length);
 };

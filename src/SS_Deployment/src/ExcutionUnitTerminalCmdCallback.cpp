@@ -196,7 +196,14 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_query(std::string p_cmd)
 	std::string l_deviceid = l_parameterlist[1];
 	std::string l_param = l_parameterlist[2];
 
-
+	if(true == m_euAndlinkPlugin->triggerQuery(l_deviceid, l_param))
+	{
+		return "\n\t" + l_deviceid + " trigger query success\n\n";
+	}
+	else
+	{
+		return "\n\t" + l_deviceid + " trigger query failed\n\n";
+	}
 
 	return std::string();
 }

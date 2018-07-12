@@ -30,6 +30,7 @@ public:
 	bool start();
 	void shutdown();
 	bool triggerDisconnect(std::string p_deviceid);
+	bool triggerQuery(std::string p_deviceid, std::string p_param);
 private:
 	bool excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
 	bool asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
