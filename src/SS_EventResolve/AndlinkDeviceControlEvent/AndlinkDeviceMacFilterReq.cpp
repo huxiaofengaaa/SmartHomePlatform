@@ -57,7 +57,7 @@ std::string buildAndlinkDeviceMacFilterReq(struct Interface56_MacFilter_Req req)
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "MacFilter");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 

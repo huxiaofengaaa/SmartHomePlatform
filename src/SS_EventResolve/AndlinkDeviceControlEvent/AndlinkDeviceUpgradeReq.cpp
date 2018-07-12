@@ -62,7 +62,7 @@ std::string buildAndlinkDeviceUpgradeReq(struct Interface56_Upgrade_Req req)
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "file");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 

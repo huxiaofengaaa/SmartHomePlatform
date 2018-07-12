@@ -47,7 +47,7 @@ std::string buildAndlinkDeviceUnbindReq(struct Interface56_Unbind_Req req)
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "unbind");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 	cJSON_AddStringToObject(regJs, "childDeviceId", req.childDeviceId.c_str());

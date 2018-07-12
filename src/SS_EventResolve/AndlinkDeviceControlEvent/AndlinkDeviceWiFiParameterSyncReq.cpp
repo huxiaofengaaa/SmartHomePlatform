@@ -89,7 +89,7 @@ std::string buildAndlinkDeviceWiFiParameterSyncReq(struct Interface56_WiFiParame
 	{
 		return l_result;
 	}
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "WiFiParameterSync");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 

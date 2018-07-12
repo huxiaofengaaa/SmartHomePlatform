@@ -54,7 +54,7 @@ std::string buildAndlinkDeviceWiFiSwitchReq(struct Interface56_WiFiSwitch_Req re
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "WiFiSwitch");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 

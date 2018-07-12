@@ -57,7 +57,7 @@ std::string buildAndlinkDeviceRoamingConfigReq(struct Interface56_RoamingConfig_
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "RoamingConfig");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 
@@ -69,8 +69,11 @@ std::string buildAndlinkDeviceRoamingConfigReq(struct Interface56_RoamingConfig_
 	}
 	cJSON_AddItemToObject(regJs, "data", data);
 	cJSON_AddNumberToObject(data, "RoamingSwitch", req.RoamingSwitch);
-	cJSON_AddNumberToObject(data, "LowRSSI2.4G", req.LowRSSI24G);
-	cJSON_AddNumberToObject(data, "LowRSSI5G", req.LowRSSI5G);
+	if(req.RoamingSwitch == 1)
+	{
+		cJSON_AddNumberToObject(data, "LowRSSI2.4G", req.LowRSSI24G);
+		cJSON_AddNumberToObject(data, "LowRSSI5G", req.LowRSSI5G);
+	}
 
 	char* regch = cJSON_Print(regJs);
 	l_result = std::string(regch);
