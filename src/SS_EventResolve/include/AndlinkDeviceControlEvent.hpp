@@ -35,7 +35,6 @@ struct Interface56_WiFiParameterSync_Req
 	std::string RPCMethod;
 	std::string ID;
 	std::string deviceId;
-	std::string data;
 	std::string SyncCode;
 	struct WiFiParameterSync* Configurations;
 	int configSize;
