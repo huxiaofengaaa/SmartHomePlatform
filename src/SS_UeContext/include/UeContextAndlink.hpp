@@ -18,6 +18,7 @@ struct UeContextAndlink
 	bool isOnline = false;
 	bool isAuth = false;
 	bool isPlugIn = false;
+
 	// device heartbeat req
 	long lastHeartbeat = 0;
 

@@ -15,11 +15,13 @@
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
 #include "AndlinkDeviceEventBuilder.hpp"
+#include "PacketStatistician.hpp"
 
 class ExcutionUnitAndlinkPlugIn:
 		public ExcutionUnit<std::shared_ptr<EventTypeTCPClientDataObject>>,
 		public AsynTCPListenerHandler,
-		public AsynTCPServerHandler
+		public AsynTCPServerHandler,
+		public PacketStatistician
 {
 public:
 	ExcutionUnitAndlinkPlugIn(std::string p_host, int p_port,

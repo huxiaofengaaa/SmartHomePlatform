@@ -122,6 +122,22 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_statistics(std::string p_c
 	snprintf(buffer, sizeof(buffer), "\t         Recv Bytes  : %d\n", m_euAndlink->getRecvBytes());
 	l_result += std::string(buffer);
 
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\tPlugIn   Send Packets: %d\n", m_euAndlinkPlugin->getSendPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Packets: %d\n", m_euAndlinkPlugin->getRecvPacket());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Send Bytes  : %d\n", m_euAndlinkPlugin->getSendBytes());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         Recv Bytes  : %d\n", m_euAndlinkPlugin->getRecvBytes());
+	l_result += std::string(buffer);
+
 	l_result += "\n";
 	return l_result;
 }

@@ -68,6 +68,7 @@ bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<Eve
 		if(writeTCPServerString(p_eventObj))
 		{
 			LOG(INFO) << p_eventObj;
+			countSendPacket(p_eventObj->m_rawData.size());
 			return true;
 		}
 		else
@@ -82,6 +83,7 @@ bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<Eve
 bool ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
 {
 	LOG(INFO) << p_eventObj;
+	countRecvPacket(p_eventObj->m_rawData.size());
 	return addDataObject(p_eventObj);
 }
 
@@ -95,6 +97,7 @@ bool ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler(std::shared_ptr<ClientC
 bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo)
 {
 	LOG(INFO) << "Close, " << p_closeInfo;
+	delClient(p_closeInfo->m_sockfd);
 	return true;
 }
 
@@ -116,6 +119,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
 	if(writeTCPServerString(l_eventObj))
 	{
 		LOG(INFO) << l_eventObj;
+		countRecvPacket(l_eventObj->m_rawData.size());
 		return true;
 	}
 	else
