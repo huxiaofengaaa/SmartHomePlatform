@@ -101,25 +101,31 @@ bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnec
 	return true;
 }
 
-bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
+bool ExcutionUnitAndlinkPlugIn::controlReqPreconditionCheck(std::string p_deviceid)
 {
-	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerDisconnect " << p_deviceid;
 	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
 	if(!l_uecontext)
 	{
 		return false;
 	}
-	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
-	auto l_eventObj = std::make_shared<EventTypeTCPClientDataObject>(
-			l_uecontext->TCPSocketfd,
-			l_uecontext->peerTCPHost,
-			l_uecontext->peerTCPPort,
-			l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
+	return true;
+}
 
-	if(writeTCPServerString(l_eventObj))
+std::shared_ptr<EventTypeTCPClientDataObject> ExcutionUnitAndlinkPlugIn::buildTCPClientDataObject(
+		std::string p_deviceID, std::string p_rawData)
+{
+	auto l_uecontext = m_ueContextHolder->getRef(p_deviceID);
+	return std::make_shared<EventTypeTCPClientDataObject>(l_uecontext->TCPSocketfd,
+			l_uecontext->peerTCPHost, l_uecontext->peerTCPPort, p_rawData);
+}
+
+bool ExcutionUnitAndlinkPlugIn::sendPlugInRequest(
+		std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
+{
+	if(writeTCPServerString(p_eventObj))
 	{
-		LOG(INFO) << l_eventObj;
-		countRecvPacket(l_eventObj->m_rawData.size());
+		LOG(INFO) << p_eventObj;
+		countRecvPacket(p_eventObj->m_rawData.size());
 		return true;
 	}
 	else
@@ -129,11 +135,23 @@ bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
 	}
 }
 
+bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
+{
+	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerDisconnect " << p_deviceid;
+	if(false == controlReqPreconditionCheck(p_deviceid))
+	{
+		return false;
+	}
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	auto l_eventObj = buildTCPClientDataObject(
+			p_deviceid, l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
+	return sendPlugInRequest(l_eventObj);
+}
+
 bool ExcutionUnitAndlinkPlugIn::triggerQuery(std::string p_deviceid, std::string p_param)
 {
 	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerQuery " << p_deviceid << " " << p_param;
-	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
-	if(!l_uecontext)
+	if(false == controlReqPreconditionCheck(p_deviceid))
 	{
 		return false;
 	}
@@ -159,25 +177,32 @@ bool ExcutionUnitAndlinkPlugIn::triggerQuery(std::string p_deviceid, std::string
 	{
 		return false;
 	}
-	if(l_queryRawData.empty() == true)
-	{
-		return false;
-	}
+	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_queryRawData);
+	return sendPlugInRequest(l_eventObj);
+}
 
-	auto l_eventObj = std::make_shared<EventTypeTCPClientDataObject>(
-			l_uecontext->TCPSocketfd,
-			l_uecontext->peerTCPHost,
-			l_uecontext->peerTCPPort,
-			l_queryRawData);
-	if(writeTCPServerString(l_eventObj))
+bool ExcutionUnitAndlinkPlugIn::triggerReboot(std::string p_deviceid)
+{
+	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerReboot " << p_deviceid;
+	if(false == controlReqPreconditionCheck(p_deviceid))
 	{
-		LOG(INFO) << l_eventObj;
-		countRecvPacket(l_eventObj->m_rawData.size());
-		return true;
-	}
-	else
-	{
-		LOG(INFO) << "writeTCPServerString failed";
 		return false;
 	}
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	auto l_rawReq = l_andlinkBuilder->buildRebootRequest(p_deviceid);
+	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
+	return sendPlugInRequest(l_eventObj);
+}
+
+bool ExcutionUnitAndlinkPlugIn::triggerLEDControl(std::string p_deviceid, bool p_turnOn)
+{
+	LOG(INFO) << "ExcutionUnitAndlinkPlugIn::triggerReboot " << p_deviceid;
+	if(false == controlReqPreconditionCheck(p_deviceid))
+	{
+		return false;
+	}
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	auto l_rawReq = l_andlinkBuilder->buildLEDControlRequest(p_deviceid, p_turnOn);
+	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
+	return sendPlugInRequest(l_eventObj);
 }

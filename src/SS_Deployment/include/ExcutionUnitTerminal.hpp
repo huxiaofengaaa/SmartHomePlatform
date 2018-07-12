@@ -42,6 +42,7 @@ private:
 	std::string terminalCmdCallback_plugin(std::string p_cmd);
 	std::string terminalCmdCallback_disconnect(std::string p_cmd);
 	std::string terminalCmdCallback_query(std::string p_cmd);
+	std::string terminalCmdCallback_control(std::string p_cmd);
 
 	bool terminalAsycDataCallback(std::string p_data);
 	bool handleDataObject(std::string p_eventObj);

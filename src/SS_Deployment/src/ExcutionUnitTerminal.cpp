@@ -131,5 +131,65 @@ void ExcutionUnitTerminal::registerAllCmd()
 						this,
 						std::placeholders::_1),
 				"[query deviceID paramName], query device parameter(apinfo/stainfo/upsts/wifists)."));
+
+	registerCmd("reboot", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[reboot deviceID         ], restart device from remote"));
+
+	registerCmd("led", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[led deviceID on/off     ], turn on/off led from remote"));
+
+//	registerCmd("power", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[power deviceID radio val], set radio transmition power from remote"));
+//
+//	registerCmd("macfilter", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[macfilter deviceID val], set device mac filter from remote"));
+
+//	registerCmd("roaming", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[roaming deviceID val1 val2], set device roaming from remote"));
+//
+//	registerCmd("wifisync", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[wifisync deviceID], sync device wifi parameter from remote"));
+//
+//	registerCmd("wifiswitch", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[wifiswitch deviceID on/off], turn on/off wifi from remote"));
+
+//	registerCmd("wps", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[wps deviceID on/off], turn on/off wps from remote"));
+//
+//	registerCmd("unbind", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[unbind deviceID], unbind device from remote"));
+//
+//	registerCmd("upgrade", std::make_shared<TerminalCmdNormal>(
+//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+//						this,
+//						std::placeholders::_1),
+//				"[upgrade deviceID pathname], upgrade device from remote"));
 }
 

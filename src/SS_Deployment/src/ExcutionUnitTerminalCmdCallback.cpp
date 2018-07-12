@@ -208,3 +208,38 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_query(std::string p_cmd)
 	return std::string();
 }
 
+std::string ExcutionUnitTerminal::terminalCmdCallback_control(std::string p_cmd)
+{
+	auto l_parameterlist = resolveParameter(p_cmd);
+	bool l_controlResult = false;
+	std::string l_cmd = l_parameterlist[0];
+	if(l_cmd == "reboot")
+	{
+		if(l_parameterlist.size() != 2)
+		{
+			return "\n\tError, Usage:" + m_cmdList["reboot"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+		l_controlResult = m_euAndlinkPlugin->triggerReboot(l_deviceID);
+	}
+	else if(l_cmd == "led")
+	{
+		if(l_parameterlist.size() != 3)
+		{
+			return "\n\tError, Usage:" + m_cmdList["led"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+		std::string l_state = l_parameterlist[2];
+		l_controlResult = m_euAndlinkPlugin->triggerLEDControl(
+				l_deviceID, l_state == "on" ? true : false);
+	}
+
+	if(true == l_controlResult)
+	{
+		return "\n\tTrigger " + l_cmd + " success\n\n";
+	}
+	else
+	{
+		return "\n\tTrigger " + l_cmd + " failed\n\n";
+	}
+}
