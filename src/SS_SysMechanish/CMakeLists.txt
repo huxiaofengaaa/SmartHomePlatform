@@ -9,5 +9,6 @@ add_library(sysMechanish STATIC src/SystemNotify.cpp
                                 src/UDPServerHandler.cpp
                                 src/TCPListenerHandler.cpp
                                 src/TCPServerHandler.cpp
-                                src/RandomGenerator.cpp)
+                                src/RandomGenerator.cpp
+                                src/CalendarClock.cpp)
                            
