@@ -18,6 +18,9 @@ public:
 	UeContextHolderAndlink(std::string p_host, int p_port): m_host(p_host), m_port(p_port){ }
 	~UeContextHolderAndlink(){ }
 
+	int onlineSize();
+	int pluginSize();
+
 	std::vector<std::string> getDeviceList();
 	bool updateNetAddress(std::string p_deviceID, std::string p_host, int p_port, int p_sockfd, bool isTCP);
 	std::string DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken);

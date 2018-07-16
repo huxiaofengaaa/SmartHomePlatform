@@ -139,6 +139,18 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_statistics(std::string p_c
 	snprintf(buffer, sizeof(buffer), "\t         Recv Bytes  : %d\n", m_euAndlinkPlugin->getRecvBytes());
 	l_result += std::string(buffer);
 
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\tClient   DeviceAll   : %d\n", m_ueContextHolder->size());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         DeviceOnline: %d\n", m_ueContextHolder->onlineSize());
+	l_result += std::string(buffer);
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "\t         DevicePlugin: %d\n", m_ueContextHolder->pluginSize());
+	l_result += std::string(buffer);
+
 	l_result += "\n";
 	return l_result;
 }

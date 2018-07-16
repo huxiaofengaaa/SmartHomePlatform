@@ -90,6 +90,15 @@ public:
 		return true;
 	}
 
+	int size()
+	{
+		int l_size = 0;
+		m_contextMapMutex.lock();
+		l_size = m_contextMap.size();
+		m_contextMapMutex.unlock();
+		return l_size;
+	}
+
 private:
 	std::map<std::string, ContextType> m_contextMap;
 	std::mutex m_contextMapMutex;

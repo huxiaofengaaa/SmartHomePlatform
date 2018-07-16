@@ -15,6 +15,40 @@ std::vector<std::string> UeContextHolderAndlink::getDeviceList()
 	return getAllKey();
 }
 
+int UeContextHolderAndlink::onlineSize()
+{
+	int l_onlineNumber = 0;
+	CalendarClock clock;
+	long l_currentTimestamp = clock.getTimeStamp();
+	for(auto l_key : getAllKey())
+	{
+		auto l_ueContext = getRef(l_key);
+		auto l_isAuthCompleted = l_ueContext->isAuth;
+		auto l_lastTimestamp = l_ueContext->lastHeartbeat;
+		auto l_heartbeatInterval = l_ueContext->heartBeatTime;
+		if(l_lastTimestamp > (l_currentTimestamp - l_heartbeatInterval * 2)
+				&& l_isAuthCompleted == true)
+		{
+			l_onlineNumber++;
+		}
+	}
+	return l_onlineNumber;
+}
+
+int UeContextHolderAndlink::pluginSize()
+{
+	int l_pluginNumber = 0;
+	for(auto l_key : getAllKey())
+	{
+		auto l_ueContext = getRef(l_key);
+		if(l_ueContext->isPlugIn == true)
+		{
+			l_pluginNumber++;
+		}
+	}
+	return l_pluginNumber;
+}
+
 std::string UeContextHolderAndlink::getDeviceIDByMAC(std::string p_deviceMac)
 {
 	for(auto l_key : getAllKey())
@@ -78,11 +112,13 @@ bool UeContextHolderAndlink::setOnlineResponse(std::string p_deviceID,
 			resp.timestamp = clock.getTimeStamp();
 			resp.encrypt = l_uecontext->encrypt;
 			resp.ChallengeCode = l_uecontext->ChallengeCode;
+			l_uecontext->isOnline = true;
 		}
 		else
 		{
 			resp.respCode = -5;
 			resp.ServerIP = m_host + std::string(":") + std::to_string(m_port);
+			l_uecontext->isOnline = false;
 		}
 		return true;
 	}
@@ -101,6 +137,7 @@ bool UeContextHolderAndlink::setAuthResponse(std::string p_deviceMAC, std::strin
 		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
 		l_uecontext->CheckSN = p_deviceCheckSN;
+		l_uecontext->isAuth = true;
 		return true;
 	}
 	else
@@ -108,6 +145,7 @@ bool UeContextHolderAndlink::setAuthResponse(std::string p_deviceMAC, std::strin
 		resp.respCode = -2;
 		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+		l_uecontext->isAuth = false;
 	}
 	return false;
 }
@@ -136,6 +174,7 @@ bool UeContextHolderAndlink::setHeartbeatResponse(std::string p_deviceID,
 	{
 		resp.respCode = -5;
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+		l_uecontext->lastHeartbeat = 0;
 	}
 	return false;
 }
