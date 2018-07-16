@@ -6,12 +6,16 @@
  */
 
 #pragma once
-
+#include <string>
+#include <mutex>
 #include "UeContext.hpp"
 
 struct UeContextAndlink
 {
-	UeContextAndlink() = default;
+	UeContextAndlink(std::string p_deviceID):deviceId(p_deviceID)
+	{
+
+	}
 	~UeContextAndlink() = default;
 
 	bool isRegister = false;
@@ -30,6 +34,8 @@ struct UeContextAndlink
 	int peerTCPPort;
 	int TCPSocketfd = -1;
 
+	const std::string deviceId;          // server generat, register resp
+
 	// deviec register req
 	std::string deviceMac;         // device, register req
 	std::string deviceType;        // device, register req
@@ -37,7 +43,6 @@ struct UeContextAndlink
 
 	// device register resp
 	std::string gwToken;           // server generat, register resp
-	std::string deviceId;          // server generat, register resp
 	std::string deviceToken;       // server generat, register resp
 	std::string andlinkToken;      // server generat, register resp
 
@@ -58,5 +63,8 @@ struct UeContextAndlink
 	int heartBeatTime;             // server setting,
 	int encrypt = 0;               // server setting
 	std::string ChallengeCode;     // server setting, 16 bytes
-	std::string ServerIP;          // server setting, 0.0.0.0:1234
+
+	// device auth req
+	std::string CheckSN;
+
 };

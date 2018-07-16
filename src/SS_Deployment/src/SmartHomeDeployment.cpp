@@ -9,7 +9,9 @@ SmartHomeDeployment::SmartHomeDeployment()
 	l_regster.registerSignal(SIGINT, l_sigintTask);
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
-	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>();
+	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>(
+			MANAGER_SERVER_IP,
+			MANAGER_SERVER_PORT);
 
 	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>(
 			MANAGER_SERVER_IP,

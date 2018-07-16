@@ -7,29 +7,6 @@
 
 #include "AndlinkDeviceEventHandler.hpp"
 
-bool AndlinkDeviceEventHandler::updateNetAddress(std::string p_deviceID,
-		std::string p_host, int p_port, int p_sockfd, bool isTCP)
-{
-	auto l_uecontext = m_ueContextHolder->getRef(p_deviceID);
-	if(l_uecontext)
-	{
-		if(isTCP == true)
-		{
-			l_uecontext->peerTCPHost = p_host;
-			l_uecontext->peerTCPPort = p_port;
-			l_uecontext->TCPSocketfd = p_sockfd;
-		}
-		else
-		{
-			l_uecontext->peerUDPHost = p_host;
-			l_uecontext->peerUDPPort = p_port;
-			l_uecontext->UDPSocketfd = p_sockfd;
-		}
-		return true;
-	}
-	return false;
-}
-
 std::string AndlinkDeviceEventHandler::run(std::string& p_rawData,
 		std::string& p_host, int p_port, int p_sockfd, bool isTCP)
 {
@@ -42,16 +19,9 @@ std::string AndlinkDeviceEventHandler::run(std::string& p_rawData,
 	{
 		std::string l_deviceID = m_ueContextHolder->DeviceRegister(
 				l_registerReq.deviceMac, l_registerReq.deviceType, l_registerReq.productToken);
-		auto l_uecontext = m_ueContextHolder->getRef(l_deviceID);
-
-		updateNetAddress(l_deviceID, p_host, p_port, p_sockfd, isTCP);
-		struct Interface56_Register_Resp l_registerResp =
-		{
-				l_uecontext->gwToken,
-				l_uecontext->deviceId,
-				l_uecontext->deviceToken,
-				l_uecontext->andlinkToken
-		};
+		m_ueContextHolder->updateNetAddress(l_deviceID, p_host, p_port, p_sockfd, isTCP);
+		struct Interface56_Register_Resp l_registerResp;
+		m_ueContextHolder->setRegisterResponse(l_deviceID, l_registerResp);
 		return build_if56_register_response_success_msg(l_registerResp);
 	}
 	else if(true == resolve_if56_online_request_msg(p_rawData, &l_onlineReq))
@@ -59,41 +29,37 @@ std::string AndlinkDeviceEventHandler::run(std::string& p_rawData,
 		if(true == m_ueContextHolder->DeviceOnline(l_onlineReq))
 		{
 			auto l_deviceid = l_onlineReq.deviceId;
-			auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
-			updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
-			struct Interface56_Online_Resp l_onlineResp =
-			{
-					0, l_uecontext->encrypt, l_uecontext->ChallengeCode,
-					0, ""
-			};
+			struct Interface56_Online_Resp l_onlineResp;
+			m_ueContextHolder->setOnlineResponse(l_deviceid, l_onlineResp, true);
+			m_ueContextHolder->updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
 			return build_if56_online_response_success_msg(l_onlineResp);
 		}
 		else
 		{
+			auto l_deviceid = l_onlineReq.deviceId;
 			struct Interface56_Online_Resp l_onlineResp;
+			m_ueContextHolder->setOnlineResponse(l_deviceid, l_onlineResp, false);
 			return build_if56_online_response_failed_msg(l_onlineResp);
 		}
 	}
 	else if(true == resolve_if56_auth_request_msg(p_rawData, &l_authReq))
 	{
+		auto l_deviceMAC = l_authReq.MAC;
+		auto l_deviceCheckSN = l_authReq.CheckSN;
 		struct Interface56_Auth_Resp l_authResp;
+		m_ueContextHolder->setAuthResponse(l_deviceMAC, l_deviceCheckSN, l_authResp);
 		return build_if56_auth_response_msg(l_authResp);
 	}
 	else if(true == resolve_if56_heartbeat_request_msg(p_rawData, &l_heartbeatReq))
 	{
 		struct Interface56_Heartbeat_Resp l_heartbeatResp;
 		auto l_deviceid = l_heartbeatReq.deviceId;
-		auto l_uecontext = m_ueContextHolder->getRef(l_deviceid);
-		if(!l_uecontext || l_uecontext->deviceMac != l_heartbeatReq.MAC)
+		auto l_deviceMAC = l_heartbeatReq.MAC;
+		auto l_deviceIPAddr = l_heartbeatReq.IPAddr;
+		if(true == m_ueContextHolder->setHeartbeatResponse(l_deviceid, l_deviceMAC,
+				l_deviceIPAddr, l_heartbeatResp))
 		{
-			l_heartbeatResp.respCode = -5;
-		}
-		else
-		{
-			updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
-			l_uecontext->lastHeartbeat = time(NULL);
-			l_heartbeatResp.respCode = 0;
-			l_heartbeatResp.heartBeatTime = 15;
+			m_ueContextHolder->updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
 		}
 		return build_if56_heartbeat_response_msg(l_heartbeatResp);
 	}

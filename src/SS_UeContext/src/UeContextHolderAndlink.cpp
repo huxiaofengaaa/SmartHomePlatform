@@ -8,49 +8,167 @@
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEvent.hpp"
 #include "RandomGenerator.hpp"
+#include "CalendarClock.hpp"
 
 std::vector<std::string> UeContextHolderAndlink::getDeviceList()
 {
 	return getAllKey();
 }
 
-std::string UeContextHolderAndlink::DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken)
+std::string UeContextHolderAndlink::getDeviceIDByMAC(std::string p_deviceMac)
 {
-	bool l_result = false;
-	std::shared_ptr<UeContextAndlink> l_currentUeContext;
-	std::string l_currentKey;
-
 	for(auto l_key : getAllKey())
 	{
 		auto l_keyValue = getRef(l_key);
-		if(l_keyValue->deviceMac == deviceMac)
+		if(l_keyValue->deviceMac == p_deviceMac)
 		{
-			l_result = true;
-			l_currentUeContext = l_keyValue;
-			l_currentKey = l_key;
-			break;
+			return l_keyValue->deviceId;
 		}
 	}
+	return std::string();
+}
 
-	if(l_result == false)
+bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceID,
+		std::string p_host, int p_port, int p_sockfd, bool isTCP)
+{
+	auto l_uecontext = getRef(p_deviceID);
+	if(l_uecontext)
 	{
-		auto l_obj = std::make_shared<UeContextAndlink>();
+		if(isTCP == true)
+		{
+			l_uecontext->peerTCPHost = p_host;
+			l_uecontext->peerTCPPort = p_port;
+			l_uecontext->TCPSocketfd = p_sockfd;
+		}
+		else
+		{
+			l_uecontext->peerUDPHost = p_host;
+			l_uecontext->peerUDPPort = p_port;
+			l_uecontext->UDPSocketfd = p_sockfd;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool UeContextHolderAndlink::setRegisterResponse(std::string p_deviceID,
+		struct Interface56_Register_Resp& resp)
+{
+	auto l_uecontext = getRef(p_deviceID);
+	if(l_uecontext)
+	{
+		resp.gwToken = l_uecontext->gwToken;
+		resp.deviceId = l_uecontext->deviceId;
+		resp.deviceToken = l_uecontext->deviceToken;
+		resp.andlinkToken = l_uecontext->andlinkToken;
+		return true;
+	}
+	return false;
+}
+
+bool UeContextHolderAndlink::setOnlineResponse(std::string p_deviceID,
+		struct Interface56_Online_Resp& resp, bool isSuccess)
+{
+	auto l_uecontext = getRef(p_deviceID);
+	if(l_uecontext)
+	{
+		if(true == isSuccess)
+		{
+			CalendarClock clock;
+			resp.timestamp = clock.getTimeStamp();
+			resp.encrypt = l_uecontext->encrypt;
+			resp.ChallengeCode = l_uecontext->ChallengeCode;
+		}
+		else
+		{
+			resp.respCode = -5;
+			resp.ServerIP = m_host + std::string(":") + std::to_string(m_port);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool UeContextHolderAndlink::setAuthResponse(std::string p_deviceMAC, std::string p_deviceCheckSN,
+		struct Interface56_Auth_Resp& resp)
+{
+	auto l_deviceID = getDeviceIDByMAC(p_deviceMAC);
+	auto l_uecontext = getRef(l_deviceID);
+	if(l_uecontext)
+	{
+		resp.respCode = 2;
+		resp.heartBeatTime = 15;
+		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+		l_uecontext->CheckSN = p_deviceCheckSN;
+		return true;
+	}
+	else
+	{
+		resp.respCode = -2;
+		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+	}
+	return false;
+}
+
+bool UeContextHolderAndlink::setHeartbeatResponse(std::string p_deviceID,
+		std::string p_deviceMAC, std::string p_deviceIPAddr,
+		struct Interface56_Heartbeat_Resp& resp)
+{
+	bool l_result = true;
+	auto l_uecontext = getRef(p_deviceID);
+	if(!l_uecontext || l_uecontext->deviceMac != p_deviceMAC)
+	{
+		l_result = false;
+	}
+	if(l_result == true)
+	{
+		resp.respCode = 0;
+		resp.heartBeatTime = 15;
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+
+		CalendarClock clock;
+		l_uecontext->lastHeartbeat = clock.getTimeStamp();
+		l_uecontext->ipAddress = p_deviceIPAddr;
+	}
+	else
+	{
+		resp.respCode = -5;
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
+	}
+	return false;
+}
+
+std::string UeContextHolderAndlink::DeviceRegister(std::string p_deviceMac,
+		std::string p_deviceType, std::string p_productToken)
+{
+	auto l_currentDeviceID = getDeviceIDByMAC(p_deviceMac);
+	if(l_currentDeviceID.empty() == true)
+	{
 		std::string deviceID = generatorDeviceID();
-		l_obj->deviceMac = deviceMac;
-		l_obj->deviceType = deviceType;
-		l_obj->productToken = productToken;
+		auto l_obj = std::make_shared<UeContextAndlink>(deviceID);
+		l_obj->deviceMac = p_deviceMac;
+		l_obj->deviceType = p_deviceType;
+		l_obj->productToken = p_productToken;
 		l_obj->gwToken = generatorGwToken();
-		l_obj->deviceId = deviceID;
 		l_obj->deviceToken = generatorDeviceToken();
 		l_obj->andlinkToken = generatorAndlinkToken();
 
+		l_obj->isRegister = true;
+		l_obj->isOnline = false;
+		l_obj->isAuth = false;
+		l_obj->isPlugIn = false;
 		add(deviceID, l_obj);
 		LOG(INFO) << "create new UeContextAndlink " << deviceID;
 		return deviceID;
 	}
 	else
 	{
-		auto l_uecontext = getRef(l_currentKey);
+		auto l_uecontext = getRef(l_currentDeviceID);
+		l_uecontext->deviceMac = p_deviceMac;
+		l_uecontext->deviceType = p_deviceType;
+		l_uecontext->productToken = p_productToken;
 		l_uecontext->gwToken = generatorGwToken();
 		l_uecontext->deviceToken = generatorDeviceToken();
 		l_uecontext->andlinkToken = generatorAndlinkToken();
@@ -58,8 +176,8 @@ std::string UeContextHolderAndlink::DeviceRegister(std::string deviceMac, std::s
 		l_uecontext->isRegister = true;
 		l_uecontext->isOnline = false;
 		l_uecontext->isAuth = false;
-		//l_uecontext->isPlugIn = false;
-		return l_currentKey;
+		l_uecontext->isPlugIn = false;
+		return l_currentDeviceID;
 	}
 }
 
@@ -73,7 +191,8 @@ bool UeContextHolderAndlink::DeviceOnline(struct Interface56_Online_Req& p_onlin
 		return false;
 	}
 	if(l_uecontext->deviceMac != p_onlinereq.deviceMac
-			|| l_uecontext->deviceType != p_onlinereq.deviceType)
+			|| l_uecontext->deviceType != p_onlinereq.deviceType
+			|| l_uecontext->isRegister == false)
 	{
 		return false;
 	}
@@ -93,14 +212,12 @@ bool UeContextHolderAndlink::DeviceOnline(struct Interface56_Online_Req& p_onlin
 	l_uecontext->heartBeatTime = 15000;
 	l_uecontext->encrypt = 0;
 	l_uecontext->ChallengeCode = l_generator.generatorRandomNumberString(16);
-	l_uecontext->ServerIP = "127.0.0.1:6887";
-	return true;
-}
 
-std::string UeContextHolderAndlink::generatorGwToken()
-{
-	RandomGenerator l_generator;
-	return l_generator.generatorRandomCharString(32);
+	l_uecontext->isRegister = true;
+	l_uecontext->isOnline = true;
+	l_uecontext->isAuth = false;
+	l_uecontext->isPlugIn = false;
+	return true;
 }
 
 std::string UeContextHolderAndlink::generatorDeviceID()
@@ -123,6 +240,12 @@ std::string UeContextHolderAndlink::generatorDeviceToken()
 }
 
 std::string UeContextHolderAndlink::generatorAndlinkToken()
+{
+	RandomGenerator l_generator;
+	return l_generator.generatorRandomCharString(32);
+}
+
+std::string UeContextHolderAndlink::generatorGwToken()
 {
 	RandomGenerator l_generator;
 	return l_generator.generatorRandomCharString(32);

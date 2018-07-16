@@ -28,7 +28,6 @@ public:
 private:
 	std::string run(std::string& p_rawData,
 			std::string& p_host, int p_port, int p_sockfd, bool isTCP = false);
-	bool updateNetAddress(std::string p_deviceID, std::string p_host, int p_port, int p_sockfd, bool isTCP);
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;
 };
 
