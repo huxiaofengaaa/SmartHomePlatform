@@ -26,3 +26,9 @@ long CalendarClock::getTimeStamp()
 {
 	return std::time(nullptr);
 }
+
+std::string CalendarClock::to_humanStringTime(long p_timestamp)
+{
+	std::time_t l_result = p_timestamp;
+	return std::ctime(&l_result);
+}

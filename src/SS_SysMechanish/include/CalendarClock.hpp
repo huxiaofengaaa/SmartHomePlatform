@@ -15,4 +15,5 @@ public:
 	std::string getLocalTimeString();
 	std::tuple<int,int,int,int,int,int> getLocalTimeGroup();
 	long getTimeStamp();
+	std::string to_humanStringTime(long p_timestamp);
 };

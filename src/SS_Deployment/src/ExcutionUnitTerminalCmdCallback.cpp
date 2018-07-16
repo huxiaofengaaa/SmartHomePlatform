@@ -5,6 +5,7 @@
  *      Author: Administrator
  */
 #include "ExcutionUnitTerminal.hpp"
+#include "CalendarClock.hpp"
 #include <sstream>
 
 std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cmd)
@@ -61,8 +62,10 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 	char buffer[512] = { 0 };
 
 	memset(buffer, 0, sizeof(buffer));
-	snprintf(buffer, sizeof(buffer), "\n\t%-24s | %-21s | %-17s | %-16s | %-16s | %-16s\n",
-			"DeviceID", "IPaddress", "MAC", "firmwareVersion", "softwareVersion", "deviceVendor");
+	snprintf(buffer, sizeof(buffer),
+			"\n    %-24s | %-21s | %-17s | %-16s | %-16s | %-12s | %-21s | %-6s | %-25s\n",
+			"DeviceID", "peerIPAddress", "MAC", "firmwareVersion", "softwareVersion", "deviceVendor",
+			"DeviceIP", "Plugin", "LastOnline");
 
 	std::string l_result = std::string(buffer);
 
@@ -73,14 +76,18 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_list(std::string p_cmd)
 		memset(buffer, 0, sizeof(buffer));
 
 		std::string ipaddress = l_uecontext->peerUDPHost + ":" + std::to_string(l_uecontext->peerUDPPort);
-
-		snprintf(buffer, sizeof(buffer), "\t%-24s | %-21s | %-17s | %-16s | %-16s | %-16s\n",
+		CalendarClock clock;
+		snprintf(buffer, sizeof(buffer),
+				"    %-24s | %-21s | %-17s | %-16s | %-16s | %-12s | %-21s | %-6s | %-25s",
 				l_uecontext->deviceId.c_str(),
 				ipaddress.c_str(),
 				l_uecontext->deviceMac.c_str(),
 				l_uecontext->firmwareVersion.c_str(),
 				l_uecontext->softwareVersion.c_str(),
-				l_uecontext->deviceVendor.c_str());
+				l_uecontext->deviceVendor.c_str(),
+				l_uecontext->ipAddress.c_str(),
+				l_uecontext->isPlugIn == true ? "Yes" : "No",
+				clock.to_humanStringTime(l_uecontext->lastHeartbeat).c_str());
 		l_result += std::string(buffer);
 	}
 	l_result += "\n";

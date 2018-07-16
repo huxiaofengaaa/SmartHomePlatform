@@ -174,7 +174,10 @@ bool UeContextHolderAndlink::setHeartbeatResponse(std::string p_deviceID,
 	{
 		resp.respCode = -5;
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
-		l_uecontext->lastHeartbeat = 0;
+		if(l_uecontext)
+		{
+			l_uecontext->lastHeartbeat = 0;
+		}
 	}
 	return false;
 }
