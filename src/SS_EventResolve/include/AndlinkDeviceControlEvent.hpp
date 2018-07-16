@@ -24,6 +24,11 @@ struct WiFiParameterSync
 
 struct Interface56_WiFiParameterSync_Req
 {
+	Interface56_WiFiParameterSync_Req()
+	{
+		Configurations = NULL;
+		configSize = 0;
+	}
 	~Interface56_WiFiParameterSync_Req()
 	{
 		if(Configurations != NULL)

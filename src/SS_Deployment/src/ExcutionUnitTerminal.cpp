@@ -144,41 +144,48 @@ void ExcutionUnitTerminal::registerAllCmd()
 						std::placeholders::_1),
 				"[led deviceID on/off     ], turn on/off led from remote"));
 
-//	registerCmd("power", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[power deviceID radio val], set radio transmition power from remote"));
-//
-//	registerCmd("macfilter", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[macfilter deviceID val], set device mac filter from remote"));
+	registerCmd("power", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				std::string("[power deviceID radio val], set radio(0->all 1->2.4G other->5G) " +
+						std::string("power(0~100 percent) from remote"))));
 
-//	registerCmd("roaming", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[roaming deviceID val1 val2], set device roaming from remote"));
-//
-//	registerCmd("wifisync", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[wifisync deviceID], sync device wifi parameter from remote"));
-//
-//	registerCmd("wifiswitch", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[wifiswitch deviceID on/off], turn on/off wifi from remote"));
+	registerCmd("macfilter", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[macfilter deviceID enable poligy entry], set device mac filter from remote"));
 
-//	registerCmd("wps", std::make_shared<TerminalCmdNormal>(
-//				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
-//						this,
-//						std::placeholders::_1),
-//				"[wps deviceID on/off], turn on/off wps from remote"));
+	registerCmd("chReselct", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[chReselct deviceID select], set channel radio(0->all 1->2.4G other->5G) reselect from remote"));
+
+	registerCmd("roaming", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[roaming deviceID enable val1 val2], set device roaming from remote"));
+
+	registerCmd("wifisync", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[wifisync deviceID], sync device wifi parameter from remote"));
+
+	registerCmd("wifiswitch", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[wifiswitch deviceID enable on/off], turn on/off wifi from remote"));
+
+	registerCmd("wps", std::make_shared<TerminalCmdNormal>(
+				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,
+						this,
+						std::placeholders::_1),
+				"[wps deviceID on/off], turn on/off wps from remote"));
 //
 //	registerCmd("unbind", std::make_shared<TerminalCmdNormal>(
 //				std::bind(&ExcutionUnitTerminal::terminalCmdCallback_control,

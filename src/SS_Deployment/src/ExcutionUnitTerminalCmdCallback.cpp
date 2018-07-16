@@ -5,6 +5,7 @@
  *      Author: Administrator
  */
 #include "ExcutionUnitTerminal.hpp"
+#include <sstream>
 
 std::vector<std::string> ExcutionUnitTerminal::resolveParameter(std::string p_cmd)
 {
@@ -233,7 +234,123 @@ std::string ExcutionUnitTerminal::terminalCmdCallback_control(std::string p_cmd)
 		l_controlResult = m_euAndlinkPlugin->triggerLEDControl(
 				l_deviceID, l_state == "on" ? true : false);
 	}
+	else if(l_cmd == "power")
+	{
+		if(l_parameterlist.size() != 4)
+		{
+			return "\n\tError, Usage:" + m_cmdList["power"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+		int p_select = -1;
+		int p_percent = -1;
+		std::stringstream stream(l_parameterlist[2]);
+		stream >> p_select;
+		std::stringstream stream2(l_parameterlist[3]);
+		stream2 >> p_percent;
+		l_controlResult = m_euAndlinkPlugin->triggerPowerControl(l_deviceID, p_select, p_percent);
+	}
+	else if(l_cmd == "macfilter")
+	{
+		if(l_parameterlist.size() != 5)
+		{
+			return "\n\tError, Usage:" + m_cmdList["macfilter"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
 
+		int ll_enable;
+		std::stringstream stream2(l_parameterlist[2]);
+		stream2 >> ll_enable;
+		bool l_enable = ll_enable == 0 ? false : true;
+
+		int l_policy;
+		std::stringstream stream(l_parameterlist[3]);
+		stream >> l_policy;
+
+		std::string p_entry = l_parameterlist[4];
+
+		l_controlResult = m_euAndlinkPlugin->triggerMACFilterControl(
+				l_deviceID, l_enable, l_policy, p_entry);
+	}
+	else if(l_cmd == "chReselct")
+	{
+		if(l_parameterlist.size() != 3)
+		{
+			return "\n\tError, Usage:" + m_cmdList["chReselct"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+
+		int p_select = -1;
+		std::stringstream stream(l_parameterlist[2]);
+		stream >> p_select;
+		l_controlResult = m_euAndlinkPlugin->triggerChannelReselectControl(l_deviceID, p_select);
+	}
+	else if(l_cmd == "roaming")
+	{
+		if(l_parameterlist.size() != 5)
+		{
+			return "\n\tError, Usage:" + m_cmdList["roaming"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+
+		int l_enable = 0;
+		std::stringstream stream2(l_parameterlist[2]);
+		stream2 >> l_enable;
+
+		int l_val1 = -1;
+		std::stringstream stream3(l_parameterlist[3]);
+		stream3 >> l_val1;
+
+		int l_val2 = -1;
+		std::stringstream stream4(l_parameterlist[4]);
+		stream4 >> l_val2;
+
+		l_controlResult = m_euAndlinkPlugin->triggerRoamingConfigControl(l_deviceID,
+				l_enable == 0 ? false : true, l_val1, l_val2);
+	}
+	else if(l_cmd == "wifiswitch")
+	{
+		if(l_parameterlist.size() != 4)
+		{
+			return "\n\tError, Usage:" + m_cmdList["wifiswitch"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+
+		bool l_enable = false;
+		if(l_parameterlist[2] == "on")
+		{
+			l_enable = true;
+		}
+
+		int p_select = -1;
+		std::stringstream stream3(l_parameterlist[3]);
+		stream3 >> p_select;
+
+		l_controlResult = m_euAndlinkPlugin->triggerWiFiSwitchControl(l_deviceID, l_enable, p_select);
+	}
+	else if(l_cmd == "wps")
+	{
+		if(l_parameterlist.size() != 3)
+		{
+			return "\n\tError, Usage:" + m_cmdList["wps"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+
+		int p_select = -1;
+		std::stringstream stream2(l_parameterlist[2]);
+		stream2 >> p_select;
+
+		l_controlResult = m_euAndlinkPlugin->triggerWPSControl(l_deviceID, p_select);
+	}
+	else if(l_cmd == "wifisync")
+	{
+		if(l_parameterlist.size() != 2)
+		{
+			return "\n\tError, Usage:" + m_cmdList["wifisync"]->help() + "\n\n";
+		}
+		std::string l_deviceID = l_parameterlist[1];
+
+		l_controlResult = m_euAndlinkPlugin->triggerWiFiParameterSyncControl(l_deviceID);
+	}
 	if(true == l_controlResult)
 	{
 		return "\n\tTrigger " + l_cmd + " success\n\n";

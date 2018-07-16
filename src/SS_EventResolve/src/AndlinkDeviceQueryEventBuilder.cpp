@@ -7,31 +7,31 @@
 #include "AndlinkDeviceEventBuilder.hpp"
 #include "RandomGenerator.hpp"
 
-std::string AndlinkDeviceEventBuilder::buildApConfigInfoQueryRequest(std::string p_deviceid)
+std::pair<std::string, std::string> AndlinkDeviceEventBuilder::buildApConfigInfoQueryRequest(std::string& p_deviceid)
 {
 	RandomGenerator l_generator;
 	std::string ID = l_generator.generatorRandomNumberString(16);
-	return buildAndlinkDeviceApConfigInfoQueryReq(ID);
+	return std::pair<std::string, std::string>(ID, buildAndlinkDeviceApConfigInfoQueryReq(ID));
 }
 
-std::string AndlinkDeviceEventBuilder::buildSTAInfoQueryRequest(std::string p_deviceid)
+std::pair<std::string, std::string> AndlinkDeviceEventBuilder::buildSTAInfoQueryRequest(std::string& p_deviceid)
 {
 	RandomGenerator l_generator;
 	std::string ID = l_generator.generatorRandomNumberString(16);
-	return buildAndlinkDeviceSTAInfoQueryReq(ID);
+	return std::pair<std::string, std::string>(ID, buildAndlinkDeviceSTAInfoQueryReq(ID));
 }
 
-std::string AndlinkDeviceEventBuilder::buildUplinkStatusQueryRequest(std::string p_deviceid)
+std::pair<std::string, std::string> AndlinkDeviceEventBuilder::buildUplinkStatusQueryRequest(std::string& p_deviceid)
 {
 	RandomGenerator l_generator;
 	std::string ID = l_generator.generatorRandomNumberString(16);
-	return buildAndlinkDeviceUplinkStatusQueryReq(ID);
+	return std::pair<std::string, std::string>(ID, buildAndlinkDeviceUplinkStatusQueryReq(ID));
 }
 
-std::string AndlinkDeviceEventBuilder::buildWiFiStatsQueryRequest(std::string p_deviceid)
+std::pair<std::string, std::string> AndlinkDeviceEventBuilder::buildWiFiStatsQueryRequest(std::string& p_deviceid)
 {
 	RandomGenerator l_generator;
 	std::string ID = l_generator.generatorRandomNumberString(16);
-	return buildAndlinkDeviceWiFiStatsQueryReq(ID);
+	return std::pair<std::string, std::string>(ID, buildAndlinkDeviceWiFiStatsQueryReq(ID));
 }
 

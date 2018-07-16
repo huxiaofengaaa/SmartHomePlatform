@@ -24,25 +24,25 @@ public:
 	std::string buildPlugIuRequest(std::string p_deviceid, std::string p_host, int p_port);
 	std::string buildDisconnectRequest(std::string p_deviceid);
 
+	typedef std::pair<std::string, std::string> DownlinkRequest;
 	// query
-	std::string buildApConfigInfoQueryRequest(std::string p_deviceid);
-	std::string buildSTAInfoQueryRequest(std::string p_deviceid);
-	std::string buildUplinkStatusQueryRequest(std::string p_deviceid);
-	std::string buildWiFiStatsQueryRequest(std::string p_deviceid);
+	DownlinkRequest buildApConfigInfoQueryRequest(std::string& p_deviceid);
+	DownlinkRequest buildSTAInfoQueryRequest(std::string& p_deviceid);
+	DownlinkRequest buildUplinkStatusQueryRequest(std::string& p_deviceid);
+	DownlinkRequest buildWiFiStatsQueryRequest(std::string& p_deviceid);
 
 	// control - led
-	typedef std::pair<std::string, std::string> ControlRequest;
-	ControlRequest buildLEDControlRequest(std::string p_deviceid, bool p_turnOn);
-	ControlRequest buildMacFilterRequest(std::string p_deviceid, bool p_enable, int p_policy, std::string p_entry);
-	ControlRequest buildRadioPowerRequest(std::string p_deviceid, int p_select, int p_percent);
-	ControlRequest buildRebootRequest(std::string p_deviceid);
-	ControlRequest buildChannelReselectRequest(std::string p_deviceid, int p_select);
-	ControlRequest buildRoamingConfigRequest(std::string p_deviceid, bool p_switch, int p_val1 = 0, int p_val2 = 0);
-	ControlRequest buildUnbindRequest(std::string p_deviceid);
-	ControlRequest buildUpgradeRequest(std::string p_deviceid, int p_type, std::string p_url, bool p_restart);
-	ControlRequest buildWiFiParameterSyncRequest(std::string p_deviceid);
-	ControlRequest buildWiFiSwitchRequest(std::string p_deviceid, bool p_turnOn, int p_select);
-	ControlRequest buildWPSRequest(std::string p_deviceid, int p_select);
+	DownlinkRequest buildLEDControlRequest(std::string p_deviceid, bool p_turnOn);
+	DownlinkRequest buildMacFilterRequest(std::string p_deviceid, bool p_enable, int p_policy, std::string p_entry);
+	DownlinkRequest buildRadioPowerRequest(std::string p_deviceid, int p_select, int p_percent);
+	DownlinkRequest buildRebootRequest(std::string p_deviceid);
+	DownlinkRequest buildChannelReselectRequest(std::string p_deviceid, int p_select);
+	DownlinkRequest buildRoamingConfigRequest(std::string p_deviceid, bool p_switch, int p_val1 = 0, int p_val2 = 0);
+	DownlinkRequest buildUnbindRequest(std::string p_deviceid);
+	DownlinkRequest buildUpgradeRequest(std::string p_deviceid, int p_type, std::string p_url, bool p_restart);
+	DownlinkRequest buildWiFiParameterSyncRequest(std::string p_deviceid);
+	DownlinkRequest buildWiFiSwitchRequest(std::string p_deviceid, bool p_turnOn, int p_select);
+	DownlinkRequest buildWPSRequest(std::string p_deviceid, int p_select);
 
 private:
 	std::shared_ptr<UeContextHolderAndlink> m_ueContextHolder;

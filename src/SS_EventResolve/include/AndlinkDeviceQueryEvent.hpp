@@ -65,6 +65,13 @@ struct Interface56_CommonQuery_Req
 
 struct Interface56_ApConfigInfo_Resp
 {
+	Interface56_ApConfigInfo_Resp()
+	{
+		Radios = NULL;
+		RadioNumber = 0;
+		Configurations = NULL;
+		ConfigurationNumber = 0;
+	}
 	std::string ID;
 	std::string deviceId;
 	int respCode;
@@ -111,6 +118,11 @@ struct Interface56_UplinkStatus_Resp
 
 struct Interface56_STAInfo_Resp
 {
+	Interface56_STAInfo_Resp()
+	{
+		Devices = NULL;
+		DevicesNumber = 0;
+	}
 	std::string ID;
 	std::string deviceId;
 	int respCode;
@@ -122,6 +134,11 @@ struct Interface56_STAInfo_Resp
 
 struct Interface56_WiFiStats_Resp
 {
+	Interface56_WiFiStats_Resp()
+	{
+		Status = NULL;
+		StatusNumber = 0;
+	}
 	std::string ID;
 	std::string deviceId;
 	int respCode;

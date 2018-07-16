@@ -33,6 +33,13 @@ public:
 	bool triggerQuery(std::string p_deviceid, std::string p_param);
 	bool triggerReboot(std::string p_deviceid);
 	bool triggerLEDControl(std::string p_deviceid, bool p_turnOn);
+	bool triggerPowerControl(std::string p_deviceid, int p_select, int p_percent);
+	bool triggerMACFilterControl(std::string p_deviceid, bool p_enable, int p_policy, std::string p_entry);
+	bool triggerChannelReselectControl(std::string p_deviceid, int p_select);
+	bool triggerRoamingConfigControl(std::string p_deviceid, bool p_switch, int p_val1, int p_val2);
+	bool triggerWiFiSwitchControl(std::string p_deviceid, bool p_turnOn, int p_select);
+	bool triggerWPSControl(std::string p_deviceid, int p_select);
+	bool triggerWiFiParameterSyncControl(std::string p_deviceid);
 
 private:
 	bool excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
