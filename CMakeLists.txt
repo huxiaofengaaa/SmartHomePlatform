@@ -10,4 +10,5 @@ set(CMAKE_C_FLAGS "-g ${CMAKE_C_FLAGS}")
 
 add_subdirectory(library)
 add_subdirectory(src)
+add_subdirectory(Client)
 
