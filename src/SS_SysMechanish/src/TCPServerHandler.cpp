@@ -67,39 +67,69 @@ bool AsynTCPServerHandler::delClient(int p_fd)
 	return true;
 }
 
+void AsynTCPServerHandler::updateClient()
+{
+	m_clientInfoMutex.lock();
+	if(m_clientReadyToDel.empty() == false)
+	{
+		for(auto l_err : m_clientReadyToDel)
+		{
+			m_closecallback(m_clientInfoMap[l_err]);
+			close(l_err);
+			m_clientInfoMap.erase(l_err);
+		}
+	}
+	m_clientReadyToDel.clear();
+
+	if(m_clientReadyToAdd.empty() == false)
+	{
+		for(auto i = 0; i < m_clientReadyToAdd.size() ; i++)
+		{
+			m_clientInfoMap.erase(m_clientReadyToAdd[i]->m_sockfd);
+			m_clientInfoMap.insert({m_clientReadyToAdd[i]->m_sockfd, m_clientReadyToAdd[i]});
+		}
+		m_clientReadyToAdd.clear();
+	}
+	m_clientInfoMutex.unlock();
+}
+
+bool AsynTCPServerHandler::readDataFromClient(int p_sockfd)
+{
+	char readbuffer[1024 * 8] = { 0 };
+	memset(readbuffer, 0, sizeof(readbuffer));
+	ssize_t l_nready = recv(p_sockfd, readbuffer, sizeof(readbuffer)-1, 0);
+	if(l_nready <= 0)
+	{
+		return false;
+	}
+	else
+	{
+		struct sockaddr_in l_cliaddr;
+		socklen_t l_len = sizeof(struct sockaddr_in);
+		std::string l_peerHost;
+		int l_peerPort = -1;
+		if(0 == getpeername(p_sockfd, (struct sockaddr*)&l_cliaddr, &l_len))
+		{
+			l_peerHost = inet_ntoa(l_cliaddr.sin_addr);
+			l_peerPort = ntohs(l_cliaddr.sin_port);
+		}
+
+		auto l_data = std::make_shared<EventTypeTCPClientDataObject>(
+				p_sockfd, l_peerHost, l_peerPort, std::string(readbuffer));
+		m_datacallback(l_data);
+		return true;
+	}
+}
+
 void AsynTCPServerHandler::mainloop()
 {
-	LOG(INFO) << "AsynUDPServerHandler::mainloop start";
-
+	LOG(INFO) << "AsynTCPServerHandler::mainloop start";
 	struct pollfd* fds = NULL;
 	int l_fdsbufferSize = 0;
 
-	char readbuffer[1024 * 8] = { 0 };
-
 	while(m_threadExitFlag == false)
 	{
-		m_clientInfoMutex.lock();
-		if(m_clientReadyToDel.empty() == false)
-		{
-			for(auto l_err : m_clientReadyToDel)
-			{
-				m_closecallback(m_clientInfoMap[l_err]);
-				close(l_err);
-				m_clientInfoMap.erase(l_err);
-			}
-		}
-		m_clientReadyToDel.clear();
-
-		if(m_clientReadyToAdd.empty() == false)
-		{
-			for(auto i = 0; i < m_clientReadyToAdd.size() ; i++)
-			{
-				m_clientInfoMap.erase(m_clientReadyToAdd[i]->m_sockfd);
-				m_clientInfoMap.insert({m_clientReadyToAdd[i]->m_sockfd, m_clientReadyToAdd[i]});
-			}
-			m_clientReadyToAdd.clear();
-		}
-		m_clientInfoMutex.unlock();
+		updateClient();
 
 		if(m_clientInfoMap.empty() == true)
 		{
@@ -113,6 +143,7 @@ void AsynTCPServerHandler::mainloop()
 			fds = (struct pollfd*)realloc(fds, sizeof(struct pollfd) * l_clientSize);
 			if(fds == NULL)
 			{
+				LOG(INFO) << "AsynTCPServerHandler::mainloop - realloc failed";
 				continue;
 			}
 			l_fdsbufferSize = l_clientSize;
@@ -137,32 +168,16 @@ void AsynTCPServerHandler::mainloop()
 			{
 				if(fds[i].revents & POLLERR)
 				{
+					LOG(INFO) << "AsynTCPServerHandler::mainloop - " << fds[i].fd << " is POLLERR";
 					delClient(fds[i].fd);
 					continue;
 				}
 				if(fds[i].revents & POLLRDNORM)
 				{
-					memset(readbuffer, 0, sizeof(readbuffer));
-					ssize_t l_nready = recv(fds[i].fd, readbuffer, sizeof(readbuffer)-1, 0);
-					if(l_nready <= 0)
+					if(false == readDataFromClient(fds[i].fd))
 					{
+						LOG(INFO) << "AsynTCPServerHandler::mainloop - readDataFromClient failed";
 						delClient(fds[i].fd);
-					}
-					else
-					{
-						struct sockaddr_in l_cliaddr;
-						socklen_t l_len = sizeof(struct sockaddr_in);
-						std::string l_peerHost;
-						int l_peerPort = -1;
-						if(0 == getpeername(fds[i].fd, (struct sockaddr*)&l_cliaddr, &l_len))
-						{
-							l_peerHost = inet_ntoa(l_cliaddr.sin_addr);
-							l_peerPort = ntohs(l_cliaddr.sin_port);
-						}
-
-						auto l_data = std::make_shared<EventTypeTCPClientDataObject>(
-								fds[i].fd, l_peerHost, l_peerPort, std::string(readbuffer));
-						m_datacallback(l_data);
 					}
 				}
 			}
@@ -175,7 +190,7 @@ void AsynTCPServerHandler::mainloop()
 		fds = NULL;
 	}
 
-	LOG(INFO) << "AsynUDPServerHandler::mainloop exit";
+	LOG(INFO) << "AsynTCPServerHandler::mainloop exit";
 }
 
 ssize_t AsynTCPServerHandler::writeTCPServerString(std::shared_ptr<EventTypeTCPClientDataObject> p_msg)

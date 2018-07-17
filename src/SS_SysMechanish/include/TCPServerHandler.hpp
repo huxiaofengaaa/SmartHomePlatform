@@ -45,6 +45,8 @@ public:
 	bool delClient(int p_fd);
 private:
 	void mainloop();
+	void updateClient();
+	bool readDataFromClient(int p_sockfd);
 
 	std::thread m_thread;
 	std::function<bool(std::shared_ptr<EventTypeTCPClientDataObject>)> m_datacallback;

@@ -24,22 +24,22 @@ public:
 		  m_excutionUnitExitFlag(false),
 		  m_callback(p_callback)
 	{
-		LOG(INFO) << "construct ExcutionUnit " << m_ExcutionUnitName;
+		LOG(INFO) << "construct ExcutionUnit " << m_ExcutionUnitName << " " << m_threadNumber;
 	}
 	virtual ~ExcutionUnit()
 	{
-		LOG(INFO) << "de-construct ExcutionUnit " << m_ExcutionUnitName;
+		LOG(INFO) << "de-construct ExcutionUnit " << m_ExcutionUnitName << " " << m_threadNumber;
 	}
 
 	bool startExcutionUnit()
 	{
-		LOG(INFO) << "start ExcutionUnit " << m_ExcutionUnitName;
 		std::function<void()> l_excutionUnitTask = std::bind(&ExcutionUnit::excutionMainLoop, this);
 		for(auto i = 0 ; i < m_threadNumber ; i++)
 		{
 			std::thread l_thread(l_excutionUnitTask);
 			m_threadList.push_back(std::move(l_thread));
 		}
+		LOG(INFO) << "start ExcutionUnit " << m_ExcutionUnitName << " " << m_threadNumber;
 		return true;
 	}
 
@@ -53,7 +53,7 @@ public:
 			(*l_thread).join();
 		}
 		m_threadList.clear();
-		LOG(INFO) << "shutdown ExcutionUnit " << m_ExcutionUnitName;
+		LOG(INFO) << "shutdown ExcutionUnit " << m_ExcutionUnitName << " " << m_threadNumber;
 	}
 
 	bool addDataObject(DataType p_obj)
@@ -94,7 +94,7 @@ public:
 private:
 	void excutionMainLoop()
 	{
-		LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop start";
+		//LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop start";
 		std::function<bool()> l_checker = std::bind(&ExcutionUnit::isDataObjectNotEmpty, this);
 		while(m_excutionUnitExitFlag == false)
 		{
@@ -104,7 +104,7 @@ private:
 				m_callback(l_eventObj);
 			}
 		}
-		LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop exit";
+		//LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop exit";
 	}
 
 	std::vector<DataType> m_dataQueue;

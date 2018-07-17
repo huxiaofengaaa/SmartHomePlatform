@@ -32,10 +32,12 @@ bool AsynTCPListenerHandler::runTCPListener()
 	m_sockfd = createTCPServerSocket(m_host, m_port, m_blockListNumber);
 	if(m_sockfd < 0)
 	{
+		LOG(INFO) << "runTCPListener - create tcp server socket failed";
 		return false;
 	}
 	std::function<void()> l_threadTask = std::bind(&AsynTCPListenerHandler::mainloop, this);
 	m_thread = std::move(std::thread(l_threadTask));
+	LOG(INFO) << "runTCPListener - success";
 	return true;
 }
 
@@ -47,12 +49,13 @@ void AsynTCPListenerHandler::shutdownTCPListener()
 		int l_tmpSocket = triggerMainloopAcceptNotBlock(m_host, m_port);
 		if(l_tmpSocket >= 0)
 		{
+			LOG(INFO) << "shutdownTCPListener - try to wait thread exit";
 			m_thread.join();
 			close(l_tmpSocket);
 		}
 		else
 		{
-			LOG(INFO) << "AsynTCPListenerHandler::shutdownTCPListener triggerMainloopAcceptNotBlock failed";
+			LOG(INFO) << "shutdownTCPListener - triggerMainloopAcceptNotBlock failed";
 		}
 		if(m_sockfd > 0)
 		{
@@ -62,7 +65,7 @@ void AsynTCPListenerHandler::shutdownTCPListener()
 	}
 	catch(std::exception& e)
 	{
-		LOG(INFO) << "AsynUDPServerHandler::shutdownUDPServer catch exception, " << e.what();
+		LOG(INFO) << "shutdownTCPListener - catch exception, " << e.what();
 	}
 	LOG(INFO) << "AsynTCPListenerHandler shutdown";
 }
@@ -82,6 +85,14 @@ void AsynTCPListenerHandler::mainloop()
 			std::string l_ip = inet_ntoa(cli_addr.sin_addr);
 			m_callback(std::make_shared<ClientConnectInfo>(l_clisockfd, l_ip, l_port));
 		}
+		else if(m_threadExitFlag == false)
+		{
+			break;
+		}
+		else if(l_clisockfd < 0)
+		{
+			LOG(INFO) << "AsynTCPListenerHandler::mainloop - accept failed";
+		}
 	}
 	LOG(INFO) << "AsynTCPListenerHandler main loop exit";
 }
@@ -91,6 +102,7 @@ int AsynTCPListenerHandler::createTCPServerSocket(std::string p_host, int p_port
 	int l_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(l_socketfd < 0)
 	{
+		LOG(INFO) << "createTCPServerSocket - create socket failed";
 		return -1;
 	}
 
@@ -101,12 +113,14 @@ int AsynTCPListenerHandler::createTCPServerSocket(std::string p_host, int p_port
 	ser_addr.sin_addr.s_addr = inet_addr(p_host.c_str());
 	if(0 != bind(l_socketfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
+		LOG(INFO) << "createTCPServerSocket - bind network address failed," << p_host << ":" << p_port;
 		close(l_socketfd);
 		return -1;
 	}
 
 	if(0 != listen(l_socketfd, p_blockNumber))
 	{
+		LOG(INFO) << "createTCPServerSocket - listen socket failed, " << l_socketfd << ", " << p_blockNumber;
 		close(l_socketfd);
 		return -1;
 	}
@@ -118,6 +132,7 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 	int l_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(l_socketfd < 0)
 	{
+		LOG(INFO) << "triggerMainloopAcceptNotBlock - create socket failed";
 		return -1;
 	}
 	struct sockaddr_in ser_addr;
@@ -128,9 +143,11 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 
 	if(0 != connect(l_socketfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
+		LOG(INFO) << "triggerMainloopAcceptNotBlock - socket connect failed";
 		close(l_socketfd);
 		return -1;
 	}
+	LOG(INFO) << "triggerMainloopAcceptNotBlock - success, " << p_host << ":" << p_port;
 	return l_socketfd;
 }
 
