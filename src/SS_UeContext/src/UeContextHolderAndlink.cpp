@@ -73,12 +73,14 @@ bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceID,
 			l_uecontext->peerTCPHost = p_host;
 			l_uecontext->peerTCPPort = p_port;
 			l_uecontext->TCPSocketfd = p_sockfd;
+			l_uecontext->isPlugIn = true;
 		}
 		else
 		{
 			l_uecontext->peerUDPHost = p_host;
 			l_uecontext->peerUDPPort = p_port;
 			l_uecontext->UDPSocketfd = p_sockfd;
+			l_uecontext->isPlugIn = false;
 		}
 		return true;
 	}
@@ -104,80 +106,51 @@ bool UeContextHolderAndlink::setOnlineResponse(std::string p_deviceID,
 		struct Interface56_Online_Resp& resp, bool isSuccess)
 {
 	auto l_uecontext = getRef(p_deviceID);
-	if(l_uecontext)
+	if(l_uecontext && true == isSuccess)
 	{
-		if(true == isSuccess)
-		{
-			CalendarClock clock;
-			resp.timestamp = clock.getTimeStamp();
-			resp.encrypt = l_uecontext->encrypt;
-			resp.ChallengeCode = l_uecontext->ChallengeCode;
-			l_uecontext->isOnline = true;
-		}
-		else
-		{
-			resp.respCode = -5;
-			resp.ServerIP = m_host + std::string(":") + std::to_string(m_port);
-			l_uecontext->isOnline = false;
-		}
-		return true;
+		CalendarClock clock;
+		resp.timestamp = clock.getTimeStamp();
+		resp.encrypt = l_uecontext->encrypt;
+		resp.ChallengeCode = l_uecontext->ChallengeCode;
 	}
-	return false;
+	else
+	{
+		resp.respCode = -5;
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port);
+	}
+	return true;
 }
 
-bool UeContextHolderAndlink::setAuthResponse(std::string p_deviceMAC, std::string p_deviceCheckSN,
-		struct Interface56_Auth_Resp& resp)
+bool UeContextHolderAndlink::setAuthResponse(bool p_result, struct Interface56_Auth_Resp& resp)
 {
-	auto l_deviceID = getDeviceIDByMAC(p_deviceMAC);
-	auto l_uecontext = getRef(l_deviceID);
-	if(l_uecontext)
+	if(p_result == true)
 	{
 		resp.respCode = 2;
 		resp.heartBeatTime = 15;
 		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
-		l_uecontext->CheckSN = p_deviceCheckSN;
-		l_uecontext->isAuth = true;
-		return true;
 	}
 	else
 	{
 		resp.respCode = -2;
 		resp.MessageServer = m_host + std::string(":") + std::to_string(m_port);
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
-		l_uecontext->isAuth = false;
 	}
-	return false;
+	return true;
 }
 
-bool UeContextHolderAndlink::setHeartbeatResponse(std::string p_deviceID,
-		std::string p_deviceMAC, std::string p_deviceIPAddr,
-		struct Interface56_Heartbeat_Resp& resp)
+bool UeContextHolderAndlink::setHeartbeatResponse(bool p_result, struct Interface56_Heartbeat_Resp& resp)
 {
-	bool l_result = true;
-	auto l_uecontext = getRef(p_deviceID);
-	if(!l_uecontext || l_uecontext->deviceMac != p_deviceMAC)
-	{
-		l_result = false;
-	}
-	if(l_result == true)
+	if(p_result == true)
 	{
 		resp.respCode = 0;
 		resp.heartBeatTime = 15;
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
-
-		CalendarClock clock;
-		l_uecontext->lastHeartbeat = clock.getTimeStamp();
-		l_uecontext->ipAddress = p_deviceIPAddr;
 	}
 	else
 	{
 		resp.respCode = -5;
 		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
-		if(l_uecontext)
-		{
-			l_uecontext->lastHeartbeat = 0;
-		}
 	}
 	return false;
 }
@@ -216,9 +189,6 @@ std::string UeContextHolderAndlink::DeviceRegister(std::string p_deviceMac,
 		l_uecontext->andlinkToken = generatorAndlinkToken();
 
 		l_uecontext->isRegister = true;
-		l_uecontext->isOnline = false;
-		l_uecontext->isAuth = false;
-		l_uecontext->isPlugIn = false;
 		return l_currentDeviceID;
 	}
 }
@@ -255,10 +225,35 @@ bool UeContextHolderAndlink::DeviceOnline(struct Interface56_Online_Req& p_onlin
 	l_uecontext->encrypt = 0;
 	l_uecontext->ChallengeCode = l_generator.generatorRandomNumberString(16);
 
-	l_uecontext->isRegister = true;
 	l_uecontext->isOnline = true;
-	l_uecontext->isAuth = false;
-	l_uecontext->isPlugIn = false;
+	return true;
+}
+
+bool UeContextHolderAndlink::DeviceAuth(std::string p_deviceMAC, std::string p_CheckSN)
+{
+	std::string l_deviceID = getDeviceIDByMAC(p_deviceMAC);
+	if(l_deviceID.empty() == true)
+	{
+		return false;
+	}
+	auto l_uecontext = getRef(l_deviceID);
+	l_uecontext->CheckSN = p_CheckSN;
+	l_uecontext->isAuth = true;
+	return true;
+}
+
+bool UeContextHolderAndlink::DeviceHeartbeat(std::string p_deviceId, std::string p_deviceMAC,
+		std::string p_IPAddr)
+{
+	auto l_uecontext = getRef(p_deviceId);
+	if(!l_uecontext || l_uecontext->deviceMac != p_deviceMAC
+			|| l_uecontext->isDeviceOnline() == false)
+	{
+		return false;
+	}
+	CalendarClock clock;
+	l_uecontext->lastHeartbeat = clock.getTimeStamp();
+	l_uecontext->ipAddress = p_IPAddr;
 	return true;
 }
 

@@ -18,6 +18,11 @@ struct UeContextAndlink
 	}
 	~UeContextAndlink() = default;
 
+	bool isDeviceOnline()
+	{
+		return isRegister && isOnline && isAuth;
+	}
+
 	bool isRegister = false;
 	bool isOnline = false;
 	bool isAuth = false;
