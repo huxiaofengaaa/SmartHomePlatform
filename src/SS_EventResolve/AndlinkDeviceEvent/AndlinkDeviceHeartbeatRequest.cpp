@@ -44,7 +44,7 @@ std::string build_if56_heartbeat_request_msg(struct Interface56_Heartbeat_Req re
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "heartbeat");
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 	cJSON_AddStringToObject(regJs, "MAC", req.MAC.c_str());
 	cJSON_AddStringToObject(regJs, "IPAddr", req.IPAddr.c_str());

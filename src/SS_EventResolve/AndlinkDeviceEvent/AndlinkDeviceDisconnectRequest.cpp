@@ -20,6 +20,10 @@ bool resolve_if56_disconnect_request_msg(std::string msg, struct Interface56_Dis
 		req->RPCMethod = RPCMethod->valuestring;
 		req->ID = ID->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "Disconnect")
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -36,7 +40,7 @@ std::string build_if56_disconnect_request_msg(struct Interface56_Disconnect_Req 
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "Disconnect");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 
 	char* regch = cJSON_Print(regJs);

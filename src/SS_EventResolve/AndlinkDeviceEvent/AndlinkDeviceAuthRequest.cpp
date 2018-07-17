@@ -22,6 +22,10 @@ bool resolve_if56_auth_request_msg(std::string msg, struct Interface56_Auth_Req*
 		req->MAC = MAC->valuestring;
 		req->CheckSN = CheckSN->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "Register")
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -38,7 +42,7 @@ std::string build_if56_auth_request_msg(struct Interface56_Auth_Req req)
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "Register");
 	cJSON_AddStringToObject(regJs, "MAC", req.MAC.c_str());
 	cJSON_AddStringToObject(regJs, "CheckSN", req.CheckSN.c_str());
 

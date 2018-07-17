@@ -78,6 +78,10 @@ bool resolve_if56_online_request_msg(std::string msg, struct Interface56_Online_
 		req->SyncCode = SyncCode->valuestring;
 
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "boot")
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -94,7 +98,7 @@ std::string build_if56_online_request_msg(struct Interface56_Online_Req req)
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "boot");
 	cJSON_AddStringToObject(regJs, "DevRND", req.DevRND.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 	cJSON_AddStringToObject(regJs, "deviceMac", req.deviceMac.c_str());

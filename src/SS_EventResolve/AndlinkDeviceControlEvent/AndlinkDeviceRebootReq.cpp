@@ -37,6 +37,10 @@ bool resolveAndlinkDeviceRebootReq(std::string msg, struct Interface56_Reboot_Re
 		req->deviceId = deviceId->valuestring;
 		req->ControlType = ControlType->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "Reboot")
+		{
+			return false;
+		}
 		return true;
 	}
 

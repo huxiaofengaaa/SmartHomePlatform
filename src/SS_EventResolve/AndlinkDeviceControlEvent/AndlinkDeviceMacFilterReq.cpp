@@ -41,6 +41,10 @@ bool resolveAndlinkDeviceMacFilterReq(std::string msg, struct Interface56_MacFil
 		req->MacFilterPolicy = MacFilterPolicy->valueint;
 		req->MacFilterEntries = MacFilterEntries->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "MacFilter")
+		{
+			return false;
+		}
 		return true;
 	}
 

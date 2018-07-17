@@ -37,6 +37,10 @@ bool resolveAndlinkDeviceWPSReq(std::string msg, struct Interface56_WPS_Req* req
 		req->deviceId = deviceId->valuestring;
 		req->Radio = Radio->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "WPS")
+		{
+			return false;
+		}
 		return true;
 	}
 

@@ -41,6 +41,10 @@ bool resolveAndlinkDeviceRoamingConfigReq(std::string msg, struct Interface56_Ro
 		req->LowRSSI24G = LowRSSI24G->valueint;
 		req->LowRSSI5G = LowRSSI5G->valueint;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "RoamingConfig")
+		{
+			return false;
+		}
 		return true;
 	}
 

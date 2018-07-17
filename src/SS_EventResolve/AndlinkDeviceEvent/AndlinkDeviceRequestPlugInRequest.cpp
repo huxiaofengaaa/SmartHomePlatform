@@ -30,6 +30,10 @@ bool resolve_if56_requestPlugIn_request_msg(std::string msg, struct Interface56_
 		req->ServerAddr = ServerAddr->valuestring;
 		req->ServerPort = ServerPort->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "RequestPlug-in")
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -46,7 +50,7 @@ std::string build_if56_requestPlugIn_request_msg(struct Interface56_RequestPlugI
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", req.RPCMethod.c_str());
+	cJSON_AddStringToObject(regJs, "RPCMethod", "RequestPlug-in");
 	cJSON_AddStringToObject(regJs, "Key", req.Key.c_str());
 	cJSON_AddStringToObject(regJs, "ServerAddr", req.ServerAddr.c_str());
 	cJSON_AddStringToObject(regJs, "ServerPort", req.ServerPort.c_str());

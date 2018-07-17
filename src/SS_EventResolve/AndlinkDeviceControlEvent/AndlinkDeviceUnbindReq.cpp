@@ -31,6 +31,10 @@ bool resolveAndlinkDeviceUnbindReq(std::string msg, struct Interface56_Unbind_Re
 		req->deviceId = deviceId->valuestring;
 		req->childDeviceId = childDeviceId->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "unbind")
+		{
+			return false;
+		}
 		return true;
 	}
 

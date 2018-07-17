@@ -38,6 +38,10 @@ bool resolveAndlinkDeviceRadioConfigReq(std::string msg, struct Interface56_Radi
 		req->Radio = Radio->valuestring;
 		req->TransmitPower = TransmitPower->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "RadioConfig")
+		{
+			return false;
+		}
 		return true;
 	}
 

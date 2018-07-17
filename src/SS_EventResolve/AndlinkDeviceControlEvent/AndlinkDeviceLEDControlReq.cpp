@@ -36,6 +36,10 @@ bool resolveAndlinkDeviceLEDControlReq(std::string msg, struct Interface56_LEDCo
 		req->deviceId = deviceId->valuestring;
 		req->LEDOnOff = LEDOnOff->valueint;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "LEDControl")
+		{
+			return false;
+		}
 		return true;
 	}
 

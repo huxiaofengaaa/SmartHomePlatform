@@ -46,6 +46,10 @@ bool resolveAndlinkDeviceUpgradeReq(std::string msg, struct Interface56_Upgrade_
 		req->fileUrl = fileUrl->valuestring;
 		req->downMode = downMode->valueint;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "file")
+		{
+			return false;
+		}
 		return true;
 	}
 

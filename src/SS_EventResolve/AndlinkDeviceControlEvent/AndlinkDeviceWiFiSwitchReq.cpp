@@ -38,6 +38,10 @@ bool resolveAndlinkDeviceWiFiSwitchReq(std::string msg, struct Interface56_WiFiS
 		req->Radio = Radio->valuestring;
 		req->Enable = Enable->valueint;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "WiFiSwitch")
+		{
+			return false;
+		}
 		return true;
 	}
 

@@ -73,6 +73,10 @@ bool resolveAndlinkDeviceWiFiParameterSyncReq(std::string msg, struct Interface5
 			}
 		}
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "WiFiParameterSync")
+		{
+			return false;
+		}
 		return true;
 	}
 
