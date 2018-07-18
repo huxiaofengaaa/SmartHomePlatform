@@ -33,6 +33,15 @@ private:
 
 	bool deviceDisconnect() override;
 
+	std::string getRegisterReq();
+	std::string getOnlineReq();
+	std::string getAuthReq();
+	std::string getHeartbeatReq();
+	bool checkerRegisterResp(std::string p_resp);
+	bool checkerOnlineResp(std::string p_resp);
+	bool checkerAuthResp(std::string p_resp);
+	bool checkerHeartbeatResp(std::string p_resp);
+
 	bool m_exitFlag;
 	DeviceDataStore m_deviceDataStore;
 };
