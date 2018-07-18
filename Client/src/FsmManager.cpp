@@ -7,6 +7,9 @@ FsmManager::FsmManager(): m_currentState(FsmManagerStates::STATE_REGISTER)
 {
 	m_heartbeatInterval = 15;
 	m_lastSuccessHeartbeat = 0;
+
+	m_pluginRetryMax = 5;
+	m_pluginRetry = 0;
 }
 
 FsmManager::~FsmManager()
@@ -33,6 +36,9 @@ std::string FsmManager::getCurrentFsmState()
 	case FsmManagerStates::STATE_PLUGIN:
 		return "FsmManagerStates::STATE_PLUGIN";
 
+	case FsmManagerStates::STATE_PLUGIN_RESET:
+		return "FsmManagerStates::STATE_PLUGIN_RESET";
+
 	case FsmManagerStates::STATE_PLUGIN_ONLINE:
 		return "FsmManagerStates::STATE_PLUGIN_ONLINE";
 
@@ -56,33 +62,44 @@ void FsmManager::setHeartbeatIntervalValue(int p_interval)
 	m_heartbeatInterval = p_interval;
 }
 
-bool FsmManager::runFsmManager()
+void FsmManager::runFsmManager()
 {
+	printf("%s\n", getCurrentFsmState().c_str());
 	switch(m_currentState)
 	{
 	case FsmManagerStates::STATE_REGISTER:
 		if(true == deviceRegister())
 		{
 			m_currentState = FsmManagerStates::STATE_ONLINE;
-			return true;
 		}
-		return false;
+		else
+		{
+			printf("register failed\n");
+			sleep(1);
+		}
+		break;
 	case FsmManagerStates::STATE_ONLINE:
 		if(true == deviceOnline())
 		{
 			m_currentState = FsmManagerStates::STATE_AUTH;
-			return true;
 		}
-		m_currentState = FsmManagerStates::STATE_REGISTER;
-		return false;
+		else
+		{
+			m_currentState = FsmManagerStates::STATE_REGISTER;
+			printf("online failed\n");
+		}
+		break;
 	case FsmManagerStates::STATE_AUTH:
 		if(true == deviceAuth())
 		{
 			m_currentState = FsmManagerStates::STATE_HEARTBEAT;
-			return true;
 		}
-		m_currentState = FsmManagerStates::STATE_ONLINE;
-		return false;
+		else
+		{
+			m_currentState = FsmManagerStates::STATE_ONLINE;
+			printf("auth failed\n");
+		}
+		break;
 	case FsmManagerStates::STATE_HEARTBEAT:
 		if(time(NULL) < (m_lastSuccessHeartbeat + m_heartbeatInterval))
 		{
@@ -100,70 +117,108 @@ bool FsmManager::runFsmManager()
 			{
 				m_currentState = FsmManagerStates::STATE_PLUGIN;
 			}
-			return l_downlinkResult;
 		}
-		if(true == deviceHeartbeat())
+		else
 		{
-			m_lastSuccessHeartbeat = time(NULL);
-			return true;
+			if(true == deviceHeartbeat())
+			{
+				m_lastSuccessHeartbeat = time(NULL);
+			}
+			else
+			{
+				m_currentState = FsmManagerStates::STATE_ONLINE;
+				printf("heartbeat failed\n");
+			}
 		}
-		m_currentState = FsmManagerStates::STATE_ONLINE;
-		return false;
+		break;
 	case FsmManagerStates::STATE_PLUGIN:
 		if(true == devicePlugin())
 		{
 			m_currentState = FsmManagerStates::STATE_PLUGIN_ONLINE;
-			return true;
+			m_pluginRetry = 0;
 		}
-		m_currentState = FsmManagerStates::STATE_ONLINE;
-		return false;
+		else
+		{
+			m_pluginRetry++;
+			if(m_pluginRetry > m_pluginRetryMax)
+			{
+				m_pluginRetry = 0;
+				m_currentState = FsmManagerStates::STATE_ONLINE;
+				printf("plugin failed\n");
+			}
+			sleep(1);
+		}
+		break;
+	case FsmManagerStates::STATE_PLUGIN_RESET:
+		if(false == deviceDisconnect())
+		{
+			printf("disconnect failed\n");
+		}
+		m_currentState = FsmManagerStates::STATE_PLUGIN;
+		break;
 	case FsmManagerStates::STATE_PLUGIN_ONLINE:
 		if(true == devicePluginOnline())
 		{
 			m_currentState = FsmManagerStates::STATE_PLUGIN_AUTH;
-			return true;
 		}
-		m_currentState = FsmManagerStates::STATE_PLUGIN;
-		return false;
+		else
+		{
+			m_currentState = FsmManagerStates::STATE_PLUGIN_RESET;
+			printf("plugin online failed\n");
+		}
+		break;
 	case FsmManagerStates::STATE_PLUGIN_AUTH:
 		if(true == devicePluginAuth())
 		{
 			m_currentState = FsmManagerStates::STATE_PLUGIN_HEARTBEAT;
-			return true;
 		}
-		m_currentState = FsmManagerStates::STATE_PLUGIN_ONLINE;
-		return false;
+		else
+		{
+			m_currentState = FsmManagerStates::STATE_PLUGIN_RESET;
+			printf("plugin auth failed\n");
+		}
+		break;
 	case FsmManagerStates::STATE_PLUGIN_HEARTBEAT:
 		if(time(NULL) < (m_lastSuccessHeartbeat + m_heartbeatInterval))
 		{
 			long l_startTimeStamps = time(NULL);
 			int l_downlinkResult = deviceTCPDownlinkAction();
 			long l_endTimestamps = time(NULL);
-			if(l_endTimestamps < (l_startTimeStamps + 2))
+			if(l_downlinkResult == false)
 			{
-				sleep(1);
+				if(l_endTimestamps < (l_startTimeStamps + 2))
+				{
+					sleep(1);
+				}
 			}
-			return l_downlinkResult;
+			else
+			{
+				m_currentState = FsmManagerStates::STATE_DISCONNECT;
+			}
 		}
-		if(true == devicePluginHeartbeat())
+		else
 		{
-			m_lastSuccessHeartbeat = time(NULL);
-			return true;
+			if(true == devicePluginHeartbeat())
+			{
+				m_lastSuccessHeartbeat = time(NULL);
+			}
+			else
+			{
+				m_currentState = FsmManagerStates::STATE_PLUGIN_RESET;
+				printf("plugin heartbeat failed\n");
+			}
 		}
-		m_currentState = FsmManagerStates::STATE_PLUGIN_ONLINE;
-		return false;
+		break;
 	case FsmManagerStates::STATE_DISCONNECT:
-		if(true == deviceDisconnect())
+		if(false == deviceDisconnect())
 		{
-			m_currentState = FsmManagerStates::STATE_ONLINE;
-			return true;
+			printf("disconnect failed\n");
 		}
 		m_currentState = FsmManagerStates::STATE_ONLINE;
-		return false;
+		break;
 	default:
 		break;
 	}
-	return false;
 }
 
 

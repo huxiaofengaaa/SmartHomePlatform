@@ -195,29 +195,68 @@ bool ExcutionUnitClient::devicePlugin()
 
 bool ExcutionUnitClient::devicePluginOnline()
 {
-	printf("devicePluginOnline success\n");
-	return true;
+	std::string l_req = getOnlineReq();
+	std::string l_resp = writeAndReadTCPString(l_req);
+	if(l_resp.empty() == true)
+	{
+		return false;
+	}
+	return checkerOnlineResp(l_resp);
 }
 
 bool ExcutionUnitClient::devicePluginAuth()
 {
-	printf("devicePluginAuth success\n");
-	return true;
+	std::string l_req = getAuthReq();
+	std::string l_resp = writeAndReadTCPString(l_req);
+	if(l_resp.empty() == true)
+	{
+		return false;
+	}
+	return checkerAuthResp(l_resp);
 }
 
 bool ExcutionUnitClient::devicePluginHeartbeat()
 {
-	printf("devicePluginHeartbeat success\n");
-	return true;
+	std::string l_req = getHeartbeatReq();
+	std::string l_resp = writeAndReadTCPString(l_req);
+	if(l_resp.empty() == true)
+	{
+		return false;
+	}
+	return checkerHeartbeatResp(l_resp);
 }
 
 bool ExcutionUnitClient::deviceTCPDownlinkAction()
 {
-	return true;
+	std::string l_downlink = readTCPString(2);
+	if(l_downlink.empty() == true)
+	{
+		return false;
+	}
+	struct Interface56_Disconnect_Req l_disconnectReq;
+
+	if(true == resolve_if56_disconnect_request_msg(l_downlink, &l_disconnectReq))
+	{
+		struct Interface56_Disconnect_Resp l_disconnectResp;
+		l_disconnectResp.respCode = 0;
+		l_disconnectResp.ID = l_disconnectReq.ID;
+		std::string l_resp = build_if56_disconnect_response_msg(l_disconnectResp);
+		if(l_resp.empty() == true)
+		{
+			return false;
+		}
+		if(writeTCPString(l_resp) <= 0)
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 bool ExcutionUnitClient::deviceDisconnect()
 {
+	shutDownTCPClient();
 	printf("deviceDisconnect success\n");
 	return true;
 }

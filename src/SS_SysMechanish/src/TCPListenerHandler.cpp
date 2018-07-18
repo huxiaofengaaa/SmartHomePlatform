@@ -93,6 +93,10 @@ void AsynTCPListenerHandler::mainloop()
 		{
 			LOG(INFO) << "AsynTCPListenerHandler::mainloop - accept failed";
 		}
+		else
+		{
+			LOG(INFO) << "AsynTCPListenerHandler::mainloop - unknown state";
+		}
 	}
 	LOG(INFO) << "AsynTCPListenerHandler main loop exit";
 }

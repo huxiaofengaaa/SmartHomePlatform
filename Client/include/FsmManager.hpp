@@ -10,6 +10,7 @@ enum class FsmManagerStates
 	STATE_AUTH,
 	STATE_HEARTBEAT,
 	STATE_PLUGIN,
+	STATE_PLUGIN_RESET,
 	STATE_PLUGIN_ONLINE,
 	STATE_PLUGIN_AUTH,
 	STATE_PLUGIN_HEARTBEAT,
@@ -21,7 +22,7 @@ class FsmManager
 public:
 	FsmManager();
 	virtual ~FsmManager();
-	bool runFsmManager();
+	void runFsmManager();
 	void setHeartbeatIntervalValue(int p_interval);
 	std::string getCurrentFsmState();
 
@@ -41,6 +42,9 @@ private:
 	FsmManagerStates m_currentState;
 	int m_heartbeatInterval;
 	long m_lastSuccessHeartbeat;
+
+	int m_pluginRetryMax;
+	int m_pluginRetry;
 };
 
 #endif /* CLIENT_INCLUDE_FSMMANAGER_HPP_ */
