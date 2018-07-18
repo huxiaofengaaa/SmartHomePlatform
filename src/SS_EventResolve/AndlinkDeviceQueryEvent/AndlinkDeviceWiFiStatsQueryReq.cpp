@@ -22,11 +22,15 @@ bool resolveAndlinkDeviceWiFiStatsQueryReq(std::string msg, struct Interface56_C
 
 	cJSON* RPCMethod = cJSON_GetObjectItem(obj, "RPCMethod");
 	cJSON* ID = cJSON_GetObjectItem(obj, "ID");
-	if(RPCMethod && ID && RPCMethod->valuestring == "WiFiStats")
+	if(RPCMethod && ID)
 	{
 		req->RPCMethod = RPCMethod->valuestring;
 		req->ID = ID->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "WiFiStats")
+		{
+			return false;
+		}
 		return true;
 	}
 	cJSON_Delete(obj);

@@ -22,11 +22,15 @@ bool resolveAndlinkDeviceApConfigInfoQueryReq(std::string msg, struct Interface5
 
 	cJSON* RPCMethod = cJSON_GetObjectItem(obj, "RPCMethod");
 	cJSON* ID = cJSON_GetObjectItem(obj, "ID");
-	if(RPCMethod && ID && RPCMethod->valuestring == "ApConfigInfo")
+	if(RPCMethod && ID)
 	{
 		req->RPCMethod = RPCMethod->valuestring;
 		req->ID = ID->valuestring;
 		cJSON_Delete(obj);
+		if(req->RPCMethod != "ApConfigInfo")
+		{
+			return false;
+		}
 		return true;
 	}
 	cJSON_Delete(obj);
