@@ -110,6 +110,7 @@ bool UeContextHolderAndlink::setOnlineResponse(std::string p_deviceID,
 	{
 		CalendarClock clock;
 		resp.timestamp = clock.getTimeStamp();
+		resp.respCode = 0;
 		resp.encrypt = l_uecontext->encrypt;
 		resp.ChallengeCode = l_uecontext->ChallengeCode;
 	}

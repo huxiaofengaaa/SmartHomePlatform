@@ -4,6 +4,7 @@
 #include "UDPClient.hpp"
 #include "TCPClient.hpp"
 #include "FsmManager.hpp"
+#include "DeviceDataStore.hpp"
 
 #define ANDLINK_SERVER_HOST	"10.96.17.50"
 #define ANDLINK_SERVER_PORT	6887
@@ -29,6 +30,7 @@ private:
 	bool deviceDisconnect() override;
 
 	bool m_exitFlag;
+	DeviceDataStore m_deviceDataStore;
 };
 
 #endif /* CLIENT_INCLUDE_EXCUTIONUNITCLIENT_HPP_ */
