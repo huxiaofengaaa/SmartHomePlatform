@@ -251,6 +251,18 @@ bool ExcutionUnitClient::deviceTCPDownlinkAction()
 		}
 		return true;
 	}
+	else if(true == deviceQueryChecker(l_downlink))
+	{
+
+	}
+	else if(true == deviceControlChecker(l_downlink))
+	{
+
+	}
+	else
+	{
+		printf("unknown downlink message\n");
+	}
 	return false;
 }
 

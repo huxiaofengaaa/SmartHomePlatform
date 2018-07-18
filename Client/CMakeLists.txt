@@ -45,11 +45,15 @@ set(EXTERNAL_SOURCE ${CMAKE_SOURCE_DIR}/src/SS_SysMechanish/src/RandomGenerator.
 add_executable(SmartHomeDevice SmartHomeClient.cpp
                                src/ExcutionUnitClient.cpp
                                src/ExcutionUnitFsmAction.cpp
+                               src/ExcutionUnitQueryChecker.cpp
+                               src/ExcutionUnitControlChecker.cpp
                                src/UDPClient.cpp
                                src/TCPClient.cpp
                                src/FsmManager.cpp
                                src/DeviceDataStore.cpp
                                ${EXTERNAL_SOURCE}
-                               ${ANDLINK_SRCS})
+                               ${ANDLINK_SRCS}
+                               ${ANDLINK_CONTROL_SRCS}
+                               ${ANDLINK_QUERY_SRCS})
 
 #target_link_libraries(SmartHomeDevice eventResolve pthread )

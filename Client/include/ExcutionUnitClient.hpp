@@ -18,6 +18,8 @@ public:
 	void shutdown();
 private:
 	void mainloop();
+	bool deviceControlChecker(std::string p_req);
+	bool deviceQueryChecker(std::string p_req);
 
 	bool deviceRegister() override;
 	bool deviceOnline() override;
