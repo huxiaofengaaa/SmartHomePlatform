@@ -1,6 +1,7 @@
 #include "ExcutionUnitClient.hpp"
 #include "AndlinkDeviceEvent.hpp"
 #include <stdio.h>
+#include <unistd.h>
 
 bool ExcutionUnitClient::deviceRegister()
 {
@@ -111,10 +112,45 @@ bool ExcutionUnitClient::deviceHeartbeat()
 	return true;
 }
 
+bool ExcutionUnitClient::deviceUDPDownlinkAction()
+{
+	std::string l_downlink = readUDPString(2);
+	if(l_downlink.empty() == true)
+	{
+		return false;
+	}
+	struct Interface56_RequestPlugIn_Req l_pluginReq;
+	if(false == resolve_if56_requestPlugIn_request_msg(l_downlink, &l_pluginReq))
+	{
+		return false;
+	}
+
+	struct Interface56_RequestPlugIn_Resp l_pluginResp;
+	l_pluginResp.respCode = 0;
+	std::string l_resp = build_if56_requestPlugIn_response_msg(l_pluginResp);
+	if(l_resp.empty() == true)
+	{
+		return false;
+	}
+	if(writeUDPString(l_resp) <= 0)
+	{
+		return false;
+	}
+	return true;
+}
+
 bool ExcutionUnitClient::devicePlugin()
 {
-	printf("devicePlugin success\n");
-	return true;
+	bool l_devicePluginResult = startTCPClient();
+	if(l_devicePluginResult == true)
+	{
+		printf("devicePlugin success\n");
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool ExcutionUnitClient::devicePluginOnline()
@@ -132,6 +168,11 @@ bool ExcutionUnitClient::devicePluginAuth()
 bool ExcutionUnitClient::devicePluginHeartbeat()
 {
 	printf("devicePluginHeartbeat success\n");
+	return true;
+}
+
+bool ExcutionUnitClient::deviceTCPDownlinkAction()
+{
 	return true;
 }
 

@@ -23,10 +23,14 @@ private:
 	bool deviceOnline() override;
 	bool deviceAuth() override;
 	bool deviceHeartbeat() override;
+	bool deviceUDPDownlinkAction() override;
+
 	bool devicePlugin() override;
 	bool devicePluginOnline() override;
 	bool devicePluginAuth() override;
 	bool devicePluginHeartbeat() override;
+	bool deviceTCPDownlinkAction() override;
+
 	bool deviceDisconnect() override;
 
 	bool m_exitFlag;

@@ -34,6 +34,6 @@ void ExcutionUnitClient::mainloop()
 	while(m_exitFlag == false)
 	{
 		runFsmManager();
-		sleep(1);
+//		sleep(1);
 	}
 }

@@ -1,5 +1,7 @@
 #include "FsmManager.hpp"
 #include <time.h>
+#include <iostream>
+#include <unistd.h>
 
 FsmManager::FsmManager(): m_currentState(FsmManagerStates::STATE_REGISTER)
 {
@@ -84,7 +86,21 @@ bool FsmManager::runFsmManager()
 	case FsmManagerStates::STATE_HEARTBEAT:
 		if(time(NULL) < (m_lastSuccessHeartbeat + m_heartbeatInterval))
 		{
-			return true;
+			long l_startTimeStamps = time(NULL);
+			int l_downlinkResult = deviceUDPDownlinkAction();
+			long l_endTimestamps = time(NULL);
+			if(l_downlinkResult == false)
+			{
+				if(l_endTimestamps < (l_startTimeStamps + 2))
+				{
+					sleep(1);
+				}
+			}
+			else
+			{
+				m_currentState = FsmManagerStates::STATE_PLUGIN;
+			}
+			return l_downlinkResult;
 		}
 		if(true == deviceHeartbeat())
 		{
@@ -120,7 +136,14 @@ bool FsmManager::runFsmManager()
 	case FsmManagerStates::STATE_PLUGIN_HEARTBEAT:
 		if(time(NULL) < (m_lastSuccessHeartbeat + m_heartbeatInterval))
 		{
-			return true;
+			long l_startTimeStamps = time(NULL);
+			int l_downlinkResult = deviceTCPDownlinkAction();
+			long l_endTimestamps = time(NULL);
+			if(l_endTimestamps < (l_startTimeStamps + 2))
+			{
+				sleep(1);
+			}
+			return l_downlinkResult;
 		}
 		if(true == devicePluginHeartbeat())
 		{
