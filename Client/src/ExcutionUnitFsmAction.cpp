@@ -7,9 +7,9 @@ std::string ExcutionUnitClient::getRegisterReq()
 {
 	struct Interface56_Register_Req l_registerReq =
 	{
-			m_deviceDataStore.getDeviceMAC(),
-			m_deviceDataStore.getDeviceType(),
-			m_deviceDataStore.getProductToken(),
+			m_deviceDataStore.m_basicConfig.getDeviceMAC(),
+			m_deviceDataStore.m_basicConfig.getDeviceType(),
+			m_deviceDataStore.m_basicConfig.getProductToken(),
 			m_deviceDataStore.getTimestamps()
 	};
 	return build_if56_register_request_msg(l_registerReq);
@@ -19,10 +19,10 @@ std::string ExcutionUnitClient::getOnlineReq()
 {
 	struct Interface56_Online_Req l_onlineReq;
 	l_onlineReq.deviceId = m_deviceDataStore.getDeviceID();
-	l_onlineReq.deviceMac = m_deviceDataStore.getDeviceMAC();
-	l_onlineReq.deviceType = m_deviceDataStore.getDeviceType();
-	l_onlineReq.firmwareVersion = m_deviceDataStore.getFirmWareVersion();
-	l_onlineReq.softwareVersion = m_deviceDataStore.getSoftWareVersion();
+	l_onlineReq.deviceMac = m_deviceDataStore.m_basicConfig.getDeviceMAC();
+	l_onlineReq.deviceType = m_deviceDataStore.m_basicConfig.getDeviceType();
+	l_onlineReq.firmwareVersion = m_deviceDataStore.m_basicConfig.getFirmWareVersion();
+	l_onlineReq.softwareVersion = m_deviceDataStore.m_basicConfig.getSoftWareVersion();
 	l_onlineReq.ipAddress = m_deviceDataStore.getDeviceIPAddr();
 	l_onlineReq.timestamp = m_deviceDataStore.getTimestamps();
 	return build_if56_online_request_msg(l_onlineReq);
@@ -31,7 +31,7 @@ std::string ExcutionUnitClient::getOnlineReq()
 std::string ExcutionUnitClient::getAuthReq()
 {
 	struct Interface56_Auth_Req l_authReq;
-	l_authReq.MAC = m_deviceDataStore.getDeviceMAC();
+	l_authReq.MAC = m_deviceDataStore.m_basicConfig.getDeviceMAC();
 	l_authReq.CheckSN = m_deviceDataStore.getDeviceCheckSN();
 	return build_if56_auth_request_msg(l_authReq);
 }
@@ -40,7 +40,7 @@ std::string ExcutionUnitClient::getHeartbeatReq()
 {
 	struct Interface56_Heartbeat_Req l_heartbeatReq;
 	l_heartbeatReq.deviceId = m_deviceDataStore.getDeviceID();
-	l_heartbeatReq.MAC = m_deviceDataStore.getDeviceMAC();
+	l_heartbeatReq.MAC = m_deviceDataStore.m_basicConfig.getDeviceMAC();
 	l_heartbeatReq.IPAddr = m_deviceDataStore.getDeviceIPAddr();
 	return build_if56_heartbeat_request_msg(l_heartbeatReq);
 }

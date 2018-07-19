@@ -1,35 +1,5 @@
 #include "DeviceDataStore.hpp"
-#include "RandomGenerator.hpp"
-
-std::string DeviceDataStore::getDeviceMAC()
-{
-	if(m_deviceMAC.empty() == true)
-	{
-		RandomGenerator l_random;
-		m_deviceMAC = l_random.generatorRandomNumberString(12);
-	}
-	return m_deviceMAC;
-}
-
-std::string DeviceDataStore::getDeviceType()
-{
-	if(m_deviceType.empty() == true)
-	{
-		RandomGenerator l_random;
-		m_deviceType = l_random.generatorRandomNumberString(5);
-	}
-	return m_deviceType;
-}
-
-std::string DeviceDataStore::getProductToken()
-{
-	if(m_productToken.empty() == true)
-	{
-		RandomGenerator l_random;
-		m_productToken = l_random.generatorRandomNumberString(32);
-	}
-	return m_productToken;
-}
+#include <stdio.h>
 
 long DeviceDataStore::getTimestamps()
 {
@@ -76,16 +46,6 @@ std::string DeviceDataStore::getDeviceAndlinkToken()
 	return m_andlinkToken;
 }
 
-std::string DeviceDataStore::getFirmWareVersion()
-{
-	return "fhhw1.0.0";
-}
-
-std::string DeviceDataStore::getSoftWareVersion()
-{
-	return "fhsw1.0.0";
-}
-
 void DeviceDataStore::storeDeviceIPAddr(std::string p_value)
 {
 	m_deviceIPAddr = p_value;
@@ -116,12 +76,6 @@ std::string DeviceDataStore::getChallengeCode()
 	return m_ChallengeCode;
 }
 
-std::string DeviceDataStore::getDeviceCheckSN()
-{
-	RandomGenerator l_random;
-	return l_random.generatorRandomNumberString(32);
-}
-
 void DeviceDataStore::storeHeartbeatInterval(int p_value)
 {
 	m_heartbeatInterval = p_value;
@@ -130,4 +84,12 @@ void DeviceDataStore::storeHeartbeatInterval(int p_value)
 int DeviceDataStore::getHeartbeatInterval()
 {
 	return m_heartbeatInterval;
+}
+
+std::string DeviceBasicConfig::getUpTime()
+{
+	long l_upTime = time(NULL) - m_startupTimestamps;
+	char tmp[128] = { 0 };
+	snprintf(tmp, sizeof(tmp), "%d", l_upTime);
+	return std::string(tmp);
 }

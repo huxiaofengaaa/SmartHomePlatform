@@ -78,11 +78,11 @@ SOURCES := ${ANDLINK_CONTROL_SRCS} ${ANDLINK_QUERY_SRCS} ${ANDLINK_SRCS} ${EXTER
 OBJECTS := $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SOURCES)))
 
 CFLAGS += -fPIC -g ${HEARD_PATH}
-CPPFLAGS += -fPIC -g -std=c++0x ${HEARD_PATH}
+CXXFLAGS += -fPIC -g -std=c++0x ${HEARD_PATH}
 
 ifdef CROSS_BUILD
 CFLAGS += -DCROSS_BUILD
-CPPFLAGS += -DCROSS_BUILD
+CXXFLAGS += -DCROSS_BUILD
 endif
 
 .PHONY: clean distclean
@@ -97,7 +97,7 @@ $(LIB):	$(OBJECTS)
 	@$(RANLIB) $@
 
 ${PROGRAM} : SmartHomeClient.cpp $(LIB)
-	$(CXX) $(CPPFLAGS) SmartHomeClient.cpp -o ${PROGRAM} -L . -l andlink56
+	$(CXX) $(CXXFLAGS) SmartHomeClient.cpp -o ${PROGRAM} -L . -l andlink56
 
 clean:
 	@rm -rf $(LIB) ${OBJECTS} ${PROGRAM}
