@@ -6,6 +6,7 @@
 #include <strings.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <stdio.h>
 
 UDPClient::UDPClient(std::string p_host, int p_port): m_host(p_host), m_port(p_port), m_sockfd(-1)
 {

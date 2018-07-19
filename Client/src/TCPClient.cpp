@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
 
 TCPClient::TCPClient(std::string p_host, int p_port): m_host(p_host), m_port(p_port)
 {

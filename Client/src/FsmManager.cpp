@@ -2,6 +2,7 @@
 #include <time.h>
 #include <iostream>
 #include <unistd.h>
+#include <stdio.h>
 
 FsmManager::FsmManager(): m_currentState(FsmManagerStates::STATE_REGISTER)
 {

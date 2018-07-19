@@ -1,5 +1,6 @@
 #include "ExcutionUnitClient.hpp"
 #include "AndlinkDeviceQueryEvent.hpp"
+#include <stdio.h>
 
 bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 {

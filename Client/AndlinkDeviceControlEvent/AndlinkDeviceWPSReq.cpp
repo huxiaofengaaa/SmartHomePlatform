@@ -1,12 +1,12 @@
 /*
- * AndlinkDeviceWiFiSwitchReq.cpp
+ * AndlinkDeviceWPSReq.cpp
  *
  *  Created on: 2018Äê7ÔÂ9ÈÕ
  *      Author: Administrator
  */
 #include "AndlinkDeviceControlEvent.hpp"
 
-bool resolveAndlinkDeviceWiFiSwitchReq(std::string msg, struct Interface56_WiFiSwitch_Req* req)
+bool resolveAndlinkDeviceWPSReq(std::string msg, struct Interface56_WPS_Req* req)
 {
 	if(msg.empty() == true || req == NULL)
 	{
@@ -18,6 +18,7 @@ bool resolveAndlinkDeviceWiFiSwitchReq(std::string msg, struct Interface56_WiFiS
 	{
 		return false;
 	}
+
 	cJSON* RPCMethod = cJSON_GetObjectItem(obj, "RPCMethod");
 	cJSON* ID = cJSON_GetObjectItem(obj, "ID");
 	cJSON* deviceId = cJSON_GetObjectItem(obj, "deviceId");
@@ -28,17 +29,15 @@ bool resolveAndlinkDeviceWiFiSwitchReq(std::string msg, struct Interface56_WiFiS
 		return false;
 	}
 	cJSON* Radio = cJSON_GetObjectItem(data, "Radio");
-	cJSON* Enable = cJSON_GetObjectItem(data, "Enable");
 
-	if(RPCMethod && ID && deviceId && Radio && Enable)
+	if(RPCMethod && ID && deviceId && Radio)
 	{
 		req->RPCMethod = RPCMethod->valuestring;
 		req->ID = ID->valuestring;
 		req->deviceId = deviceId->valuestring;
 		req->Radio = Radio->valuestring;
-		req->Enable = Enable->valueint;
 		cJSON_Delete(obj);
-		if(req->RPCMethod != "WiFiSwitch")
+		if(req->RPCMethod != "WPS")
 		{
 			return false;
 		}
@@ -49,7 +48,7 @@ bool resolveAndlinkDeviceWiFiSwitchReq(std::string msg, struct Interface56_WiFiS
 	return false;
 }
 
-std::string buildAndlinkDeviceWiFiSwitchReq(struct Interface56_WiFiSwitch_Req req)
+std::string buildAndlinkDeviceWPSReq(struct Interface56_WPS_Req req)
 {
 	std::string l_result;
 	cJSON *regJs = cJSON_CreateObject();
@@ -58,7 +57,7 @@ std::string buildAndlinkDeviceWiFiSwitchReq(struct Interface56_WiFiSwitch_Req re
 		return l_result;
 	}
 
-	cJSON_AddStringToObject(regJs, "RPCMethod", "WiFiSwitch");
+	cJSON_AddStringToObject(regJs, "RPCMethod", "WPS");
 	cJSON_AddStringToObject(regJs, "ID", req.ID.c_str());
 	cJSON_AddStringToObject(regJs, "deviceId", req.deviceId.c_str());
 
@@ -70,7 +69,6 @@ std::string buildAndlinkDeviceWiFiSwitchReq(struct Interface56_WiFiSwitch_Req re
 	}
 	cJSON_AddItemToObject(regJs, "data", data);
 	cJSON_AddStringToObject(data, "Radio", req.Radio.c_str());
-	cJSON_AddNumberToObject(data, "Enable", req.Enable);
 
 	char* regch = cJSON_Print(regJs);
 	l_result = std::string(regch);

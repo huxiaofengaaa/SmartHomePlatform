@@ -1,0 +1,103 @@
+SHELL = /bin/sh
+MKDIR = mkdir
+prefix = /users/lib
+RANLIB=ranlib
+includerootdir = $(DIR_ROOT)$(prefix)/include
+librootdir = $(DIR_ROOT)$(prefix)/lib
+
+abs_builddir = $(CUR_PATH)
+top_builddir = ..
+top_srcdir = ..
+
+CROSS_COMPILER_PATH := /home/smartnetwork_v1r1/smartnetv1r1_4/huxiaofeng/project/router_commit/toolchain/msdk-4.4.7-mips-EL-3.10-u0.9.33-m32t-140827/usr/bin
+
+ifdef CROSS_BUILD
+CC = ${CROSS_COMPILER_PATH}/msdk-linux-gcc
+CXX = ${CROSS_COMPILER_PATH}/msdk-linux-g++
+AR = ${CROSS_COMPILER_PATH}/msdk-linux-ar
+RANLIB = ${CROSS_COMPILER_PATH}/msdk-linux-ranlib
+endif
+
+LIB=libandlink56.a
+PROGRAM=andlink56
+
+ANDLINK_CONTROL_SRCS :=  AndlinkDeviceControlEvent/AndlinkDeviceWiFiParameterSyncReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceWPSReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceWiFiSwitchReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceRoamingConfigReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceRebootReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceRadioConfigReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceMacFilterReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceLEDControlReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceUnbindReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceUpgradeReq.cpp \
+                         AndlinkDeviceControlEvent/AndlinkDeviceControlCommonResp.cpp
+
+ANDLINK_QUERY_SRCS  := AndlinkDeviceQueryEvent/AndlinkDeviceApConfigInfoQueryResp.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceApConfigInfoQueryReq.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceSTAInfoQueryResp.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceSTAInfoQueryReq.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceUplinkStatusQueryResp.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceUplinkStatusQueryReq.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceWiFiStatsQueryResp.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceWiFiStatsQueryReq.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceDataReportReq.cpp \
+                       AndlinkDeviceQueryEvent/AndlinkDeviceDataReportResp.cpp
+
+ANDLINK_SRCS := AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceRegisterResponse.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceOnlineRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceOnlineResponse.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceAuthRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceAuthResponse.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceRequestPlugInRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceRequestPlugInResponse.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceDisconnectRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceDisconnectResponse.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceHeartbeatRequest.cpp \
+                 AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp
+
+EXTERNAL_SOURCE := cJSON/cJSON.c
+
+MAIN_SOURCE := src/RandomGenerator.cpp \
+               src/ExcutionUnitClient.cpp \
+               src/ExcutionUnitFsmAction.cpp \
+               src/ExcutionUnitQueryChecker.cpp \
+               src/ExcutionUnitControlChecker.cpp \
+               src/UDPClient.cpp \
+               src/TCPClient.cpp \
+               src/FsmManager.cpp \
+               src/DeviceDataStore.cpp
+
+HEARD_PATH := -I ./AndlinkDeviceInclude \
+              -I ./cJSON \
+              -I ./include
+
+SOURCES := ${ANDLINK_CONTROL_SRCS} ${ANDLINK_QUERY_SRCS} ${ANDLINK_SRCS} ${EXTERNAL_SOURCE} ${MAIN_SOURCE}
+
+OBJECTS := $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SOURCES)))
+
+CFLAGS += -fPIC -g ${HEARD_PATH}
+CPPFLAGS += -fPIC -g -std=c++0x ${HEARD_PATH}
+
+ifdef CROSS_BUILD
+CFLAGS += -DCROSS_BUILD
+CPPFLAGS += -DCROSS_BUILD
+endif
+
+.PHONY: clean distclean
+
+.SUFFIXES:      .cpp .o
+.SUFFIXES:      .c .o
+
+all:	$(LIB) ${PROGRAM}
+
+$(LIB):	$(OBJECTS)
+	@$(AR) $(ARFLAGS) $@ $^
+	@$(RANLIB) $@
+
+${PROGRAM} : SmartHomeClient.cpp $(LIB)
+	$(CXX) $(CPPFLAGS) SmartHomeClient.cpp -o ${PROGRAM} -L . -l andlink56
+
+clean:
+	@rm -rf $(LIB) ${OBJECTS} ${PROGRAM}

@@ -1,6 +1,8 @@
 #include "ExcutionUnitClient.hpp"
 #include <unistd.h>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 
 ExcutionUnitClient::ExcutionUnitClient():
 	UDPClient(ANDLINK_SERVER_HOST, ANDLINK_SERVER_PORT),
@@ -19,8 +21,10 @@ ExcutionUnitClient::~ExcutionUnitClient()
 void ExcutionUnitClient::startup()
 {
 	startUDPClient();
-	m_deviceDataStore.storeDeviceIPAddr(
-			getLocalUDPHost() + ":" + std::to_string(getLocalUDPPort()));
+	char buffer[128] = { 0 };
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(buffer, sizeof(buffer), "%s:%d", getLocalUDPHost().c_str(), getLocalUDPPort());
+	m_deviceDataStore.storeDeviceIPAddr(std::string(buffer));
 	mainloop();
 }
 

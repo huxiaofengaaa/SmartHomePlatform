@@ -21,19 +21,19 @@ private:
 	bool deviceControlChecker(std::string p_req);
 	bool deviceQueryChecker(std::string p_req);
 
-	bool deviceRegister() override;
-	bool deviceOnline() override;
-	bool deviceAuth() override;
-	bool deviceHeartbeat() override;
-	bool deviceUDPDownlinkAction() override;
+	bool deviceRegister(); // override
+	bool deviceOnline(); // override
+	bool deviceAuth(); // override
+	bool deviceHeartbeat(); // override
+	bool deviceUDPDownlinkAction(); // override
 
-	bool devicePlugin() override;
-	bool devicePluginOnline() override;
-	bool devicePluginAuth() override;
-	bool devicePluginHeartbeat() override;
-	bool deviceTCPDownlinkAction() override;
+	bool devicePlugin(); // override
+	bool devicePluginOnline(); // override
+	bool devicePluginAuth(); // override
+	bool devicePluginHeartbeat(); // override
+	bool deviceTCPDownlinkAction(); // override
 
-	bool deviceDisconnect() override;
+	bool deviceDisconnect(); // override
 
 	std::string getRegisterReq();
 	std::string getOnlineReq();
