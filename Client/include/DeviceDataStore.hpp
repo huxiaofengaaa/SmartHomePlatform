@@ -46,10 +46,14 @@ public:
 	int getMacFilterPolicy(){ return 0;}
 	std::string getMacFilterEntries() { return std::string();}
 	int getLEDOnOff(){ return 0; }
+	bool setLEDOnOff(int p_value){ return true; }
 	int getRoamingSwitch(){ return 0; }
 	int getLowRSSI24G(){ return 0;}
 	int getLowRSSI5G(){ return 0;}
 
+	bool triggerSystemReboot(){return true;}
+	bool setMacFilter(int p_enable, int p_policy, std::string p_entry){return true;}
+	bool setRoaming(int p_switch, int p_lowRssi24G, int p_lowRssi5G){return true;}
 private:
 	const long m_startupTimestamps;
 	std::string m_deviceMAC;
@@ -125,6 +129,21 @@ public:
 	int getRadioEnable(int index) { return 0;}
 	std::string getRadioTransmitPower(int index) { return std::string("100%");}
 	int getRadioChannel(int index){ return 1;}
+
+	bool set24GWps(){ return true;}
+	bool set5GWps(){ return true;}
+	bool set24GWiFiSwitch(int l_value){ return true;}
+	bool set5GWiFiSwitch(int l_value){ return true;}
+	bool set24GChannelReselect(){ return true;}
+	bool set5GChannelReselect(){ return true;}
+	bool set24GTransmitPower(std::string p_value){ return true;}
+	bool set5GTransmitPower(std::string p_value){ return true;}
+	bool sync24GWiFiParameter(std::string p_Radio, std::string p_Index, std::string p_Enable,
+			std::string p_SSID, std::string p_SecurityMode, std::string p_Pwd,
+			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled){ return true;}
+	bool sync5GWiFiParameter(std::string p_Radio, std::string p_Index, std::string p_Enable,
+			std::string p_SSID, std::string p_SecurityMode, std::string p_Pwd,
+			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled){ return true;}
 };
 
 class DeviceDataStore
