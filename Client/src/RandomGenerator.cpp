@@ -71,3 +71,27 @@ std::string RandomGenerator::generatorRandomNumberString(int length)
 #endif
 }
 
+std::string RandomGenerator::generatorRandomMAC()
+{
+#ifdef CROSS_BUILD
+	std::srand(std::time(NULL));
+
+	char buffer[128] = { 0 };
+	snprintf(buffer, sizeof(buffer), "%x:%x:%x:%x:%x:%x",
+			std::rand() % 0xFF, std::rand() % 0xFF, std::rand() % 0xFF,
+			std::rand() % 0xFF, std::rand() % 0xFF, std::rand() % 0xFF);
+
+	return std::string(buffer);
+#else
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, 0xFF);
+
+	char buffer[128] = { 0 };
+	snprintf(buffer, sizeof(buffer), "%x:%x:%x:%x:%x:%x",
+			dis(gen), dis(gen), dis(gen),
+			dis(gen), dis(gen), dis(gen));
+
+	return std::string(buffer);
+#endif
+}
