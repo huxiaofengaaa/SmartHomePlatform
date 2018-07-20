@@ -18,6 +18,7 @@ std::string ExcutionUnitClient::getRegisterReq()
 std::string ExcutionUnitClient::getOnlineReq()
 {
 	struct Interface56_Online_Req l_onlineReq;
+	l_onlineReq.DevRND = m_deviceDataStore.generatorDevRND();
 	l_onlineReq.deviceId = m_deviceDataStore.getDeviceID();
 	l_onlineReq.deviceMac = m_deviceDataStore.m_basicConfig.getDeviceMAC();
 	l_onlineReq.deviceType = m_deviceDataStore.m_basicConfig.getDeviceType();
@@ -25,6 +26,12 @@ std::string ExcutionUnitClient::getOnlineReq()
 	l_onlineReq.softwareVersion = m_deviceDataStore.m_basicConfig.getSoftWareVersion();
 	l_onlineReq.ipAddress = m_deviceDataStore.getDeviceIPAddr();
 	l_onlineReq.timestamp = m_deviceDataStore.getTimestamps();
+	l_onlineReq.deviceVendor = m_deviceDataStore.m_basicConfig.getDeviceVendor();
+	l_onlineReq.deviceModel = m_deviceDataStore.m_basicConfig.getDeviceModel();
+	l_onlineReq.deviceSn = m_deviceDataStore.getDeviceSn();
+	l_onlineReq.apUplinkType = m_deviceDataStore.m_uplinkInterface.getUplinkType();
+	l_onlineReq.radio5 = m_deviceDataStore.m_radioConfig.get5GSupport();
+	l_onlineReq.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
 	return build_if56_online_request_msg(l_onlineReq);
 }
 
@@ -71,6 +78,7 @@ bool ExcutionUnitClient::checkerOnlineResp(std::string p_resp)
 	{
 		return false;
 	}
+	m_deviceDataStore.storeDevRND(m_deviceDataStore.getDevRND());
 	m_deviceDataStore.storeEnctypt(l_onlineResp.encrypt);
 	m_deviceDataStore.storeChallengeCode(l_onlineResp.ChallengeCode);
 	printf("deviceOnline success\n");

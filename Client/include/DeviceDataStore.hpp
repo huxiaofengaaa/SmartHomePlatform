@@ -16,7 +16,7 @@ public:
 		if(m_deviceMAC.empty() == true)
 		{
 			RandomGenerator l_random;
-			m_deviceMAC = l_random.generatorRandomNumberString(12);
+			m_deviceMAC = l_random.generatorRandomMAC();
 		}
 		return m_deviceMAC;
 	}
@@ -40,6 +40,8 @@ public:
 	}
 	std::string getFirmWareVersion(){return "fhhw1.0.0";}
 	std::string getSoftWareVersion(){return "fhsw1.0.0";}
+	std::string getDeviceVendor(){return "fiberhome"; }
+	std::string getDeviceModel(){ return "unknown"; }
 	int getWorkMode(){ return 0;}
 	std::string getUpTime();
 	int getMacFilterEnable(){ return 0;}
@@ -81,7 +83,7 @@ public:
 class DeviceUplinkInterface
 {
 public:
-	std::string getUplinkType(){ return std::string();}
+	std::string getUplinkType(){ return std::string("Ethernet");}
 	std::string getUplinkMacAddress(){ return std::string();}
 	std::string getUplinkRadio(){ return std::string();}
 	std::string getUplinkSSID(){ return std::string();}
@@ -129,6 +131,8 @@ public:
 	int getRadioEnable(int index) { return 0;}
 	std::string getRadioTransmitPower(int index) { return std::string("100%");}
 	int getRadioChannel(int index){ return 1;}
+	int get5GSupport(){ return 1;}
+	int getSyncCode(){ return 0;}
 
 	bool set24GWps(){ return true;}
 	bool set5GWps(){ return true;}
@@ -144,6 +148,7 @@ public:
 	bool sync5GWiFiParameter(std::string p_Radio, std::string p_Index, std::string p_Enable,
 			std::string p_SSID, std::string p_SecurityMode, std::string p_Pwd,
 			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled){ return true;}
+	bool storeSyncCode(std::string p_value){ return true;}
 };
 
 class DeviceDataStore
@@ -154,25 +159,60 @@ public:
 		RandomGenerator l_random;
 		return l_random.generatorRandomNumberString(32);
 	}
-	int getSyncCode(){ return 0;}
 
-	void storeDeviceGwToken(std::string p_value);
-	void storeDeviceID(std::string p_value);
-	void storeDeviceToken(std::string p_value);
-	void storeDeviceAndlinkToken(std::string p_value);
 	std::string getDeviceGwToken();
+	void storeDeviceGwToken(std::string p_value);
+
 	std::string getDeviceID();
+	void storeDeviceID(std::string p_value);
+
 	std::string getDeviceToken();
+	void storeDeviceToken(std::string p_value);
+
 	std::string getDeviceAndlinkToken();
-	void storeDeviceIPAddr(std::string p_value);
+	void storeDeviceAndlinkToken(std::string p_value);
+
 	std::string getDeviceIPAddr();
-	void storeEnctypt(int p_value);
+	void storeDeviceIPAddr(std::string p_value);
+
 	int getEnctypt();
-	void storeChallengeCode(std::string p_value);
+	void storeEnctypt(int p_value);
+
 	std::string getChallengeCode();
-	void storeHeartbeatInterval(int p_value);
+	void storeChallengeCode(std::string p_value);
+
 	int getHeartbeatInterval();
+	void storeHeartbeatInterval(int p_value);
+
 	long getTimestamps();
+
+	std::string getDeviceSn()
+	{
+		RandomGenerator l_random;
+		if(m_deviceSn.empty() == true)
+		{
+			m_deviceSn = l_random.generatorRandomNumberString(32);
+		}
+		return m_deviceSn;
+	}
+
+	std::string getUserKey()
+	{
+		RandomGenerator l_random;
+		if(m_UserKey.empty() == true)
+		{
+			m_UserKey = l_random.generatorRandomNumberString(32);
+		}
+		return m_UserKey;
+	}
+	std::string getDevRND(){ return m_DevRND; }
+	std::string generatorDevRND()
+	{
+		RandomGenerator l_random;
+		m_DevRND = l_random.generatorRandomNumberString(32);
+		return m_DevRND;
+	}
+	bool storeDevRND(std::string p_value) { return true; }
 
 	DeviceBasicConfig m_basicConfig;
 	DeviceRadioConfig m_radioConfig;
@@ -190,6 +230,22 @@ private:
 	int m_encrypt;
 	std::string m_ChallengeCode;
 	int m_heartbeatInterval;
+	std::string m_deviceSn;
+	std::string m_UserKey;
+
+	/*
+	 * The parameter m_DevRND is randomly generated when the client device
+	 * online success and stored in the flash. The server may then send a plugin
+	 * request to the client, which will contain the m_DevRND parameter.
+	 * The client must verify that the m_DevRND parameter in the plugin
+	 * request is consistent with the locally stored m_DevRND parameter.
+	 * If they are inconsistent, the client must reject the server's plugin request;
+	 *
+	 * generate: when device build online request message,
+	 * store   : when device online success
+	 * update  : when device register again.
+	 * */
+	std::string m_DevRND;
 };
 
 

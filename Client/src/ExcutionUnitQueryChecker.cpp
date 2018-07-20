@@ -12,7 +12,7 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 		Interface56_ApConfigInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
 		resp.deviceId = m_deviceDataStore.getDeviceID();
-		resp.SyncCode = m_deviceDataStore.getSyncCode();
+		resp.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
 		resp.hardwareVersion = m_deviceDataStore.m_basicConfig.getFirmWareVersion();
 		resp.softwareVersion = m_deviceDataStore.m_basicConfig.getSoftWareVersion();
 		resp.WorkingMode = m_deviceDataStore.m_basicConfig.getWorkMode();
