@@ -4,6 +4,7 @@ set(CMAKE_C_FLAGS "-g ${CMAKE_C_FLAGS}")
 include_directories(include)
 include_directories(AndlinkDeviceInclude)
 include_directories(cJSON)
+include_directories(MD5)
 
 set(ANDLINK_CONTROL_SRCS AndlinkDeviceControlEvent/AndlinkDeviceWiFiParameterSyncReq.cpp
                          AndlinkDeviceControlEvent/AndlinkDeviceWPSReq.cpp
@@ -41,7 +42,8 @@ set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp)
 
-set(EXTERNAL_SOURCE cJSON/cJSON.c)
+set(EXTERNAL_SOURCE cJSON/cJSON.c
+                    MD5/MD5.c)
 
 add_executable(SmartHomeDevice SmartHomeClient.cpp
                                src/RandomGenerator.cpp

@@ -57,7 +57,8 @@ ANDLINK_SRCS := AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp \
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatRequest.cpp \
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp
 
-EXTERNAL_SOURCE := cJSON/cJSON.c
+EXTERNAL_SOURCE := cJSON/cJSON.c \
+                   MD5/MD5.c
 
 MAIN_SOURCE := src/RandomGenerator.cpp \
                src/ExcutionUnitClient.cpp \
@@ -71,6 +72,7 @@ MAIN_SOURCE := src/RandomGenerator.cpp \
 
 HEARD_PATH := -I ./AndlinkDeviceInclude \
               -I ./cJSON \
+              -I ./MD5 \
               -I ./include
 
 SOURCES := ${ANDLINK_CONTROL_SRCS} ${ANDLINK_QUERY_SRCS} ${ANDLINK_SRCS} ${EXTERNAL_SOURCE} ${MAIN_SOURCE}
