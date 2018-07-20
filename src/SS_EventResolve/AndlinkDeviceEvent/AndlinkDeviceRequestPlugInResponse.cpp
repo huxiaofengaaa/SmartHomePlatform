@@ -18,7 +18,7 @@ bool resolve_if56_requestPlugIn_response_msg(std::string msg, struct Interface56
 	if(respCode && DevRND)
 	{
 		resp->respCode = respCode->valueint;
-		resp->DevRND = DevRND->valueint;
+		resp->DevRND = DevRND->valuestring;
 		cJSON_Delete(obj);
 		return true;
 	}
@@ -37,7 +37,7 @@ std::string build_if56_requestPlugIn_response_msg(struct Interface56_RequestPlug
 	}
 
 	cJSON_AddNumberToObject(regJs, "respCode", resp.respCode);
-	cJSON_AddNumberToObject(regJs, "DevRND", resp.DevRND);
+	cJSON_AddStringToObject(regJs, "DevRND", resp.DevRND.c_str());
 
 	char* regch = cJSON_Print(regJs);
 	l_result = std::string(regch);

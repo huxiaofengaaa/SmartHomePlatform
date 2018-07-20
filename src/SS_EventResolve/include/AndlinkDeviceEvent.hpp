@@ -117,7 +117,7 @@ struct Interface56_RequestPlugIn_Req
 struct Interface56_RequestPlugIn_Resp
 {
 	int respCode;
-	int DevRND;
+	std::string DevRND;
 };
 
 struct Interface56_Disconnect_Req
