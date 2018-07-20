@@ -70,7 +70,7 @@ std::string AndlinkDeviceEventHandler::run(
 	else if(true == resolve_if56_requestPlugIn_response_msg(p_rawData, &l_pluginResp))
 	{
 		int l_respCode = l_pluginResp.respCode;
-		int l_DevRND = l_pluginResp.DevRND;
+		std::string l_DevRND = l_pluginResp.DevRND;
 	}
 	else if(true == resolve_if56_disconnect_response_msg(p_rawData, &l_disconnectResp))
 	{

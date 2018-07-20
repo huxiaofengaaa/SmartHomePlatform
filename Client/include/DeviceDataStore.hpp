@@ -7,42 +7,18 @@
 class DeviceBasicConfig
 {
 public:
-	DeviceBasicConfig(): m_startupTimestamps(time(NULL))
+	DeviceBasicConfig():
+		m_startupTimestamps(time(NULL)),
+		m_workMode(initWorkMode())
 	{
 
 	}
-	std::string getDeviceMAC()
+
+	int initWorkMode()
 	{
-		if(m_deviceMAC.empty() == true)
-		{
-			RandomGenerator l_random;
-			m_deviceMAC = l_random.generatorRandomMAC();
-		}
-		return m_deviceMAC;
+		return 0;
 	}
-	std::string getDeviceType()
-	{
-		if(m_deviceType.empty() == true)
-		{
-			RandomGenerator l_random;
-			m_deviceType = l_random.generatorRandomNumberString(5);
-		}
-		return m_deviceType;
-	}
-	std::string getProductToken()
-	{
-		if(m_productToken.empty() == true)
-		{
-			RandomGenerator l_random;
-			m_productToken = l_random.generatorRandomNumberString(32);
-		}
-		return m_productToken;
-	}
-	std::string getFirmWareVersion(){return "fhhw1.0.0";}
-	std::string getSoftWareVersion(){return "fhsw1.0.0";}
-	std::string getDeviceVendor(){return "fiberhome"; }
-	std::string getDeviceModel(){ return "unknown"; }
-	int getWorkMode(){ return 0;}
+
 	std::string getUpTime();
 	int getMacFilterEnable(){ return 0;}
 	int getMacFilterPolicy(){ return 0;}
@@ -56,11 +32,14 @@ public:
 	bool triggerSystemReboot(){return true;}
 	bool setMacFilter(int p_enable, int p_policy, std::string p_entry){return true;}
 	bool setRoaming(int p_switch, int p_lowRssi24G, int p_lowRssi5G){return true;}
+
+
+	int getWorkMode() const;
+
 private:
 	const long m_startupTimestamps;
-	std::string m_deviceMAC;
-	std::string m_deviceType;
-	std::string m_productToken;
+
+	const int m_workMode;
 };
 
 class DeviceDownlinkInterface
@@ -142,13 +121,88 @@ public:
 	bool set5GChannelReselect(){ return true;}
 	bool set24GTransmitPower(std::string p_value){ return true;}
 	bool set5GTransmitPower(std::string p_value){ return true;}
-	bool sync24GWiFiParameter(std::string p_Radio, std::string p_Index, std::string p_Enable,
+	bool sync24GWiFiParameter(
+			std::string p_Radio, std::string p_Index, std::string p_Enable,
 			std::string p_SSID, std::string p_SecurityMode, std::string p_Pwd,
-			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled){ return true;}
-	bool sync5GWiFiParameter(std::string p_Radio, std::string p_Index, std::string p_Enable,
+			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled)
+	{
+		return true;
+	}
+	bool sync5GWiFiParameter(
+			std::string p_Radio, std::string p_Index, std::string p_Enable,
 			std::string p_SSID, std::string p_SecurityMode, std::string p_Pwd,
-			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled){ return true;}
+			std::string p_MaxAssociateNum, std::string p_SSIDAdvertisementEnabled)
+	{
+		return true;
+	}
 	bool storeSyncCode(std::string p_value){ return true;}
+};
+
+class DeviceRunTimeData
+{
+public:
+	DeviceRunTimeData();
+
+	void initDevRND();
+
+	std::string getDevRND() const;
+	std::string getLastPluginKey() const;
+
+	std::string getDeviceGwToken();
+	std::string getDeviceID();
+	std::string getDeviceToken();
+	std::string getDeviceAndlinkToken();
+	int getHeartbeatInterval();
+
+	void storePluginKey(std::string p_value);
+
+	void storeDeviceGwToken(std::string p_value);
+	void storeDeviceID(std::string p_value);
+	void storeDeviceToken(std::string p_value);
+	void storeDeviceAndlinkToken(std::string p_value);
+	void storeHeartbeatInterval(int p_value);
+
+private:
+	std::string m_gwToken;
+	std::string m_deviceID;
+	std::string m_deviceToken;
+	std::string m_andlinkToken;
+	std::string m_DevRND;
+	std::string m_lastPluginKey;
+	int m_heartbeatInterval;
+};
+
+class DeviceReadOnlyData
+{
+public:
+	DeviceReadOnlyData();
+
+	std::string initDeviceMAC() const;
+	std::string initDeviceType() const;
+	std::string initProductToken() const;
+	std::string initDeviceSn() const;
+	std::string initFirmWareVersion() const;
+	std::string initSoftWareVersion() const;
+	std::string initDeviceVendor() const;
+	std::string initDeviceModel() const;
+
+	std::string getDeviceMAC() const;
+	std::string getDeviceType() const;
+	std::string getProductToken() const;
+	std::string getDeviceSn() const;
+	std::string getFirmWareVersion() const;
+	std::string getSoftWareVersion() const;
+	std::string getDeviceVendor() const;
+	std::string getDeviceModel() const;
+private:
+	const std::string m_deviceMAC;
+	const std::string m_deviceType;
+	const std::string m_productToken;
+	const std::string m_deviceSn;
+	const std::string m_firmwareVersion;
+	const std::string m_softwareVersion;
+	const std::string m_deviceVendor;
+	const std::string m_deviceModel;
 };
 
 class DeviceDataStore
@@ -160,18 +214,6 @@ public:
 		return l_random.generatorRandomNumberString(32);
 	}
 
-	std::string getDeviceGwToken();
-	void storeDeviceGwToken(std::string p_value);
-
-	std::string getDeviceID();
-	void storeDeviceID(std::string p_value);
-
-	std::string getDeviceToken();
-	void storeDeviceToken(std::string p_value);
-
-	std::string getDeviceAndlinkToken();
-	void storeDeviceAndlinkToken(std::string p_value);
-
 	std::string getDeviceIPAddr();
 	void storeDeviceIPAddr(std::string p_value);
 
@@ -181,20 +223,7 @@ public:
 	std::string getChallengeCode();
 	void storeChallengeCode(std::string p_value);
 
-	int getHeartbeatInterval();
-	void storeHeartbeatInterval(int p_value);
-
 	long getTimestamps();
-
-	std::string getDeviceSn()
-	{
-		RandomGenerator l_random;
-		if(m_deviceSn.empty() == true)
-		{
-			m_deviceSn = l_random.generatorRandomNumberString(32);
-		}
-		return m_deviceSn;
-	}
 
 	std::string getUserKey()
 	{
@@ -205,15 +234,9 @@ public:
 		}
 		return m_UserKey;
 	}
-	std::string getDevRND(){ return m_DevRND; }
-	std::string generatorDevRND()
-	{
-		RandomGenerator l_random;
-		m_DevRND = l_random.generatorRandomNumberString(32);
-		return m_DevRND;
-	}
-	bool storeDevRND(std::string p_value) { return true; }
 
+	DeviceReadOnlyData m_readOnlyData;
+	DeviceRunTimeData m_runTimeData;
 	DeviceBasicConfig m_basicConfig;
 	DeviceRadioConfig m_radioConfig;
 	DeviceRadioConfigurationList m_radioConfigurationList;
@@ -222,30 +245,10 @@ public:
 	DeviceDownlinkInterface m_downlinkInterface;
 
 private:
-	std::string m_gwToken;
-	std::string m_deviceID;
-	std::string m_deviceToken;
-	std::string m_andlinkToken;
 	std::string m_deviceIPAddr;
 	int m_encrypt;
 	std::string m_ChallengeCode;
-	int m_heartbeatInterval;
-	std::string m_deviceSn;
 	std::string m_UserKey;
-
-	/*
-	 * The parameter m_DevRND is randomly generated when the client device
-	 * online success and stored in the flash. The server may then send a plugin
-	 * request to the client, which will contain the m_DevRND parameter.
-	 * The client must verify that the m_DevRND parameter in the plugin
-	 * request is consistent with the locally stored m_DevRND parameter.
-	 * If they are inconsistent, the client must reject the server's plugin request;
-	 *
-	 * generate: when device build online request message,
-	 * store   : when device online success
-	 * update  : when device register again.
-	 * */
-	std::string m_DevRND;
 };
 
 

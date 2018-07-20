@@ -25,7 +25,7 @@ private:
 	bool deviceOnline(); // override
 	bool deviceAuth(); // override
 	bool deviceHeartbeat(); // override
-	bool deviceUDPDownlinkAction(); // override
+	int deviceUDPDownlinkAction(); // override
 
 	bool devicePlugin(); // override
 	bool devicePluginOnline(); // override

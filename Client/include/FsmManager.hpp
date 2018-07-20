@@ -36,7 +36,7 @@ private:
 	virtual bool devicePluginAuth() = 0;
 	virtual bool devicePluginHeartbeat() = 0;
 	virtual bool deviceDisconnect() = 0;
-	virtual bool deviceUDPDownlinkAction() = 0;
+	virtual int deviceUDPDownlinkAction() = 0;
 	virtual bool deviceTCPDownlinkAction() = 0;
 
 	FsmManagerStates m_currentState;

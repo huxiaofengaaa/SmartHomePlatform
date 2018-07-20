@@ -68,7 +68,9 @@ MAIN_SOURCE := src/RandomGenerator.cpp \
                src/UDPClient.cpp \
                src/TCPClient.cpp \
                src/FsmManager.cpp \
-               src/DeviceDataStore.cpp
+               src/DeviceDataStore.cpp \
+               src/DeviceDataRunTime.cpp \
+               src/DeviceDataReadOnly.cpp
 
 HEARD_PATH := -I ./AndlinkDeviceInclude \
               -I ./cJSON \

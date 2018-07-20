@@ -1,5 +1,6 @@
 #include "ExcutionUnitClient.hpp"
 #include "AndlinkDeviceEvent.hpp"
+#include "MD5.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -7,9 +8,9 @@ std::string ExcutionUnitClient::getRegisterReq()
 {
 	struct Interface56_Register_Req l_registerReq =
 	{
-			m_deviceDataStore.m_basicConfig.getDeviceMAC(),
-			m_deviceDataStore.m_basicConfig.getDeviceType(),
-			m_deviceDataStore.m_basicConfig.getProductToken(),
+			m_deviceDataStore.m_readOnlyData.getDeviceMAC(),
+			m_deviceDataStore.m_readOnlyData.getDeviceType(),
+			m_deviceDataStore.m_readOnlyData.getProductToken(),
 			m_deviceDataStore.getTimestamps()
 	};
 	return build_if56_register_request_msg(l_registerReq);
@@ -18,17 +19,17 @@ std::string ExcutionUnitClient::getRegisterReq()
 std::string ExcutionUnitClient::getOnlineReq()
 {
 	struct Interface56_Online_Req l_onlineReq;
-	l_onlineReq.DevRND = m_deviceDataStore.generatorDevRND();
-	l_onlineReq.deviceId = m_deviceDataStore.getDeviceID();
-	l_onlineReq.deviceMac = m_deviceDataStore.m_basicConfig.getDeviceMAC();
-	l_onlineReq.deviceType = m_deviceDataStore.m_basicConfig.getDeviceType();
-	l_onlineReq.firmwareVersion = m_deviceDataStore.m_basicConfig.getFirmWareVersion();
-	l_onlineReq.softwareVersion = m_deviceDataStore.m_basicConfig.getSoftWareVersion();
+	l_onlineReq.DevRND = m_deviceDataStore.m_runTimeData.getDevRND();
+	l_onlineReq.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
+	l_onlineReq.deviceMac = m_deviceDataStore.m_readOnlyData.getDeviceMAC();
+	l_onlineReq.deviceType = m_deviceDataStore.m_readOnlyData.getDeviceType();
+	l_onlineReq.firmwareVersion = m_deviceDataStore.m_readOnlyData.getFirmWareVersion();
+	l_onlineReq.softwareVersion = m_deviceDataStore.m_readOnlyData.getSoftWareVersion();
 	l_onlineReq.ipAddress = m_deviceDataStore.getDeviceIPAddr();
 	l_onlineReq.timestamp = m_deviceDataStore.getTimestamps();
-	l_onlineReq.deviceVendor = m_deviceDataStore.m_basicConfig.getDeviceVendor();
-	l_onlineReq.deviceModel = m_deviceDataStore.m_basicConfig.getDeviceModel();
-	l_onlineReq.deviceSn = m_deviceDataStore.getDeviceSn();
+	l_onlineReq.deviceVendor = m_deviceDataStore.m_readOnlyData.getDeviceVendor();
+	l_onlineReq.deviceModel = m_deviceDataStore.m_readOnlyData.getDeviceModel();
+	l_onlineReq.deviceSn = m_deviceDataStore.m_readOnlyData.getDeviceSn();
 	l_onlineReq.apUplinkType = m_deviceDataStore.m_uplinkInterface.getUplinkType();
 	l_onlineReq.radio5 = m_deviceDataStore.m_radioConfig.get5GSupport();
 	l_onlineReq.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
@@ -38,7 +39,7 @@ std::string ExcutionUnitClient::getOnlineReq()
 std::string ExcutionUnitClient::getAuthReq()
 {
 	struct Interface56_Auth_Req l_authReq;
-	l_authReq.MAC = m_deviceDataStore.m_basicConfig.getDeviceMAC();
+	l_authReq.MAC = m_deviceDataStore.m_readOnlyData.getDeviceMAC();
 	l_authReq.CheckSN = m_deviceDataStore.getDeviceCheckSN();
 	return build_if56_auth_request_msg(l_authReq);
 }
@@ -46,8 +47,8 @@ std::string ExcutionUnitClient::getAuthReq()
 std::string ExcutionUnitClient::getHeartbeatReq()
 {
 	struct Interface56_Heartbeat_Req l_heartbeatReq;
-	l_heartbeatReq.deviceId = m_deviceDataStore.getDeviceID();
-	l_heartbeatReq.MAC = m_deviceDataStore.m_basicConfig.getDeviceMAC();
+	l_heartbeatReq.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
+	l_heartbeatReq.MAC = m_deviceDataStore.m_readOnlyData.getDeviceMAC();
 	l_heartbeatReq.IPAddr = m_deviceDataStore.getDeviceIPAddr();
 	return build_if56_heartbeat_request_msg(l_heartbeatReq);
 }
@@ -59,10 +60,10 @@ bool ExcutionUnitClient::checkerRegisterResp(std::string p_resp)
 	{
 		return false;
 	}
-	m_deviceDataStore.storeDeviceGwToken(l_registerResp.gwToken);
-	m_deviceDataStore.storeDeviceID(l_registerResp.deviceId);
-	m_deviceDataStore.storeDeviceToken(l_registerResp.deviceToken);
-	m_deviceDataStore.storeDeviceAndlinkToken(l_registerResp.andlinkToken);
+	m_deviceDataStore.m_runTimeData.storeDeviceGwToken(l_registerResp.gwToken);
+	m_deviceDataStore.m_runTimeData.storeDeviceID(l_registerResp.deviceId);
+	m_deviceDataStore.m_runTimeData.storeDeviceToken(l_registerResp.deviceToken);
+	m_deviceDataStore.m_runTimeData.storeDeviceAndlinkToken(l_registerResp.andlinkToken);
 	printf("deviceRegister success\n");
 	return true;
 }
@@ -78,7 +79,6 @@ bool ExcutionUnitClient::checkerOnlineResp(std::string p_resp)
 	{
 		return false;
 	}
-	m_deviceDataStore.storeDevRND(m_deviceDataStore.getDevRND());
 	m_deviceDataStore.storeEnctypt(l_onlineResp.encrypt);
 	m_deviceDataStore.storeChallengeCode(l_onlineResp.ChallengeCode);
 	printf("deviceOnline success\n");
@@ -96,7 +96,7 @@ bool ExcutionUnitClient::checkerAuthResp(std::string p_resp)
 	{
 		return false;
 	}
-	m_deviceDataStore.storeHeartbeatInterval(l_authResp.heartBeatTime);
+	m_deviceDataStore.m_runTimeData.storeHeartbeatInterval(l_authResp.heartBeatTime);
 	printf("deviceAuth success\n");
 	return true;
 }
@@ -160,31 +160,68 @@ bool ExcutionUnitClient::deviceHeartbeat()
 	return checkerHeartbeatResp(l_resp);
 }
 
-bool ExcutionUnitClient::deviceUDPDownlinkAction()
+int ExcutionUnitClient::deviceUDPDownlinkAction()
 {
+	const int l_resultNoAction = 0;
+	const int l_resultReturnToBoot = -1;
+	const int l_resultShouldPlugin = 1;
 	std::string l_downlink = readUDPString(2);
 	if(l_downlink.empty() == true)
 	{
-		return false;
+		return l_resultNoAction;
 	}
 	struct Interface56_RequestPlugIn_Req l_pluginReq;
 
 	if(true == resolve_if56_requestPlugIn_request_msg(l_downlink, &l_pluginReq))
 	{
+
+		int returnResult = l_resultNoAction;
+		std::string l_key = l_pluginReq.Key;
+		std::string l_LocalDevRND = m_deviceDataStore.m_runTimeData.getDevRND();
+		std::string l_LocalSN = m_deviceDataStore.m_readOnlyData.getDeviceSn();
+		std::string l_lastKey = m_deviceDataStore.m_runTimeData.getLastPluginKey();
+
+		char l_md5Result[64] = { 0 };
+		char l_srcString[256] = { 0 };
+		snprintf(l_srcString, sizeof(l_srcString), "%s%s", l_LocalDevRND.c_str(), l_LocalSN.c_str());
+		Compute_string_md5(l_srcString, l_md5Result);
+
 		struct Interface56_RequestPlugIn_Resp l_pluginResp;
-		l_pluginResp.respCode = 0;
+		if(l_lastKey == l_key)
+		{
+			l_pluginResp.respCode = 0;
+			l_pluginResp.DevRND = l_LocalDevRND;
+			returnResult = l_resultNoAction;
+		}
+		else
+		{
+			if(l_key == l_md5Result)
+			{
+				l_pluginResp.respCode = 0;
+				m_deviceDataStore.m_runTimeData.storePluginKey(l_key);
+				m_deviceDataStore.m_runTimeData.initDevRND();
+				l_pluginResp.DevRND = m_deviceDataStore.m_runTimeData.getDevRND();
+				returnResult = l_resultShouldPlugin;
+			}
+			else
+			{
+				l_pluginResp.respCode = -1;
+				returnResult = l_resultReturnToBoot;
+			}
+		}
+
 		std::string l_resp = build_if56_requestPlugIn_response_msg(l_pluginResp);
 		if(l_resp.empty() == true)
 		{
-			return false;
+			return l_resultNoAction;
 		}
 		if(writeUDPString(l_resp) <= 0)
 		{
-			return false;
+			return l_resultNoAction;
 		}
-		return true;
+		return returnResult;
 	}
-	return false;
+	return l_resultNoAction;
 }
 
 bool ExcutionUnitClient::devicePlugin()

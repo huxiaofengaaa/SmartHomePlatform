@@ -104,19 +104,26 @@ void FsmManager::runFsmManager()
 	case FsmManagerStates::STATE_HEARTBEAT:
 		if(time(NULL) < (m_lastSuccessHeartbeat + m_heartbeatInterval))
 		{
+			const int l_resultNoAction = 0;
+			const int l_resultReturnToBoot = -1;
+			const int l_resultShouldPlugin = 1;
 			long l_startTimeStamps = time(NULL);
 			int l_downlinkResult = deviceUDPDownlinkAction();
 			long l_endTimestamps = time(NULL);
-			if(l_downlinkResult == false)
+			if(l_downlinkResult == l_resultNoAction)
 			{
 				if(l_endTimestamps < (l_startTimeStamps + 2))
 				{
 					sleep(1);
 				}
 			}
-			else
+			else if(l_downlinkResult == l_resultShouldPlugin)
 			{
 				m_currentState = FsmManagerStates::STATE_PLUGIN;
+			}
+			else if(l_downlinkResult == l_resultReturnToBoot)
+			{
+				m_currentState = FsmManagerStates::STATE_ONLINE;
 			}
 		}
 		else

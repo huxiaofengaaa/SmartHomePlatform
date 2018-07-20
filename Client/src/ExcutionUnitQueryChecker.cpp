@@ -11,10 +11,10 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 	{
 		Interface56_ApConfigInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
-		resp.deviceId = m_deviceDataStore.getDeviceID();
+		resp.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
 		resp.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
-		resp.hardwareVersion = m_deviceDataStore.m_basicConfig.getFirmWareVersion();
-		resp.softwareVersion = m_deviceDataStore.m_basicConfig.getSoftWareVersion();
+		resp.hardwareVersion = m_deviceDataStore.m_readOnlyData.getFirmWareVersion();
+		resp.softwareVersion = m_deviceDataStore.m_readOnlyData.getSoftWareVersion();
 		resp.WorkingMode = m_deviceDataStore.m_basicConfig.getWorkMode();
 		resp.UpTime = m_deviceDataStore.m_basicConfig.getUpTime();
 		resp.MacFilterEnable = m_deviceDataStore.m_basicConfig.getMacFilterEnable();
@@ -96,7 +96,7 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 	{
 		Interface56_STAInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
-		resp.deviceId = m_deviceDataStore.getDeviceID();
+		resp.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
 
 		int l_staDeviceNumber = m_deviceDataStore.m_holdSTAinfo.getSTADeviceNumber();
 		DeviceStatus* l_staDevice = new DeviceStatus[l_staDeviceNumber];
@@ -136,7 +136,7 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 	{
 		Interface56_UplinkStatus_Resp resp;
 		resp.ID = l_queryReq.ID;
-		resp.deviceId = m_deviceDataStore.getDeviceID();
+		resp.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
 		resp.UplinkType = m_deviceDataStore.m_uplinkInterface.getUplinkType();
 		resp.MacAddress = m_deviceDataStore.m_uplinkInterface.getUplinkMacAddress();
 		resp.Radio = m_deviceDataStore.m_uplinkInterface.getUplinkRadio();
@@ -158,7 +158,7 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 	{
 		Interface56_WiFiStats_Resp resp;
 		resp.ID = l_queryReq.ID;
-		resp.deviceId = m_deviceDataStore.getDeviceID();
+		resp.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
 
 		int l_downlinkInterfaceNumber = m_deviceDataStore.m_downlinkInterface.getDownlinkInterfaceNumber();
 		WiFiStats* l_downlinkInterface = new WiFiStats[l_downlinkInterfaceNumber];

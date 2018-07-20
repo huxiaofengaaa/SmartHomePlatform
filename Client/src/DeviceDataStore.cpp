@@ -1,49 +1,14 @@
 #include "DeviceDataStore.hpp"
 #include <stdio.h>
 
+int DeviceBasicConfig::getWorkMode() const
+{
+	return m_workMode;
+}
+
 long DeviceDataStore::getTimestamps()
 {
 	return time(NULL);
-}
-
-void DeviceDataStore::storeDeviceGwToken(std::string p_value)
-{
-	m_gwToken = p_value;
-}
-
-void DeviceDataStore::storeDeviceID(std::string p_value)
-{
-	m_deviceID = p_value;
-}
-
-void DeviceDataStore::storeDeviceToken(std::string p_value)
-{
-	m_deviceToken = p_value;
-}
-
-void DeviceDataStore::storeDeviceAndlinkToken(std::string p_value)
-{
-	m_andlinkToken = p_value;
-}
-
-std::string DeviceDataStore::getDeviceGwToken()
-{
-	return m_gwToken;
-}
-
-std::string DeviceDataStore::getDeviceID()
-{
-	return m_deviceID;
-}
-
-std::string DeviceDataStore::getDeviceToken()
-{
-	return m_deviceToken;
-}
-
-std::string DeviceDataStore::getDeviceAndlinkToken()
-{
-	return m_andlinkToken;
 }
 
 void DeviceDataStore::storeDeviceIPAddr(std::string p_value)
@@ -76,15 +41,7 @@ std::string DeviceDataStore::getChallengeCode()
 	return m_ChallengeCode;
 }
 
-void DeviceDataStore::storeHeartbeatInterval(int p_value)
-{
-	m_heartbeatInterval = p_value;
-}
 
-int DeviceDataStore::getHeartbeatInterval()
-{
-	return m_heartbeatInterval;
-}
 
 std::string DeviceBasicConfig::getUpTime()
 {
