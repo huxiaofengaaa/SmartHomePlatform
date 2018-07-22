@@ -1,6 +1,7 @@
 #include "SmartHomeDeployment.hpp"
 
-SmartHomeDeployment::SmartHomeDeployment()
+SmartHomeDeployment::SmartHomeDeployment(std::shared_ptr<ConfigParser> p_config):
+	m_config(p_config)
 {
 	m_deploymentShouldExit = false;
 
@@ -9,18 +10,24 @@ SmartHomeDeployment::SmartHomeDeployment()
 	l_regster.registerSignal(SIGINT, l_sigintTask);
 	LOG(INFO) << "register user handler for linux signal " << SIGINT;
 
+	std::string l_managerServerHost = m_config->getParamString("ManagerServerHost", "10.96.17.50");
+	int l_managerServerPort = m_config->getParamInteger("ManagerServerPort", 6887);
+
+	std::string l_controlServerHost = m_config->getParamString("ControlServerHost", l_managerServerHost);
+	int l_controlServerPort = m_config->getParamInteger("ControlServerPort", l_managerServerPort + 1);
+
 	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>(
-			MANAGER_SERVER_IP,
-			MANAGER_SERVER_PORT);
+			l_managerServerHost,
+			l_managerServerPort);
 
 	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>(
-			MANAGER_SERVER_IP,
-			MANAGER_SERVER_PORT,
+			l_managerServerHost,
+			l_managerServerPort,
 			m_ueContextAndlinkHolder);
 
 	m_andlinkPlugInExcutionUnit = std::make_shared<ExcutionUnitAndlinkPlugIn>(
-			MANAGER_SERVER_IP,
-			MANAGER_SERVER_PORT+1,
+			l_controlServerHost,
+			l_controlServerPort,
 			m_ueContextAndlinkHolder);
 
 	m_terminalExcutionUnit = std::make_shared<ExcutionUnitTerminal>(

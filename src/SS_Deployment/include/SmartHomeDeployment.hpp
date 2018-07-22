@@ -9,6 +9,7 @@
 #include "UeContextHolderAndlink.hpp"
 #include "SignalRegister.hpp"
 #include "glog/logging.h"
+#include "ConfigParser.hpp"
 
 #define MANAGER_SERVER_IP	"10.96.17.50"
 #define MANAGER_SERVER_PORT	6887
@@ -16,7 +17,7 @@
 class SmartHomeDeployment
 {
 public:
-	SmartHomeDeployment();
+	SmartHomeDeployment(std::shared_ptr<ConfigParser> p_config);
 	~SmartHomeDeployment();
 	void start();
 	bool shutdown(int p_signum);
@@ -28,6 +29,7 @@ private:
 	std::shared_ptr<ExcutionUnitTerminal> m_terminalExcutionUnit;
 	std::shared_ptr<ExcutionUnitAndlink> m_andlinkExcutionUnit;
 	std::shared_ptr<ExcutionUnitAndlinkPlugIn> m_andlinkPlugInExcutionUnit;
+	std::shared_ptr<ConfigParser> m_config;
 };
 
 
