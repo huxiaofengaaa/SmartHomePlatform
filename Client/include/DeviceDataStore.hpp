@@ -153,6 +153,8 @@ public:
 	std::string getDeviceToken();
 	std::string getDeviceAndlinkToken();
 	int getHeartbeatInterval();
+	int getEnctypt();
+	std::string getChallengeCode();
 
 	void storePluginKey(std::string p_value);
 
@@ -161,15 +163,18 @@ public:
 	void storeDeviceToken(std::string p_value);
 	void storeDeviceAndlinkToken(std::string p_value);
 	void storeHeartbeatInterval(int p_value);
-
+	void storeEnctypt(int p_value);
+	void storeChallengeCode(std::string p_value);
 private:
-	std::string m_gwToken;
+	std::string m_gwToken;        // Used for upstream message encryption key
 	std::string m_deviceID;
-	std::string m_deviceToken;
+	std::string m_deviceToken;    // Used for downstream message encryption key
 	std::string m_andlinkToken;
 	std::string m_DevRND;
 	std::string m_lastPluginKey;
 	int m_heartbeatInterval;
+	int m_encrypt;
+	std::string m_ChallengeCode;
 };
 
 class DeviceReadOnlyData
@@ -217,12 +222,6 @@ public:
 	std::string getDeviceIPAddr();
 	void storeDeviceIPAddr(std::string p_value);
 
-	int getEnctypt();
-	void storeEnctypt(int p_value);
-
-	std::string getChallengeCode();
-	void storeChallengeCode(std::string p_value);
-
 	long getTimestamps();
 
 	std::string getUserKey()
@@ -246,8 +245,6 @@ public:
 
 private:
 	std::string m_deviceIPAddr;
-	int m_encrypt;
-	std::string m_ChallengeCode;
 	std::string m_UserKey;
 };
 

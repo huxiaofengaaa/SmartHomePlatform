@@ -21,28 +21,6 @@ std::string DeviceDataStore::getDeviceIPAddr()
 	return m_deviceIPAddr;
 }
 
-void DeviceDataStore::storeEnctypt(int p_value)
-{
-	m_encrypt = p_value;
-}
-
-int DeviceDataStore::getEnctypt()
-{
-	return m_encrypt;
-}
-
-void DeviceDataStore::storeChallengeCode(std::string p_value)
-{
-	m_ChallengeCode = p_value;
-}
-
-std::string DeviceDataStore::getChallengeCode()
-{
-	return m_ChallengeCode;
-}
-
-
-
 std::string DeviceBasicConfig::getUpTime()
 {
 	long l_upTime = time(NULL) - m_startupTimestamps;

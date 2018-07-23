@@ -40,7 +40,16 @@ std::string ExcutionUnitClient::getAuthReq()
 {
 	struct Interface56_Auth_Req l_authReq;
 	l_authReq.MAC = m_deviceDataStore.m_readOnlyData.getDeviceMAC();
-	l_authReq.CheckSN = m_deviceDataStore.getDeviceCheckSN();
+
+	std::string l_Challenge = m_deviceDataStore.m_runTimeData.getChallengeCode();
+	std::string l_DeviceSN = m_deviceDataStore.m_readOnlyData.getDeviceSn();
+
+	char l_md5Result[64] = { 0 };
+	char l_srcString[256] = { 0 };
+	snprintf(l_srcString, sizeof(l_srcString), "%s%s", l_Challenge.c_str(), l_DeviceSN.c_str());
+	Compute_string_md5(l_srcString, l_md5Result);
+
+	l_authReq.CheckSN = l_md5Result;
 	return build_if56_auth_request_msg(l_authReq);
 }
 
@@ -79,8 +88,8 @@ bool ExcutionUnitClient::checkerOnlineResp(std::string p_resp)
 	{
 		return false;
 	}
-	m_deviceDataStore.storeEnctypt(l_onlineResp.encrypt);
-	m_deviceDataStore.storeChallengeCode(l_onlineResp.ChallengeCode);
+	m_deviceDataStore.m_runTimeData.storeEnctypt(l_onlineResp.encrypt);
+	m_deviceDataStore.m_runTimeData.storeChallengeCode(l_onlineResp.ChallengeCode);
 	printf("deviceOnline success\n");
 	return true;
 }

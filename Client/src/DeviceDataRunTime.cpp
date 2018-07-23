@@ -76,3 +76,23 @@ void DeviceRunTimeData::storeHeartbeatInterval(int p_value)
 {
 	m_heartbeatInterval = p_value;
 }
+
+void DeviceRunTimeData::storeEnctypt(int p_value)
+{
+	m_encrypt = p_value;
+}
+
+int DeviceRunTimeData::getEnctypt()
+{
+	return m_encrypt;
+}
+
+void DeviceRunTimeData::storeChallengeCode(std::string p_value)
+{
+	m_ChallengeCode = p_value;
+}
+
+std::string DeviceRunTimeData::getChallengeCode()
+{
+	return m_ChallengeCode;
+}
