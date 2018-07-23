@@ -113,6 +113,7 @@ bool UeContextHolderAndlink::setOnlineResponse(std::string p_deviceID,
 		resp.respCode = 0;
 		resp.encrypt = l_uecontext->encrypt;
 		resp.ChallengeCode = l_uecontext->ChallengeCode;
+		resp.ServerIP = m_host + std::string(":") + std::to_string(m_port+1);
 	}
 	else
 	{

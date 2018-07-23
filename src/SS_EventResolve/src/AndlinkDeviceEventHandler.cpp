@@ -42,7 +42,14 @@ std::string AndlinkDeviceEventHandler::run(
 			m_ueContextHolder->updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
 		}
 		m_ueContextHolder->setOnlineResponse(l_deviceid, l_onlineResp, l_response);
-		return build_if56_online_response_failed_msg(l_onlineResp);
+		if(true == l_response)
+		{
+			return build_if56_online_response_success_msg(l_onlineResp);
+		}
+		else
+		{
+			return build_if56_online_response_failed_msg(l_onlineResp);
+		}
 	}
 	else if(true == resolve_if56_auth_request_msg(p_rawData, &l_authReq))
 	{
