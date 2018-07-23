@@ -2,6 +2,7 @@
 #define LIBRARY_CONFIGPARSER_CONFIGPARSER_HPP_
 
 #include <string.h>
+#include <stdio.h>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,7 @@ private:
 	bool parserLine(std::string p_line);
 
 	bool m_vaild;
-	std::ifstream m_fileReader;
+	FILE* m_fileReader;
 	std::map<std::string, std::string> m_paramList;
 };
 

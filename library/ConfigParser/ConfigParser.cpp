@@ -1,10 +1,20 @@
 #include "ConfigParser.hpp"
 
 ConfigParser::ConfigParser(std::string p_filename):
-	m_fileReader(std::ifstream(p_filename, std::ios::in)),
+	m_fileReader(NULL),
 	m_vaild(false)
 {
-	m_vaild = parser();
+	m_fileReader = fopen(p_filename.c_str(), "r");
+	if(m_fileReader)
+	{
+		m_vaild = parser();
+		fclose(m_fileReader);
+		m_fileReader = NULL;
+	}
+	else
+	{
+		m_vaild = false;
+	}
 }
 
 ConfigParser::~ConfigParser()
@@ -19,16 +29,24 @@ bool ConfigParser::isVaild()
 
 std::string ConfigParser::getParamString(std::string p_name, std::string p_default)
 {
-	auto l_search = m_paramList.find(p_name);
-	if(l_search == m_paramList.end())
+	if(m_vaild == true)
 	{
-		return p_default;
+		auto l_search = m_paramList.find(p_name);
+		if(l_search == m_paramList.end())
+		{
+			return p_default;
+		}
+		return l_search->second;
 	}
-	return l_search->second;
+	return p_default;
 }
 
 int ConfigParser::getParamInteger(std::string p_name, int p_default)
 {
+	if(m_vaild == false)
+	{
+		return p_default;
+	}
 	auto l_search = m_paramList.find(p_name);
 	if(l_search == m_paramList.end())
 	{
@@ -48,16 +66,12 @@ int ConfigParser::getParamInteger(std::string p_name, int p_default)
 
 bool ConfigParser::parser()
 {
-	if(m_fileReader.is_open() == false)
-	{
-		return false;
-	}
 	char buffer[1024] = { 0 };
 	while(true)
 	{
 		memset(buffer, 0, sizeof(buffer));
-		m_fileReader.getline(buffer, sizeof(buffer)-1);
-		if(m_fileReader.gcount() <= 0)
+		char* l_result = fgets(buffer, sizeof(buffer) - 1, m_fileReader);
+		if(l_result == NULL)
 		{
 			break;
 		}
@@ -71,9 +85,12 @@ bool ConfigParser::parser()
 
 void ConfigParser::show()
 {
-	for(auto i = m_paramList.begin() ; i != m_paramList.end() ; i++)
+	if(m_vaild == true)
 	{
-		std::cout << i->first << ":" << i->second << std::endl;
+		for(auto i = m_paramList.begin() ; i != m_paramList.end() ; i++)
+		{
+			std::cout << i->first << ":" << i->second << std::endl;
+		}
 	}
 }
 
