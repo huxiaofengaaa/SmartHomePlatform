@@ -69,7 +69,4 @@ struct UeContextAndlink
 	int encrypt = 0;               // server setting
 	std::string ChallengeCode;     // server setting, 16 bytes
 
-	// device auth req
-	std::string CheckSN;
-
 };

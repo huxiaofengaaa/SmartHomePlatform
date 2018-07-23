@@ -1,14 +1,8 @@
-/*
- * UeContextHolderAndlink.cpp
- *
- *  Created on: 2018锟斤拷7锟斤拷4锟斤拷
- *      Author: Administrator
- */
-
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEvent.hpp"
 #include "RandomGenerator.hpp"
 #include "CalendarClock.hpp"
+#include "MD5.h"
 
 std::vector<std::string> UeContextHolderAndlink::getDeviceList()
 {
@@ -236,12 +230,33 @@ bool UeContextHolderAndlink::DeviceAuth(std::string p_deviceMAC, std::string p_C
 	std::string l_deviceID = getDeviceIDByMAC(p_deviceMAC);
 	if(l_deviceID.empty() == true)
 	{
+		LOG(INFO) << "deviceID is empty";
 		return false;
 	}
 	auto l_uecontext = getRef(l_deviceID);
-	l_uecontext->CheckSN = p_CheckSN;
-	l_uecontext->isAuth = true;
-	return true;
+
+	std::string l_ChallengeCode = l_uecontext->ChallengeCode;
+	std::string l_DeviceSn = l_uecontext->deviceSn;
+
+	char l_md5Result[64] = { 0 };
+	char l_srcString[256] = { 0 };
+	snprintf(l_srcString, sizeof(l_srcString), "%s%s", l_ChallengeCode.c_str(), l_DeviceSn.c_str());
+	Compute_string_md5(l_srcString, l_md5Result);
+
+	if(p_CheckSN == l_md5Result)
+	{
+		l_uecontext->isAuth = true;
+		return true;
+	}
+	else
+	{
+		LOG(INFO) << "device " << l_deviceID << " auth failed for error checkSN, "
+				<< "ChallengeCode=" << l_ChallengeCode
+				<< ",DeviceSn=" << l_DeviceSn
+				<< ",CheckSN=" << p_CheckSN;
+		l_uecontext->isAuth = false;
+		return false;
+	}
 }
 
 bool UeContextHolderAndlink::DeviceHeartbeat(std::string p_deviceId, std::string p_deviceMAC,
