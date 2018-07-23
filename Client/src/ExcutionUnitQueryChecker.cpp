@@ -12,11 +12,11 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 		Interface56_ApConfigInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
 		resp.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
-		resp.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
+		resp.SyncCode = m_deviceDataStore.m_runTimeData.getSyncCode();
 		resp.hardwareVersion = m_deviceDataStore.m_readOnlyData.getFirmWareVersion();
 		resp.softwareVersion = m_deviceDataStore.m_readOnlyData.getSoftWareVersion();
 		resp.WorkingMode = m_deviceDataStore.m_basicConfig.getWorkMode();
-		resp.UpTime = m_deviceDataStore.m_basicConfig.getUpTime();
+		resp.UpTime = m_deviceDataStore.m_runTimeData.getUpTime();
 		resp.MacFilterEnable = m_deviceDataStore.m_basicConfig.getMacFilterEnable();
 		resp.MacFilterPolicy = m_deviceDataStore.m_basicConfig.getMacFilterPolicy();
 		resp.MacFilterEntries = m_deviceDataStore.m_basicConfig.getMacFilterEntries();

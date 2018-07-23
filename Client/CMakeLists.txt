@@ -54,7 +54,6 @@ add_executable(SmartHomeDevice SmartHomeClient.cpp
                                src/UDPClient.cpp
                                src/TCPClient.cpp
                                src/FsmManager.cpp
-                               src/DeviceDataStore.cpp
                                src/DeviceDataRunTime.cpp
                                src/DeviceDataReadOnly.cpp
                                ${EXTERNAL_SOURCE}

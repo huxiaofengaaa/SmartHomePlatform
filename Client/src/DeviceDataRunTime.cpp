@@ -1,7 +1,9 @@
 #include "DeviceDataStore.hpp"
 #include <stdio.h>
 
-DeviceRunTimeData::DeviceRunTimeData()
+DeviceRunTimeData::DeviceRunTimeData():
+	m_SyncCode(initSyncCode()),
+	m_startupTimestamps(time(NULL))
 {
 	initDevRND();
 }
@@ -95,4 +97,37 @@ void DeviceRunTimeData::storeChallengeCode(std::string p_value)
 std::string DeviceRunTimeData::getChallengeCode()
 {
 	return m_ChallengeCode;
+}
+
+void DeviceRunTimeData::storeDeviceIPAddr(std::string p_value)
+{
+	m_deviceIPAddr = p_value;
+}
+
+std::string DeviceRunTimeData::getDeviceIPAddr()
+{
+	return m_deviceIPAddr;
+}
+
+long DeviceRunTimeData::getTimestamps()
+{
+	return time(NULL);
+}
+
+std::string DeviceRunTimeData::getUpTime()
+{
+	long l_upTime = time(NULL) - m_startupTimestamps;
+	char tmp[128] = { 0 };
+	snprintf(tmp, sizeof(tmp), "%d", l_upTime);
+	return std::string(tmp);
+}
+
+std::string DeviceRunTimeData::getUserKey()
+{
+	RandomGenerator l_random;
+	if(m_UserKey.empty() == true)
+	{
+		m_UserKey = l_random.generatorRandomNumberString(32);
+	}
+	return m_UserKey;
 }

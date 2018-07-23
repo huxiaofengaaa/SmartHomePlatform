@@ -11,7 +11,7 @@ std::string ExcutionUnitClient::getRegisterReq()
 			m_deviceDataStore.m_readOnlyData.getDeviceMAC(),
 			m_deviceDataStore.m_readOnlyData.getDeviceType(),
 			m_deviceDataStore.m_readOnlyData.getProductToken(),
-			m_deviceDataStore.getTimestamps()
+			m_deviceDataStore.m_runTimeData.getTimestamps()
 	};
 	return build_if56_register_request_msg(l_registerReq);
 }
@@ -25,14 +25,15 @@ std::string ExcutionUnitClient::getOnlineReq()
 	l_onlineReq.deviceType = m_deviceDataStore.m_readOnlyData.getDeviceType();
 	l_onlineReq.firmwareVersion = m_deviceDataStore.m_readOnlyData.getFirmWareVersion();
 	l_onlineReq.softwareVersion = m_deviceDataStore.m_readOnlyData.getSoftWareVersion();
-	l_onlineReq.ipAddress = m_deviceDataStore.getDeviceIPAddr();
-	l_onlineReq.timestamp = m_deviceDataStore.getTimestamps();
+	l_onlineReq.ipAddress = m_deviceDataStore.m_runTimeData.getDeviceIPAddr();
+	l_onlineReq.timestamp = m_deviceDataStore.m_runTimeData.getTimestamps();
 	l_onlineReq.deviceVendor = m_deviceDataStore.m_readOnlyData.getDeviceVendor();
 	l_onlineReq.deviceModel = m_deviceDataStore.m_readOnlyData.getDeviceModel();
 	l_onlineReq.deviceSn = m_deviceDataStore.m_readOnlyData.getDeviceSn();
 	l_onlineReq.apUplinkType = m_deviceDataStore.m_uplinkInterface.getUplinkType();
 	l_onlineReq.radio5 = m_deviceDataStore.m_radioConfig.get5GSupport();
-	l_onlineReq.SyncCode = m_deviceDataStore.m_radioConfig.getSyncCode();
+	l_onlineReq.user_key = m_deviceDataStore.m_runTimeData.getUserKey();
+	l_onlineReq.SyncCode = m_deviceDataStore.m_runTimeData.getSyncCode();
 	return build_if56_online_request_msg(l_onlineReq);
 }
 
@@ -58,7 +59,7 @@ std::string ExcutionUnitClient::getHeartbeatReq()
 	struct Interface56_Heartbeat_Req l_heartbeatReq;
 	l_heartbeatReq.deviceId = m_deviceDataStore.m_runTimeData.getDeviceID();
 	l_heartbeatReq.MAC = m_deviceDataStore.m_readOnlyData.getDeviceMAC();
-	l_heartbeatReq.IPAddr = m_deviceDataStore.getDeviceIPAddr();
+	l_heartbeatReq.IPAddr = m_deviceDataStore.m_runTimeData.getDeviceIPAddr();
 	return build_if56_heartbeat_request_msg(l_heartbeatReq);
 }
 

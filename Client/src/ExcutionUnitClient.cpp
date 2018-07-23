@@ -24,7 +24,7 @@ void ExcutionUnitClient::startup()
 	char buffer[128] = { 0 };
 	memset(buffer, 0, sizeof(buffer));
 	snprintf(buffer, sizeof(buffer), "%s:%d", getLocalUDPHost().c_str(), getLocalUDPPort());
-	m_deviceDataStore.storeDeviceIPAddr(std::string(buffer));
+	m_deviceDataStore.m_runTimeData.storeDeviceIPAddr(std::string(buffer));
 	mainloop();
 }
 

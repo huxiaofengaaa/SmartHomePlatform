@@ -8,37 +8,28 @@ class DeviceBasicConfig
 {
 public:
 	DeviceBasicConfig():
-		m_startupTimestamps(time(NULL)),
 		m_workMode(initWorkMode())
 	{
 
 	}
 
-	int initWorkMode()
-	{
-		return 0;
-	}
+	int initWorkMode(){ return 0; }
 
-	std::string getUpTime();
 	int getMacFilterEnable(){ return 0;}
 	int getMacFilterPolicy(){ return 0;}
-	std::string getMacFilterEntries() { return std::string();}
 	int getLEDOnOff(){ return 0; }
-	bool setLEDOnOff(int p_value){ return true; }
 	int getRoamingSwitch(){ return 0; }
 	int getLowRSSI24G(){ return 0;}
 	int getLowRSSI5G(){ return 0;}
+	int getWorkMode() const{return m_workMode;}
+	bool setLEDOnOff(int p_value){ return true; }
+	std::string getMacFilterEntries() { return std::string();}
 
 	bool triggerSystemReboot(){return true;}
 	bool setMacFilter(int p_enable, int p_policy, std::string p_entry){return true;}
 	bool setRoaming(int p_switch, int p_lowRssi24G, int p_lowRssi5G){return true;}
 
-
-	int getWorkMode() const;
-
 private:
-	const long m_startupTimestamps;
-
 	const int m_workMode;
 };
 
@@ -111,7 +102,6 @@ public:
 	std::string getRadioTransmitPower(int index) { return std::string("100%");}
 	int getRadioChannel(int index){ return 1;}
 	int get5GSupport(){ return 1;}
-	int getSyncCode(){ return 0;}
 
 	bool set24GWps(){ return true;}
 	bool set5GWps(){ return true;}
@@ -135,7 +125,6 @@ public:
 	{
 		return true;
 	}
-	bool storeSyncCode(std::string p_value){ return true;}
 };
 
 class DeviceRunTimeData
@@ -144,20 +133,24 @@ public:
 	DeviceRunTimeData();
 
 	void initDevRND();
+	std::string initSyncCode(){ return "0";}
 
 	std::string getDevRND() const;
 	std::string getLastPluginKey() const;
-
 	std::string getDeviceGwToken();
 	std::string getDeviceID();
 	std::string getDeviceToken();
 	std::string getDeviceAndlinkToken();
+	std::string getChallengeCode();
+	std::string getSyncCode(){ return m_SyncCode;}
+	std::string getUserKey();
+	std::string getDeviceIPAddr();
+	std::string getUpTime();
+	long getTimestamps();
 	int getHeartbeatInterval();
 	int getEnctypt();
-	std::string getChallengeCode();
 
 	void storePluginKey(std::string p_value);
-
 	void storeDeviceGwToken(std::string p_value);
 	void storeDeviceID(std::string p_value);
 	void storeDeviceToken(std::string p_value);
@@ -165,6 +158,9 @@ public:
 	void storeHeartbeatInterval(int p_value);
 	void storeEnctypt(int p_value);
 	void storeChallengeCode(std::string p_value);
+	bool storeSyncCode(std::string p_value){ return true;}
+	void storeDeviceIPAddr(std::string p_value);
+
 private:
 	std::string m_gwToken;        // Used for upstream message encryption key
 	std::string m_deviceID;
@@ -175,6 +171,10 @@ private:
 	int m_heartbeatInterval;
 	int m_encrypt;
 	std::string m_ChallengeCode;
+	std::string m_SyncCode;
+	std::string m_UserKey;
+	std::string m_deviceIPAddr;
+	const long m_startupTimestamps;
 };
 
 class DeviceReadOnlyData
@@ -213,27 +213,6 @@ private:
 class DeviceDataStore
 {
 public:
-	std::string getDeviceCheckSN()
-	{
-		RandomGenerator l_random;
-		return l_random.generatorRandomNumberString(32);
-	}
-
-	std::string getDeviceIPAddr();
-	void storeDeviceIPAddr(std::string p_value);
-
-	long getTimestamps();
-
-	std::string getUserKey()
-	{
-		RandomGenerator l_random;
-		if(m_UserKey.empty() == true)
-		{
-			m_UserKey = l_random.generatorRandomNumberString(32);
-		}
-		return m_UserKey;
-	}
-
 	DeviceReadOnlyData m_readOnlyData;
 	DeviceRunTimeData m_runTimeData;
 	DeviceBasicConfig m_basicConfig;
@@ -242,12 +221,6 @@ public:
 	DeviceHoldSTAInfo m_holdSTAinfo;
 	DeviceUplinkInterface m_uplinkInterface;
 	DeviceDownlinkInterface m_downlinkInterface;
-
-private:
-	std::string m_deviceIPAddr;
-	std::string m_UserKey;
 };
-
-
 
 #endif /* CLIENT_INCLUDE_DEVICEDATASTORE_HPP_ */
