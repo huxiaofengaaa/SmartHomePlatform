@@ -19,11 +19,13 @@ bool resolve_if56_online_response_msg(std::string msg, struct Interface56_Online
 		return false;
 	}
 
+	cJSON* respCode = cJSON_GetObjectItem(obj, "respCode");
 	cJSON* timestamp = cJSON_GetObjectItem(obj, "timestamp");
 	cJSON* encrypt = cJSON_GetObjectItem(obj, "encrypt");
 	cJSON* ChallengeCode = cJSON_GetObjectItem(obj, "ChallengeCode");
-	if(timestamp && encrypt && ChallengeCode)
+	if(timestamp && encrypt && ChallengeCode && respCode)
 	{
+		resp->respCode = respCode->valueint;
 		resp->timestamp = timestamp->valueint;
 		resp->encrypt = encrypt->valueint;
 		resp->ChallengeCode = ChallengeCode->valuestring;
@@ -31,7 +33,6 @@ bool resolve_if56_online_response_msg(std::string msg, struct Interface56_Online
 		return true;
 	}
 
-	cJSON* respCode = cJSON_GetObjectItem(obj, "respCode");
 	cJSON* ServerIP = cJSON_GetObjectItem(obj, "ServerIP");
 	if(respCode && ServerIP)
 	{
@@ -54,9 +55,11 @@ std::string build_if56_online_response_success_msg(struct Interface56_Online_Res
 		return l_result;
 	}
 
+	cJSON_AddNumberToObject(regJs, "respCode", resp.respCode);
 	cJSON_AddNumberToObject(regJs, "timestamp", resp.timestamp);
 	cJSON_AddNumberToObject(regJs, "encrypt", resp.encrypt);
 	cJSON_AddStringToObject(regJs, "ChallengeCode", resp.ChallengeCode.c_str());
+	cJSON_AddStringToObject(regJs, "ServerIP", resp.ServerIP.c_str());
 
 	char* regch = cJSON_Print(regJs);
 	l_result = std::string(regch);
