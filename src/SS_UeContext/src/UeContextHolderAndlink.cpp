@@ -81,6 +81,25 @@ bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceID,
 	return false;
 }
 
+bool UeContextHolderAndlink::pluginDisconnect(int p_sockfd, std::string p_host, int p_port)
+{
+	for(auto l_key : getAllKey())
+	{
+		auto l_Context = getRef(l_key);
+		if(l_Context->peerTCPHost == p_host
+				&& l_Context->peerTCPPort == p_port
+				&& l_Context->TCPSocketfd == p_sockfd)
+		{
+			l_Context->peerTCPHost = "";
+			l_Context->peerTCPPort = -1;
+			l_Context->TCPSocketfd = -1;
+			l_Context->isPlugIn = false;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UeContextHolderAndlink::setRegisterResponse(std::string p_deviceID,
 		struct Interface56_Register_Resp& resp)
 {

@@ -23,6 +23,7 @@ public:
 
 	std::vector<std::string> getDeviceList();
 	bool updateNetAddress(std::string p_deviceID, std::string p_host, int p_port, int p_sockfd, bool isTCP);
+	bool pluginDisconnect(int p_sockfd, std::string p_host, int p_port);
 
 	std::string DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken);
 	bool DeviceOnline(struct Interface56_Online_Req& onlinereq);

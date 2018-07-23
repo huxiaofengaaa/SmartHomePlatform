@@ -97,8 +97,10 @@ bool ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler(std::shared_ptr<ClientC
 bool ExcutionUnitAndlinkPlugIn::asycTCPCloseHandler(std::shared_ptr<ClientConnectInfo> p_closeInfo)
 {
 	LOG(INFO) << "Close, " << p_closeInfo;
-//	delClient(p_closeInfo->m_sockfd);
-	return true;
+	return m_ueContextHolder->pluginDisconnect(
+			p_closeInfo->m_sockfd,
+			p_closeInfo->m_ip,
+			p_closeInfo->m_port);
 }
 
 bool ExcutionUnitAndlinkPlugIn::controlReqPreconditionCheck(std::string p_deviceid)
@@ -106,6 +108,12 @@ bool ExcutionUnitAndlinkPlugIn::controlReqPreconditionCheck(std::string p_device
 	auto l_uecontext = m_ueContextHolder->getRef(p_deviceid);
 	if(!l_uecontext)
 	{
+		LOG(INFO) << "control device " << p_deviceid << " failed, not exist.";
+		return false;
+	}
+	if(l_uecontext->isPlugIn == false)
+	{
+		LOG(INFO) << "control device " << p_deviceid << " failed, not plugin.";
 		return false;
 	}
 	return true;
