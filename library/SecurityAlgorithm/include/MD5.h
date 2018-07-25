@@ -1,10 +1,3 @@
-/*
- * MD5.h
- *
- *  Created on: 2018Äê7ÔÂ20ÈÕ
- *      Author: Administrator
- */
-
 #ifndef CLIENT_MD5_MD5_H_
 #define CLIENT_MD5_MD5_H_
 
