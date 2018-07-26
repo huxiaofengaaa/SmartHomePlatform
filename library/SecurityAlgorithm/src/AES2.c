@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-static const char SBOX[16][16] =
+static const int SBOX[16][16] =
 {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -20,10 +20,7 @@ static const char SBOX[16][16] =
     0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16 };
 
-/**
- * 逆S盒
- */
-static const char S2BOX[16][16] =
+static const int S2BOX[16][16] =
 {
 	0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -42,134 +39,369 @@ static const char S2BOX[16][16] =
     0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d };
 
-void doExternKey(const char* p_key, char* l_externKey)
+const int Rcon[10] =
 {
+	0x01000000, 0x02000000,
+    0x04000000, 0x08000000,
+    0x10000000, 0x20000000,
+    0x40000000, 0x80000000,
+    0x1b000000, 0x36000000
+};
 
+
+int mergeFourIntoInteger(int* p_ptr)
+{
+    int one = p_ptr[0];
+    one = (one << 24) & 0xFF000000;
+
+    int two = p_ptr[1];
+    two = (two << 16) & 0x00FF0000;
+
+    int three = p_ptr[2];
+    three = (three << 8) & 0x0000FF00;
+
+    int four = p_ptr[3] & 0x000000FF;
+    return one | two | three | four;
 }
 
-void convertString2Array(const char* p_str, char p_array[][4])
+void splitIntegerIntoFour(int p_value, int* p_ptr)
 {
-	int l_row = 0;
+	p_ptr[0] = (p_value >> 24) & 0x000000FF;
+	p_ptr[1] = (p_value >> 16) & 0x000000FF;
+	p_ptr[2] = (p_value >> 8)  & 0x000000FF;
+	p_ptr[3] = (p_value >> 0)  & 0x000000FF;
+}
+
+int T(int p_value, int p_round)
+{
+	int i = 0;
+	int l_array[4] = { 0 };
+	splitIntegerIntoFour(p_value, l_array);
+
+	int tmp = l_array[0];
+	l_array[0] = l_array[1];
+	l_array[1] = l_array[2];
+	l_array[2] = l_array[3];
+	l_array[3] = tmp;
+
+	for(i = 0 ; i < 4 ; i++)
+	{
+		int l_row = (l_array[i] >> 4) & 0x0000000F;
+		int l_column = l_array[i] & 0x0000000F;
+		l_array[i] = SBOX[l_row][l_column];
+	}
+
+	int l_result = mergeFourIntoInteger(l_array);
+	return l_result ^ Rcon[p_round];
+}
+
+
+void doExternKey(const char* p_key, int* p_externKey)
+{
+	int i = 0;
+	int j = 0;
+	for(i = 0 ; i < 16 ; i++)
+	{
+		int l_curKey = (int)p_key[i];
+		p_externKey[i] = l_curKey & 0x000000FF;
+	}
+
+	int l_round = 0;
 	int l_column = 0;
-	for(l_row = 0; l_row < 4; l_row++)
+	for(l_round = 1 ; l_round <= 10 ; l_round++)
 	{
-		for(l_column = 0; l_column < 4; l_column++)
+		for(l_column = 0 ; l_column < 4 ; l_column++)
 		{
-			p_array[l_row][l_column] = p_str[l_column * 4 + l_row];
-		}
-	}
-}
+			int l_currentColumnWord = 0;
+			int* l_currentPosition = p_externKey + l_round * 16 + l_column * 4;
 
-void convertArray2String(char* p_str, char p_array[][4])
-{
-	int l_row = 0;
-	int l_column = 0;
-	for(l_row = 0; l_row < 4; l_row++)
-	{
-		for(l_column = 0; l_column < 4; l_column++)
-		{
-			p_str[l_column * 4 + l_row] = p_array[l_row][l_column];
-		}
-	}
-}
+			int l_columnWordDe4 = mergeFourIntoInteger(l_currentPosition - 16);
+			int l_columnWordDe1 = mergeFourIntoInteger(l_currentPosition - 4);
 
-void showArray(char p_array[][4])
-{
-	int l_row = 0;
-	int l_column = 0;
-	for(l_row = 0; l_row < 4; l_row++)
-	{
-		for(l_column = 0; l_column < 4; l_column++)
-		{
-			printf("0x%02x ", p_array[l_row][l_column] & 0x000000FF);
-		}
-		printf("\n");
-	}
-	printf("===========================================\n");
-}
-
-void addRoundKey(char p_array[][4], char* p_currentKey)
-{
-
-}
-
-void subBytesArray(char p_array[][4])
-{
-	int l_Row = 0;
-	int l_Column = 0;
-	printf("==================subBytesArray\n");
-	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
-	{
-		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
-		{
-			char l_currentValue = p_array[l_Row][l_Column];
-			int l_rowNumber    = (l_currentValue & 0xF0) >> 4 ;
-			int l_columnNumber = l_currentValue & 0x0F;
-			int value = SBOX[l_rowNumber][l_columnNumber];
-			p_array[l_Row][l_Column] = (char)(value & 0x000000FF);
-		}
-	}
-}
-
-void shiftRows(char p_array[][4])
-{
-	printf("==================shiftRows\n");
-	int l_Row = 0;
-	int l_Column = 0;
-	char l_rowTmp[4] = { 0 };
-	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
-	{
-		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
-		{
-			l_rowTmp[l_Column] = p_array[l_Row][l_Column];
-			int l_tgtColumn = l_Column + l_Row;
-			if(l_tgtColumn >= 4)
+			if((l_round * 4 + l_column) % 4 == 0)
 			{
-				p_array[l_Row][l_Column] = l_rowTmp[l_tgtColumn % 4];
+				l_currentColumnWord = l_columnWordDe4 ^ T(l_columnWordDe1, l_round - 1);
 			}
 			else
 			{
-				p_array[l_Row][l_Column] = p_array[l_Row][l_tgtColumn];
+				l_currentColumnWord = l_columnWordDe4 ^ l_columnWordDe1;
 			}
+			splitIntegerIntoFour(l_currentColumnWord, l_currentPosition);
+		}
+	}
+
+#if 0
+	printf("========================doExternKey\n");
+	for(i = 0 ; i < 11; i++)
+	{
+		for(j = 0 ; j < 16 ; j++)
+		{
+			printf("0x%02x ", p_externKey[i * 16 + j]);
+		}
+		printf("\n");
+	}
+	printf("===================================\n");
+#endif
+}
+
+void convertString2Array(const char* p_str, int p_array[][4])
+{
+	//printf("========================convertString2Array\n");
+	int l_row = 0;
+	int l_column = 0;
+	for(l_row = 0; l_row < 4; l_row++)
+	{
+		for(l_column = 0; l_column < 4; l_column++)
+		{
+			int value = p_str[l_column * 4 + l_row];
+			p_array[l_row][l_column] = value & 0x000000FF;
 		}
 	}
 }
 
-const char colM[4][4] =
+void convertArray2String(char* p_str, int p_array[][4])
 {
-	0x02, 0x03, 0x01, 0x01,
-    0x01, 0x02, 0x03, 0x01,
-    0x01, 0x01, 0x02, 0x03,
-    0x03, 0x01, 0x01, 0x02
+	//printf("========================convertArray2String\n");
+	int l_row = 0;
+	int l_column = 0;
+	for(l_row = 0; l_row < 4; l_row++)
+	{
+		for(l_column = 0; l_column < 4; l_column++)
+		{
+			int value = p_array[l_row][l_column];
+			p_str[l_column * 4 + l_row] = (char)(value & 0x000000FF);
+		}
+	}
+}
+
+void showArray(int p_array[][4])
+{
+	int l_row = 0;
+	int l_column = 0;
+	for(l_row = 0; l_row < 4; l_row++)
+	{
+		for(l_column = 0; l_column < 4; l_column++)
+		{
+			printf("0x%02x ", p_array[l_row][l_column]);
+		}
+		printf("\n");
+	}
+}
+
+void addRoundKey(int p_array[][4], int* p_currentKey)
+{
+	//printf("========================addRoundKey\n");
+	int l_column = 0;
+	int l_row = 0;
+
+	for(l_row = 0 ; l_row < 4 ; l_row++)
+	{
+		for(l_column = 0; l_column < 4; l_column++)
+		{
+			int l_key = p_currentKey[4 * l_column + l_row];
+			int l_value = p_array[l_row][l_column];
+			p_array[l_row][l_column] = l_key ^ l_value;
+		}
+	}
+}
+
+void subBytesArray(int p_array[][4])
+{
+	int l_Row = 0;
+	int l_Column = 0;
+	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
+	{
+		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
+		{
+			int l_currentValue = p_array[l_Row][l_Column];
+			int l_rowNumber    = (l_currentValue & 0x000000F0) >> 4 ;
+			int l_columnNumber =  l_currentValue & 0x0000000F;
+			p_array[l_Row][l_Column] = SBOX[l_rowNumber][l_columnNumber];
+		}
+	}
+}
+
+void deSubBytesArray(int p_array[][4])
+{
+	int l_Row = 0;
+	int l_Column = 0;
+	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
+	{
+		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
+		{
+			int l_currentValue = p_array[l_Row][l_Column];
+			int l_rowNumber    = (l_currentValue & 0x000000F0) >> 4 ;
+			int l_columnNumber =  l_currentValue & 0x0000000F;
+			p_array[l_Row][l_Column] = S2BOX[l_rowNumber][l_columnNumber];
+		}
+	}
+}
+
+void leftLoop4int(int array[4], int step)
+{
+	int i = 0;
+    int temp[4];
+    for(i = 0; i < 4; i++)
+    {
+        temp[i] = array[i];
+    }
+
+    int index = step % 4 == 0 ? 0 : step % 4;
+    for(i = 0; i < 4; i++)
+    {
+        array[i] = temp[index];
+        index++;
+        index = index % 4;
+    }
+}
+
+void rightLoop4int(int array[4], int step)
+{
+	int i = 0;
+    int temp[4];
+    for(i = 0; i < 4; i++)
+    {
+    	temp[i] = array[i];
+    }
+
+    int index = step % 4 == 0 ? 0 : step % 4;
+    index = 3 - index;
+    for(i = 3; i >= 0; i--)
+    {
+        array[i] = temp[index];
+        index--;
+        index = index == -1 ? 3 : index;
+    }
+}
+
+void shiftRows(int array[4][4])
+{
+	int i = 0;
+    int rowTwo[4], rowThree[4], rowFour[4];
+    //复制状态矩阵的第2,3,4行
+    for(i = 0; i < 4; i++)
+    {
+        rowTwo[i] = array[1][i];
+        rowThree[i] = array[2][i];
+        rowFour[i] = array[3][i];
+    }
+    //循环左移相应的位数
+    leftLoop4int(rowTwo, 1);
+    leftLoop4int(rowThree, 2);
+    leftLoop4int(rowFour, 3);
+
+    //把左移后的行复制回状态矩阵中
+    for(i = 0; i < 4; i++)
+    {
+        array[1][i] = rowTwo[i];
+        array[2][i] = rowThree[i];
+        array[3][i] = rowFour[i];
+    }
+}
+
+void deShiftRows(int array[4][4])
+{
+	int i = 0;
+    int rowTwo[4], rowThree[4], rowFour[4];
+    for(i = 0; i < 4; i++)
+    {
+        rowTwo[i] = array[1][i];
+        rowThree[i] = array[2][i];
+        rowFour[i] = array[3][i];
+    }
+
+    rightLoop4int(rowTwo, 1);
+    rightLoop4int(rowThree, 2);
+    rightLoop4int(rowFour, 3);
+
+    for(i = 0; i < 4; i++)
+    {
+        array[1][i] = rowTwo[i];
+        array[2][i] = rowThree[i];
+        array[3][i] = rowFour[i];
+    }
+}
+
+const int colM[4][4] =
+{
+	2, 3, 1, 1,
+    1, 2, 3, 1,
+    1, 1, 2, 3,
+    3, 1, 1, 2
 };
 
-char GFMul2(char p_value2)
+const int deColM[4][4] =
 {
-	char l_result = (p_value2 << 1) & 0xFE;
-	char a7 = (l_result >> 7) & 0x01;
-	if(a7 != 0)
-	{
-		l_result = l_result ^ 0x1b;
-	}
-	return l_result;
+	0x0000000E, 0x0000000B, 0x0000000D, 0x00000009,
+    0x00000009, 0x0000000E, 0x0000000B, 0x0000000D,
+    0x0000000D, 0x00000009, 0x0000000E, 0x0000000B,
+    0x0000000B, 0x0000000D, 0x00000009, 0x0000000E
+};
+
+int GFMul2(int s)
+{
+    int result = s << 1;
+    int a7 = result & 0x00000100;
+
+    if(a7 != 0)
+    {
+        result = result & 0x000000ff;
+        result = result ^ 0x1b;
+    }
+
+    return result;
 }
 
-char GFMul(char p_value1, char p_value2)
+int GFMul(int n, int s)
 {
-	if(p_value1 % 2 != 0)
-	{
-		return GFMul(p_value1 -1, p_value2) ^ p_value2;
-	}
-	return GFMul2(GFMul(p_value1 / 2, p_value2));
+    int result;
+
+    if(n == 1)
+    {
+    	return s;
+    }
+    else if(n == 2)
+    {
+    	return GFMul2(s);
+    }
+    else if(n == 3)
+    {
+    	return GFMul2(s) ^ s;
+    }
+    else if(n == 4)
+    {
+    	return GFMul2(GFMul2(s));
+    }
+    else if(n == 8)
+    {
+    	return GFMul2(GFMul(4, s));
+    }
+    else if(n == 0x9)
+    {
+    	return GFMul(8, s) ^ s;
+    }
+    else if(n == 0xb)//11
+    {
+    	return GFMul(8, s) ^ s ^ GFMul2(s);
+    }
+    else if(n == 0xd)//13
+    {
+    	return GFMul(8, s) ^ GFMul(4, s) ^ s;
+    }
+    else if(n == 0xe)//14
+    {
+    	return GFMul(8, s) ^ GFMul(4, s) ^ GFMul2(s);
+    }
+
+    return result;
 }
 
-void mixColumns(char p_array[][4])
+void mixColumns(int p_array[][4])
 {
-	printf("==================mixColumns\n");
 	int l_Row = 0;
 	int l_Column = 0;
 
-	char l_arrayTmp[4][4] = { 0 };
+	int l_arrayTmp[4][4] = { 0 };
 	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
 	{
 		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
@@ -177,12 +409,10 @@ void mixColumns(char p_array[][4])
 			l_arrayTmp[l_Row][l_Column] = p_array[l_Row][l_Column];
 		}
 	}
-	printf("==================mixColumns  - 1\n");
 	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
 	{
 		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
 		{
-			printf("%d %d \n", l_Row, l_Column);
 			p_array[l_Row][l_Column] =
 					  GFMul(colM[l_Row][0], l_arrayTmp[0][l_Column])
 					^ GFMul(colM[l_Row][1], l_arrayTmp[1][l_Column])
@@ -191,47 +421,81 @@ void mixColumns(char p_array[][4])
 
 		}
 	}
-	printf("==================mixColumns  - 2\n");
 }
 
-int AES128Encrypt2(const char *p_plainText, int p_plainSize, char* p_chiperText,
-		int p_chiperSize, const char *p_key)
+void deMixColumns(int p_array[][4])
+{
+	int l_Row = 0;
+	int l_Column = 0;
+
+	int l_arrayTmp[4][4] = { 0 };
+	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
+	{
+		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
+		{
+			l_arrayTmp[l_Row][l_Column] = p_array[l_Row][l_Column];
+		}
+	}
+	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
+	{
+		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
+		{
+			p_array[l_Row][l_Column] =
+					  GFMul(deColM[l_Row][0], l_arrayTmp[0][l_Column])
+					^ GFMul(deColM[l_Row][1], l_arrayTmp[1][l_Column])
+					^ GFMul(deColM[l_Row][2], l_arrayTmp[2][l_Column])
+					^ GFMul(deColM[l_Row][3], l_arrayTmp[3][l_Column]);
+		}
+	}
+}
+
+void addRoundTowArray(int aArray[4][4],int bArray[4][4])
+{
+	int l_Row = 0;
+	int l_Column = 0;
+	for(l_Row = 0 ; l_Row < 4 ; l_Row++)
+    {
+		for(l_Column = 0 ; l_Column < 4 ; l_Column++)
+        {
+            aArray[l_Row][l_Column] =
+            		aArray[l_Row][l_Column] ^ bArray[l_Row][l_Column];
+        }
+    }
+}
+
+int AES128Encrypt2(char *p_plainText, int p_plainSize, char* p_chiperText,
+		int p_chiperSize, char *p_key)
 {
 	int l_keySize =strlen(p_key);
 	int l_plainIndex = 0;
 
 	if(p_plainText == NULL || p_plainSize == 0 || p_plainSize % 16 != 0
 			|| p_chiperText == NULL || p_chiperSize < p_plainSize
-			|| l_keySize != 16)
+			|| l_keySize < 16)
 	{
+		printf("p_plainSize = %d, p_chiperSize = %d, l_keySize = %d \n",
+				p_plainSize, p_chiperSize, l_keySize);
 		return -1;
 	}
 
-	char l_externKey[16 * 11] = { 0 };
+	int l_externKey[16 * 11] = { 0 };
 	doExternKey(p_key, l_externKey);
 
-	char l_CurrentArray[4][4] = { 0 };
-	showArray(l_CurrentArray);
+	int l_CurrentArray[4][4] = { 0 };
 	for(l_plainIndex = 0; l_plainIndex < p_plainSize; l_plainIndex += 16)
 	{
 		convertString2Array(p_plainText + l_plainIndex, l_CurrentArray);
-		showArray(l_CurrentArray);
-
 		addRoundKey(l_CurrentArray, l_externKey + (0 * 16));
 
 		int l_currentRound = 1;
-		for(l_currentRound = 1 ; l_currentRound <= 1 ; l_currentRound++)
+		for(l_currentRound = 1 ; l_currentRound <= 9 ; l_currentRound++)
 		{
 			subBytesArray(l_CurrentArray);
-			showArray(l_CurrentArray);
-
             shiftRows(l_CurrentArray);
-            showArray(l_CurrentArray);
-
             mixColumns(l_CurrentArray);
-
             addRoundKey(l_CurrentArray, l_externKey + (l_currentRound * 16));
 		}
+		//showArray(l_CurrentArray);
 		subBytesArray(l_CurrentArray);//字节代换
         shiftRows(l_CurrentArray);//行移位
         addRoundKey(l_CurrentArray, l_externKey + (10 * 16));
@@ -241,4 +505,53 @@ int AES128Encrypt2(const char *p_plainText, int p_plainSize, char* p_chiperText,
 	return 0;
 }
 
+int AES128Decrypt2(char *p_chiperText, int p_chiperSize, char* p_plainText,
+		int p_plainSize, char *p_key)
+{
+    int l_row = 0;
+    int l_column = 0;
+	int l_keySize =strlen(p_key);
+	int l_chiperIndex = 0;
 
+	if(p_plainText == NULL || p_plainSize == 0
+			|| p_chiperText == NULL || p_chiperSize % 16 != 0
+			|| l_keySize < 16)
+	{
+		printf("p_plainSize = %d, p_chiperSize = %d, l_keySize = %d \n",
+				p_plainSize, p_chiperSize, l_keySize);
+		return -1;
+	}
+	int l_externKey[16 * 11] = { 0 };
+	doExternKey(p_key, l_externKey);
+
+	int l_CurrentArray[4][4] = { 0 };
+	for(l_chiperIndex = 0; l_chiperIndex < p_chiperSize; l_chiperIndex += 16)
+	{
+		convertString2Array(p_chiperText + l_chiperIndex, l_CurrentArray);
+		addRoundKey(l_CurrentArray, l_externKey + (10 * 16));
+		int l_currentRound = 9;
+		for(l_currentRound = 9 ; l_currentRound >= 1 ; l_currentRound--)
+		{
+            deSubBytesArray(l_CurrentArray);
+            deShiftRows(l_CurrentArray);
+            deMixColumns(l_CurrentArray);
+
+            int l_currentKey[4][4] = { 0 };
+            for(l_row = 0 ; l_row < 4 ; l_row++)
+            {
+            	for(l_column = 0 ; l_column < 4 ; l_column++)
+            	{
+            		l_currentKey[l_row][l_column] =
+            				l_externKey[l_currentRound * 16 + 4 * l_column + l_row];
+            	}
+            }
+            deMixColumns(l_currentKey);
+            addRoundTowArray(l_CurrentArray, l_currentKey);
+		}
+		deSubBytesArray(l_CurrentArray);
+        deShiftRows(l_CurrentArray);
+        addRoundKey(l_CurrentArray, l_externKey + (0 * 16));
+        convertArray2String(p_plainText + l_chiperIndex, l_CurrentArray);
+	}
+	return 0;
+}

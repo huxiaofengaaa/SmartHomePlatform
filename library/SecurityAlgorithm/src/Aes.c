@@ -1,6 +1,6 @@
 #include <string.h>
-#include "Aes.h"
 #include <stdio.h>
+#include "../include/AES.h"
 
 /**
  * S盒
@@ -256,6 +256,13 @@ static void extendKey(char *key)
             w[i] = w[i - 4] ^ w[i - 1];
         }
     }
+#if 0
+    for(i = 0 ; i < 44 ; i++)
+    {
+    	printf("0x%0x ", w[i]);
+    }
+    printf("\n");
+#endif
 }
 
 /**
@@ -482,6 +489,20 @@ static int checkKeyLen(int len)
     }
 }
 
+static void showArray(int p_array[][4])
+{
+	int l_row = 0;
+	int l_column = 0;
+	for(l_row = 0; l_row < 4; l_row++)
+	{
+		for(l_column = 0; l_column < 4; l_column++)
+		{
+			printf("0x%02x ", p_array[l_row][l_column]);
+		}
+		printf("\n");
+	}
+}
+
 /**
  * 参数 p: 明文的字符串数组。
  * 参数 plen: 明文的长度。
@@ -527,7 +548,7 @@ int AES128Encrypt(char *p_plainText, int p_plainSize, char* p_chiperText,
             mixColumns(pArray);//列混合
             addRoundKey(pArray, i);
         }
-
+        //showArray(pArray);
         //第10轮
         subBytes(pArray);//字节代换
         shiftRows(pArray);//行移位
