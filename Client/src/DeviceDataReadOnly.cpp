@@ -35,7 +35,7 @@ std::string DeviceReadOnlyData::initProductToken() const
 std::string DeviceReadOnlyData::initDeviceSn() const
 {
 	RandomGenerator l_random;
-	return l_random.generatorRandomNumberString(32);
+	return l_random.generatorRandomNumberString(16);
 }
 
 std::string DeviceReadOnlyData::initFirmWareVersion() const

@@ -1,6 +1,7 @@
 #include "ExcutionUnitClient.hpp"
 #include "AndlinkDeviceControlEvent.hpp"
 #include <stdio.h>
+#include "AES.h"
 
 bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 {
@@ -13,9 +14,16 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 	struct Interface56_WiFiSwitch_Req wifi_switch_req;
 	struct Interface56_WPS_Req wps_req;
 
-	if(true == resolveAndlinkDeviceLEDControlReq(p_req, &led_control_req))
+	std::string l_plainReq = chiperDecrypt(p_req);
+	if(l_plainReq.empty() == true)
 	{
-		Interface56_ControlCommon_Resp resp;
+		return false;
+	}
+	printf("Recv Control Req Msg: %s\n", l_plainReq.c_str());
+
+	Interface56_ControlCommon_Resp resp;
+	if(true == resolveAndlinkDeviceLEDControlReq(l_plainReq, &led_control_req))
+	{
 		resp.ID = led_control_req.ID;
 		int l_LEDOnOff = led_control_req.LEDOnOff;
 		if(true == m_deviceDataStore.m_basicConfig.setLEDOnOff(l_LEDOnOff))
@@ -26,19 +34,13 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 0; // Received Success
 		}
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceMacFilterReq(p_req, &mac_filter_req))
+	else if(true == resolveAndlinkDeviceMacFilterReq(l_plainReq, &mac_filter_req))
 	{
 		int l_macFilterEnable = mac_filter_req.MacFilterEnable;
 		int l_macFilterPolicy = mac_filter_req.MacFilterPolicy;
 		std::string l_macFilterEntry = mac_filter_req.MacFilterEntries;
 
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = mac_filter_req.ID;
 		if(true == m_deviceDataStore.m_basicConfig.setMacFilter(l_macFilterEnable,
 				l_macFilterPolicy, l_macFilterEntry))
@@ -49,17 +51,11 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 0;
 		}
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceRadioConfigReq(p_req, &radio_config_req))
+	else if(true == resolveAndlinkDeviceRadioConfigReq(l_plainReq, &radio_config_req))
 	{
 		std::string l_radio = radio_config_req.Radio;
 		std::string l_TransmitPower = radio_config_req.TransmitPower;
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = radio_config_req.ID;
 		bool l_result = false;
 		if(l_radio == "2.4G")
@@ -82,17 +78,11 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 1003;
 		}
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceRebootReq(p_req, &reboot_req))
+	else if(true == resolveAndlinkDeviceRebootReq(l_plainReq, &reboot_req))
 	{
 		std::string l_ControlType = reboot_req.ControlType;
 
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = reboot_req.ID;
 		bool l_result = false;
 		if(l_ControlType == "Reboot")
@@ -114,20 +104,13 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 1003;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceRoamingConfigReq(p_req, &roaming_req))
+	else if(true == resolveAndlinkDeviceRoamingConfigReq(l_plainReq, &roaming_req))
 	{
 		int l_roamingSwitch = roaming_req.RoamingSwitch;
 		int l_lowRSSI24G = roaming_req.LowRSSI24G;
 		int l_lowRSSI5G = roaming_req.LowRSSI5G;
 
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = roaming_req.ID;
 		if(true == m_deviceDataStore.m_basicConfig.setRoaming(l_roamingSwitch,
 				l_lowRSSI24G, l_lowRSSI5G))
@@ -138,15 +121,9 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 0;
 		}
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceWiFiParameterSyncReq(p_req, &wifi_parameter_req))
+	else if(true == resolveAndlinkDeviceWiFiParameterSyncReq(l_plainReq, &wifi_parameter_req))
 	{
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = wifi_parameter_req.ID;
 
 		bool l_result = false;
@@ -200,19 +177,12 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 0;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceWiFiSwitchReq(p_req, &wifi_switch_req))
+	else if(true == resolveAndlinkDeviceWiFiSwitchReq(l_plainReq, &wifi_switch_req))
 	{
 		std::string l_radio = wifi_switch_req.Radio;
 		int l_enable = wifi_switch_req.Enable;
 
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = wifi_switch_req.ID;
 		bool l_result = false;
 		if(l_radio == "2.4G")
@@ -235,18 +205,11 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 1003;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceWPSReq(p_req, &wps_req))
+	else if(true == resolveAndlinkDeviceWPSReq(l_plainReq, &wps_req))
 	{
 		std::string l_radio = wps_req.Radio;
 
-		Interface56_ControlCommon_Resp resp;
 		resp.ID = wps_req.ID;
 		bool l_result = false;
 		if(l_radio == "2.4G")
@@ -269,14 +232,24 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 		{
 			resp.respCode = 1003;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceControlCommonResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
 	}
-	return false;
+	else
+	{
+		return false;
+	}
+
+	std::string l_plainResp = buildAndlinkDeviceControlCommonResp(resp);
+	if(l_plainResp.empty() == true)
+	{
+		return false;
+	}
+	printf("Send Control Resp Msg: %s\n", l_plainResp.c_str());
+	if(false == writeTCPString(plainEncrypt(l_plainResp)))
+	{
+		printf("send interface5_6 msg failed\n");
+		return false;
+	}
+	return true;
 }
 
 

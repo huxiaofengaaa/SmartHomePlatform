@@ -18,6 +18,10 @@ public:
 	void shutdown();
 private:
 	void mainloop();
+
+	std::string chiperDecrypt(std::string p_chiperText);
+	std::string plainEncrypt(std::string p_plainText);
+
 	bool deviceControlChecker(std::string p_req);
 	bool deviceQueryChecker(std::string p_req);
 

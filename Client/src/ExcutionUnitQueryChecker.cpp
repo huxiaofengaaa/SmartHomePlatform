@@ -7,7 +7,15 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 	printf("deviceQueryChecker running....\n");
 	struct Interface56_CommonQuery_Req l_queryReq;
 
-	if(true == resolveAndlinkDeviceApConfigInfoQueryReq(p_req, &l_queryReq))
+	std::string l_plainReq = chiperDecrypt(p_req);
+	if(l_plainReq.empty() == true)
+	{
+		return false;
+	}
+	printf("Recv Query Req Msg: %s\n", l_plainReq.c_str());
+
+	std::string l_plainResp;
+	if(true == resolveAndlinkDeviceApConfigInfoQueryReq(l_plainReq, &l_queryReq))
 	{
 		Interface56_ApConfigInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
@@ -77,11 +85,7 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 			resp.Configurations = NULL;
 			resp.ConfigurationNumber = 0;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceApConfigInfoQueryResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
+		l_plainResp = buildAndlinkDeviceApConfigInfoQueryResp(resp);
 		if(l_radio)
 		{
 			delete[] l_radio;
@@ -90,9 +94,8 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 		{
 			delete[] l_radioConfiguration;
 		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceSTAInfoQueryReq(p_req, &l_queryReq))
+	else if(true == resolveAndlinkDeviceSTAInfoQueryReq(l_plainReq, &l_queryReq))
 	{
 		Interface56_STAInfo_Resp resp;
 		resp.ID = l_queryReq.ID;
@@ -121,18 +124,13 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 			resp.DevicesNumber = 0;
 			resp.Devices = NULL;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceSTAInfoQueryResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
+		l_plainResp = buildAndlinkDeviceSTAInfoQueryResp(resp);
 		if(l_staDevice)
 		{
 			delete[] l_staDevice;
 		}
-		return true;
 	}
-	else if(true == resolveAndlinkDeviceUplinkStatusQueryReq(p_req, &l_queryReq))
+	else if(true == resolveAndlinkDeviceUplinkStatusQueryReq(l_plainReq, &l_queryReq))
 	{
 		Interface56_UplinkStatus_Resp resp;
 		resp.ID = l_queryReq.ID;
@@ -148,13 +146,9 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 		resp.RxRate = m_deviceDataStore.m_uplinkInterface.getUplinkRxRate();
 		resp.TxRate = m_deviceDataStore.m_uplinkInterface.getUplinkTxRate();
 
-		if(false == writeTCPString(buildAndlinkDeviceUplinkStatusQueryResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
-		return true;
+		l_plainResp = buildAndlinkDeviceUplinkStatusQueryResp(resp);
 	}
-	else if(true == resolveAndlinkDeviceWiFiStatsQueryReq(p_req, &l_queryReq))
+	else if(true == resolveAndlinkDeviceWiFiStatsQueryReq(l_plainReq, &l_queryReq))
 	{
 		Interface56_WiFiStats_Resp resp;
 		resp.ID = l_queryReq.ID;
@@ -197,17 +191,23 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 			resp.Status = NULL;
 			resp.StatusNumber = 0;
 		}
-
-		if(false == writeTCPString(buildAndlinkDeviceWiFiStatsQueryResp(resp)))
-		{
-			printf("send interface5_6 msg failed\n");
-		}
+		l_plainResp = buildAndlinkDeviceWiFiStatsQueryResp(resp);
 		if(l_downlinkInterface)
 		{
 			delete[] l_downlinkInterface;
 		}
-		return true;
 	}
-	return false;
+
+	if(l_plainResp.empty() == true)
+	{
+		return false;
+	}
+	printf("Send Control Resp Msg: %s\n", l_plainResp.c_str());
+	if(false == writeTCPString(plainEncrypt(l_plainResp)))
+	{
+		printf("send interface5_6 msg failed\n");
+		return false;
+	}
+	return true;
 }
 
