@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	showArray(src, 32, "src");
 	showArray(key, 16, "key");
 
-#if 1
+#if 0
 	char l_AES128Encrypt[128] = { 0 };
 	AES128Encrypt(src, 32, l_AES128Encrypt, 32, key);
 	showArray(l_AES128Encrypt, 32, "l_AES128Encrypt");
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	AES128Decrypt2(l_AES128Encrypt2, 32, l_AES128Decrypt2, 32, key);
 	showArray(l_AES128Decrypt2, 32, "l_AES128Decrypt2");
 
-#if 1
+#if 0
 	// ECB
 	char l_AES_ECB_Encrypt[128] = { 0 };
 	AES_ECB_Encrypt(src, 31, l_AES_ECB_Encrypt, 32, key, PKCS5Padding);
@@ -52,6 +52,7 @@ int main(int argc, char** argv)
 	char l_AES_ECB_Decrypt[128] = { 0 };
 	AES_ECB_Decrypt(l_AES_ECB_Encrypt, 32, l_AES_ECB_Decrypt, 32, key);
 	showArray(l_AES_ECB_Decrypt, 32, "l_AES_ECB_Decrypt");
+#endif
 
 	// CBC
 	char l_AES_CBC_Encrypt[128] = { 0 };
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
 	AES_CBC_Decrypt(l_AES_CBC_Encrypt, 32, l_AES_CBC_Decrypt, 32, key, NULL);
 	showArray(l_AES_CBC_Decrypt, 32, "l_AES_CBC_Decrypt");
 
+#if 0
 	// CFB
 	char l_AES_CFB_Encrypt[128] = { 0 };
 	AES_CFB_Encrypt(src, 31, l_AES_CFB_Encrypt, 32, key, NULL, PKCS5Padding);

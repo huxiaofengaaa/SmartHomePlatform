@@ -8,30 +8,30 @@ extern "C"
 
 typedef enum
 {
+	AES_SUCCESS          = 0,
+	AES_ERROR_KEY        = -1001,
+	AES_ERROR_INITVECTOR = -1002,
+	AES_ERROR_PLAINTEXT  = -1003,
+	AES_ERROR_CHIPERTEXT = -1004
+}AES_STATUS;
+
+typedef enum
+{
 	PKCS5Padding,
 	PKCS7Padding
 }PaddingType;
 
-int AES128Encrypt(char *p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char *key);
-int AES128Encrypt2(char *p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char *p_key);
-int AES_ECB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char* p_key,
-		PaddingType p_type);
-int AES_CBC_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char* p_key,
-		char* p_initVector, PaddingType p_type);
-int AES_CFB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char* p_key,
-		char* p_initVector, PaddingType p_type);
-int AES_OFB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText, int p_chiperSize, char* p_key,
-		char* p_initVector, PaddingType p_type);
+int AES128Encrypt2(const char *p_plainText, const int p_plainSize, char* p_chiperText,
+		const int p_chiperSize, const char *p_key);
 
-int AES128Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char* key);
-int AES128Decrypt2(char *p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char *p_key);
-int AES_ECB_Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char* p_key);
-int AES_CBC_Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char* p_key,
-		char* p_initVector);
-int AES_CFB_Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char* p_key,
-		char* p_initVector);
-int AES_OFB_Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText, int p_plainSize, char* p_key,
-		char* p_initVector);
+int AES128Decrypt2(const char *p_chiperText, const int p_chiperSize, char* p_plainText,
+		const int p_plainSize, const char *p_key);
+
+AES_STATUS AES_CBC_Encrypt(const char* p_plainText, const int p_plainSize, char* p_chiperText,
+		const int p_chiperSize, const char* p_key, const char* p_initVector, PaddingType p_type);
+
+AES_STATUS AES_CBC_Decrypt(const char* p_chiperText, const int p_chiperSize,
+		char* p_plainText, const int p_plainSize, const char* p_key, const char* p_initVector);
 
 #ifdef __cplusplus
 }

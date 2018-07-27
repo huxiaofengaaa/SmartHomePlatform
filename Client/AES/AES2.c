@@ -463,8 +463,8 @@ void addRoundTowArray(int aArray[4][4],int bArray[4][4])
     }
 }
 
-int AES128Encrypt2(char *p_plainText, int p_plainSize, char* p_chiperText,
-		int p_chiperSize, char *p_key)
+int AES128Encrypt2(const char *p_plainText, const int p_plainSize, char* p_chiperText,
+		const int p_chiperSize, const char *p_key)
 {
 	int l_keySize =strlen(p_key);
 	int l_plainIndex = 0;
@@ -505,8 +505,8 @@ int AES128Encrypt2(char *p_plainText, int p_plainSize, char* p_chiperText,
 	return 0;
 }
 
-int AES128Decrypt2(char *p_chiperText, int p_chiperSize, char* p_plainText,
-		int p_plainSize, char *p_key)
+int AES128Decrypt2(const char *p_chiperText, const int p_chiperSize, char* p_plainText,
+		const int p_plainSize, const char *p_key)
 {
     int l_row = 0;
     int l_column = 0;
