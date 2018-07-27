@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	showArray(src, 32, "src");
 	showArray(key, 16, "key");
 
-#if 0
+#if 1
 	char l_AES128Encrypt[128] = { 0 };
 	AES128Encrypt(src, 32, l_AES128Encrypt, 32, key);
 	showArray(l_AES128Encrypt, 32, "l_AES128Encrypt");
@@ -44,6 +44,7 @@ int main(int argc, char** argv)
 	showArray(l_AES128Decrypt2, 32, "l_AES128Decrypt2");
 
 #if 1
+	// ECB
 	char l_AES_ECB_Encrypt[128] = { 0 };
 	AES_ECB_Encrypt(src, 31, l_AES_ECB_Encrypt, 32, key, PKCS5Padding);
 	showArray(l_AES_ECB_Encrypt, 32, "l_AES_ECB_Encrypt");
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
 	AES_ECB_Decrypt(l_AES_ECB_Encrypt, 32, l_AES_ECB_Decrypt, 32, key);
 	showArray(l_AES_ECB_Decrypt, 32, "l_AES_ECB_Decrypt");
 
+	// CBC
 	char l_AES_CBC_Encrypt[128] = { 0 };
 	AES_CBC_Encrypt(src, 31, l_AES_CBC_Encrypt, 32, key, NULL, PKCS5Padding);
 	showArray(l_AES_CBC_Encrypt, 32, "l_AES_CBC_Encrypt");
@@ -59,6 +61,24 @@ int main(int argc, char** argv)
 	char l_AES_CBC_Decrypt[128] = { 0 };
 	AES_CBC_Decrypt(l_AES_CBC_Encrypt, 32, l_AES_CBC_Decrypt, 32, key, NULL);
 	showArray(l_AES_CBC_Decrypt, 32, "l_AES_CBC_Decrypt");
+
+	// CFB
+	char l_AES_CFB_Encrypt[128] = { 0 };
+	AES_CFB_Encrypt(src, 31, l_AES_CFB_Encrypt, 32, key, NULL, PKCS5Padding);
+	showArray(l_AES_CFB_Encrypt, 32, "l_AES_CFB_Encrypt");
+
+	char l_AES_CFB_Decrypt[128] = { 0 };
+	AES_CFB_Decrypt(l_AES_CFB_Encrypt, 32, l_AES_CFB_Decrypt, 32, key, NULL);
+	showArray(l_AES_CFB_Decrypt, 32, "l_AES_CFB_Decrypt");
+
+	// OFB
+	char l_AES_OFB_Encrypt[128] = { 0 };
+	AES_OFB_Encrypt(src, 31, l_AES_OFB_Encrypt, 32, key, NULL, PKCS5Padding);
+	showArray(l_AES_OFB_Encrypt, 32, "l_AES_OFB_Encrypt");
+
+	char l_AES_OFB_Decrypt[128] = { 0 };
+	AES_OFB_Decrypt(l_AES_OFB_Encrypt, 32, l_AES_OFB_Decrypt, 32, key, NULL);
+	showArray(l_AES_OFB_Decrypt, 32, "l_AES_OFB_Decrypt");
 #endif
 	return 0;
 }
