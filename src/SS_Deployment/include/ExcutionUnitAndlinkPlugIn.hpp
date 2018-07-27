@@ -50,7 +50,7 @@ private:
 	bool controlReqPreconditionCheck(std::string p_deviceid);
 	std::shared_ptr<EventTypeTCPClientDataObject> buildTCPClientDataObject(
 			std::string p_deviceID, std::string p_rawData);
-	bool sendPlugInRequest(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
+	bool sendPlugInRequest(std::string p_deviceid, std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj);
 
 	std::string m_host;
 	int m_port;

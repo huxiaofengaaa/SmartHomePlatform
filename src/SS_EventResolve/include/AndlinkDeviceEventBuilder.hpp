@@ -20,6 +20,10 @@ public:
 	{
 
 	}
+
+	std::string chiperDecrypt(std::string p_deviceID, std::string p_chiperText);
+	std::string plainEncrypt(std::string p_deviceID, std::string p_plainText);
+
 	// plugin and disconnect
 	std::string buildPlugIuRequest(std::string p_deviceid, std::string p_host, int p_port);
 	std::string buildDisconnectRequest(std::string p_deviceid);

@@ -128,11 +128,15 @@ std::shared_ptr<EventTypeTCPClientDataObject> ExcutionUnitAndlinkPlugIn::buildTC
 }
 
 bool ExcutionUnitAndlinkPlugIn::sendPlugInRequest(
-		std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
+		std::string p_deviceid, std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
 {
+	LOG(INFO) << p_eventObj;
+	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
+	p_eventObj->m_rawData = l_andlinkBuilder->plainEncrypt(p_deviceid,
+			p_eventObj->m_rawData);
+
 	if(writeTCPServerString(p_eventObj))
 	{
-		LOG(INFO) << p_eventObj;
 		countRecvPacket(p_eventObj->m_rawData.size());
 		return true;
 	}
@@ -153,7 +157,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerDisconnect(std::string p_deviceid)
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_eventObj = buildTCPClientDataObject(
 			p_deviceid, l_andlinkBuilder->buildDisconnectRequest(p_deviceid));
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerQuery(std::string p_deviceid, std::string p_param)
@@ -186,7 +190,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerQuery(std::string p_deviceid, std::string
 		return false;
 	}
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_queryReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerReboot(std::string p_deviceid)
@@ -199,7 +203,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerReboot(std::string p_deviceid)
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildRebootRequest(p_deviceid);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerLEDControl(std::string p_deviceid, bool p_turnOn)
@@ -212,7 +216,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerLEDControl(std::string p_deviceid, bool p
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildLEDControlRequest(p_deviceid, p_turnOn);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerPowerControl(std::string p_deviceid, int p_select, int p_percent)
@@ -225,7 +229,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerPowerControl(std::string p_deviceid, int 
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildRadioPowerRequest(p_deviceid, p_select, p_percent);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerMACFilterControl(std::string p_deviceid, bool p_enable,
@@ -239,7 +243,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerMACFilterControl(std::string p_deviceid, 
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildMacFilterRequest(p_deviceid, p_enable, p_policy, p_entry);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerChannelReselectControl(std::string p_deviceid, int p_select)
@@ -252,7 +256,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerChannelReselectControl(std::string p_devi
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildChannelReselectRequest(p_deviceid, p_select);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerRoamingConfigControl(std::string p_deviceid,
@@ -266,7 +270,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerRoamingConfigControl(std::string p_device
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildRoamingConfigRequest(p_deviceid, p_switch, p_val1, p_val2);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerWiFiSwitchControl(std::string p_deviceid, bool p_turnOn, int p_select)
@@ -279,7 +283,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerWiFiSwitchControl(std::string p_deviceid,
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildWiFiSwitchRequest(p_deviceid, p_turnOn, p_select);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerWPSControl(std::string p_deviceid, int p_select)
@@ -292,7 +296,7 @@ bool ExcutionUnitAndlinkPlugIn::triggerWPSControl(std::string p_deviceid, int p_
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildWPSRequest(p_deviceid, p_select);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::triggerWiFiParameterSyncControl(std::string p_deviceid)
@@ -305,5 +309,5 @@ bool ExcutionUnitAndlinkPlugIn::triggerWiFiParameterSyncControl(std::string p_de
 	auto l_andlinkBuilder = std::make_shared<AndlinkDeviceEventBuilder>(m_ueContextHolder);
 	auto l_rawReq = l_andlinkBuilder->buildWiFiParameterSyncRequest(p_deviceid);
 	auto l_eventObj = buildTCPClientDataObject(p_deviceid, l_rawReq.second);
-	return sendPlugInRequest(l_eventObj);
+	return sendPlugInRequest(p_deviceid, l_eventObj);
 }
