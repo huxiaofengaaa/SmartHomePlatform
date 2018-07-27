@@ -273,7 +273,7 @@ bool ExcutionUnitClient::devicePluginAuth()
 bool ExcutionUnitClient::devicePluginHeartbeat()
 {
 	std::string l_req = getHeartbeatReq();
-	std::string l_resp = writeAndReadTCPString(l_req);
+	std::string l_resp = writeAndReadUDPString(l_req);
 	if(l_resp.empty() == true)
 	{
 		return false;

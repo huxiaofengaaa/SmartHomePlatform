@@ -23,7 +23,6 @@ std::string AndlinkDeviceEventHandler::run(
 				l_registerReq.deviceMac, l_registerReq.deviceType, l_registerReq.productToken);
 		if(l_deviceID.empty() == false)
 		{
-			m_ueContextHolder->updateNetAddress(l_deviceID, p_host, p_port, p_sockfd, isTCP);
 			struct Interface56_Register_Resp l_registerResp;
 			if(true == m_ueContextHolder->setRegisterResponse(l_deviceID, l_registerResp))
 			{
@@ -37,10 +36,6 @@ std::string AndlinkDeviceEventHandler::run(
 		auto l_deviceid = l_onlineReq.deviceId;
 		struct Interface56_Online_Resp l_onlineResp;
 		bool l_response = m_ueContextHolder->DeviceOnline(l_onlineReq);
-		if(true == l_response)
-		{
-			m_ueContextHolder->updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
-		}
 		m_ueContextHolder->setOnlineResponse(l_deviceid, l_onlineResp, l_response);
 		if(true == l_response)
 		{
@@ -58,6 +53,10 @@ std::string AndlinkDeviceEventHandler::run(
 		struct Interface56_Auth_Resp l_authResp;
 		bool l_response = m_ueContextHolder->DeviceAuth(l_deviceMAC, l_deviceCheckSN);
 		m_ueContextHolder->setAuthResponse(l_response, l_authResp);
+		if(true == l_response)
+		{
+			m_ueContextHolder->updateNetAddress(l_deviceMAC, p_host, p_port, p_sockfd, isTCP);
+		}
 		return build_if56_auth_response_msg(l_authResp);
 	}
 	else if(true == resolve_if56_heartbeat_request_msg(p_rawData, &l_heartbeatReq))
@@ -67,10 +66,6 @@ std::string AndlinkDeviceEventHandler::run(
 		auto l_deviceMAC = l_heartbeatReq.MAC;
 		auto l_deviceIPAddr = l_heartbeatReq.IPAddr;
 		bool l_response = m_ueContextHolder->DeviceHeartbeat(l_deviceid, l_deviceMAC, l_deviceIPAddr);
-		if(true == l_response)
-		{
-			m_ueContextHolder->updateNetAddress(l_deviceid, p_host, p_port, p_sockfd, isTCP);
-		}
 		m_ueContextHolder->setHeartbeatResponse(l_response, l_heartbeatResp);
 		return build_if56_heartbeat_response_msg(l_heartbeatResp);
 	}

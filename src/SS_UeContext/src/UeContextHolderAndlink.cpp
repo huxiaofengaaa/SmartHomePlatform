@@ -56,10 +56,11 @@ std::string UeContextHolderAndlink::getDeviceIDByMAC(std::string p_deviceMac)
 	return std::string();
 }
 
-bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceID,
+bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceMAC,
 		std::string p_host, int p_port, int p_sockfd, bool isTCP)
 {
-	auto l_uecontext = getRef(p_deviceID);
+	std::string l_deviceID = getDeviceIDByMAC(p_deviceMAC);
+	auto l_uecontext = getRef(l_deviceID);
 	if(l_uecontext)
 	{
 		if(isTCP == true)
