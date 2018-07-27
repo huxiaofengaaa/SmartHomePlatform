@@ -5,6 +5,7 @@ include_directories(include)
 include_directories(AndlinkDeviceInclude)
 include_directories(cJSON)
 include_directories(MD5)
+include_directories(AES)
 
 set(ANDLINK_CONTROL_SRCS AndlinkDeviceControlEvent/AndlinkDeviceWiFiParameterSyncReq.cpp
                          AndlinkDeviceControlEvent/AndlinkDeviceWPSReq.cpp
@@ -43,7 +44,9 @@ set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp)
 
 set(EXTERNAL_SOURCE cJSON/cJSON.c
-                    MD5/MD5.c)
+                    MD5/MD5.c
+                    AES/AES2.c
+                    AES/AESCBC.c)
 
 add_executable(SmartHomeDevice SmartHomeClient.cpp
                                src/RandomGenerator.cpp
