@@ -278,19 +278,16 @@ void shiftRows(int array[4][4])
 {
 	int i = 0;
     int rowTwo[4], rowThree[4], rowFour[4];
-    //复制状态矩阵的第2,3,4行
     for(i = 0; i < 4; i++)
     {
         rowTwo[i] = array[1][i];
         rowThree[i] = array[2][i];
         rowFour[i] = array[3][i];
     }
-    //循环左移相应的位数
     leftLoop4int(rowTwo, 1);
     leftLoop4int(rowThree, 2);
     leftLoop4int(rowFour, 3);
 
-    //把左移后的行复制回状态矩阵中
     for(i = 0; i < 4; i++)
     {
         array[1][i] = rowTwo[i];
@@ -496,8 +493,8 @@ int AES128Encrypt2(const char *p_plainText, const int p_plainSize, char* p_chipe
             addRoundKey(l_CurrentArray, l_externKey + (l_currentRound * 16));
 		}
 		//showArray(l_CurrentArray);
-		subBytesArray(l_CurrentArray);//字节代换
-        shiftRows(l_CurrentArray);//行移位
+		subBytesArray(l_CurrentArray);
+        shiftRows(l_CurrentArray);
         addRoundKey(l_CurrentArray, l_externKey + (10 * 16));
         convertArray2String(p_chiperText + l_plainIndex, l_CurrentArray);
 	}

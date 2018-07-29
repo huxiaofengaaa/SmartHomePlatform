@@ -1,8 +1,8 @@
 #include <string.h>
 #include <stdio.h>
-#include "AES.h"
+#include "Aes.h"
 
-int AES_OFB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText,
+int AES_CFB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText,
 		int p_chiperSize, char* p_key, char* p_initVector, PaddingType p_type)
 {
 	if(p_plainText == NULL || p_plainSize <= 0)
@@ -50,17 +50,45 @@ int AES_OFB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText,
 			p_chiperText[l_plainIndex + i] = (char)((l_plain ^ l_chiperByte) & 0x000000FF);
 		}
 
-		p_initVector = currentTmpText;
+		p_initVector = p_chiperText + l_plainIndex;
 		l_plainIndex += 16;
 	}
 	return 0;
 }
 
-int AES_OFB_Decrypt(char* p_chiperText, int p_chiperSize,
+int AES_CFB_Decrypt(char* p_chiperText, int p_chiperSize,
 		char* p_plainText, int p_plainSize, char* p_key, char* p_initVector)
 {
-	return AES_OFB_Encrypt(
-			p_chiperText, p_chiperSize, p_plainText, p_plainSize, p_key, p_initVector, PKCS5Padding);
+	if(p_chiperText == NULL || p_chiperSize <= 0 || p_chiperSize % 16 != 0
+			|| p_plainText == NULL || p_plainSize < p_chiperSize
+			|| p_key == NULL || strlen(p_key) < 16
+			|| (p_initVector != NULL && strlen(p_initVector) < 16))
+	{
+		return -1;
+	}
+	if(p_initVector == NULL)
+	{
+		p_initVector = "1234567890123456";
+	}
+
+	int l_chiperIndex = 0;
+	int i = 0;
+	char currentTmpText[16] = { 0 };
+	while(l_chiperIndex < p_chiperSize)
+	{
+		AES128Encrypt2(p_initVector, 16, currentTmpText, 16, p_key);
+
+		for(i = 0; i< 16; i++)
+		{
+			int l_chiper = ((int)p_chiperText[l_chiperIndex + i]) & 0x000000FF;
+			int l_tmpByte = ((int)currentTmpText[i]) & 0x000000FF;
+			p_plainText[l_chiperIndex + i] = (char)((l_chiper ^ l_tmpByte) & 0x000000FF);
+		}
+
+		p_initVector = p_chiperText + l_chiperIndex;
+		l_chiperIndex += 16;
+	}
+	return 0;
 }
 
 

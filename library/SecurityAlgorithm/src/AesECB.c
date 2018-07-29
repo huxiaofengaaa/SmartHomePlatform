@@ -1,4 +1,4 @@
-#include "AES.h"
+#include "Aes.h"
 #include <string.h>
 
 int AES_ECB_Encrypt(char* p_plainText, int p_plainSize, char* p_chiperText,

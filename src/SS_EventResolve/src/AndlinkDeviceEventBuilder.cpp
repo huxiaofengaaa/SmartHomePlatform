@@ -1,13 +1,7 @@
-/*
- * AndlinkDeviceEventBuilder.cpp
- *
- *  Created on: 2018Äê7ÔÂ11ÈÕ
- *      Author: Administrator
- */
 #include "AndlinkDeviceEventBuilder.hpp"
 #include "RandomGenerator.hpp"
 #include "MD5.h"
-#include "AES.h"
+#include "Aes.h"
 
 std::string AndlinkDeviceEventBuilder::buildPlugIuRequest(std::string p_deviceid,
 		std::string p_host, int p_port)

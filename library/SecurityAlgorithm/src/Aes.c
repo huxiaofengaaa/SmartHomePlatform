@@ -1,10 +1,7 @@
 #include <string.h>
 #include <stdio.h>
-#include "../include/AES.h"
+#include "Aes.h"
 
-/**
- * S盒
- */
 static const int S[16][16] =
 {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -24,9 +21,6 @@ static const int S[16][16] =
     0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16 };
 
-/**
- * 逆S盒
- */
 static const int S2[16][16] =
 {
 	0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
@@ -46,25 +40,17 @@ static const int S2[16][16] =
     0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d };
 
-/**
- * 获取整形数据的低8位的左4个位
- */
 static int getLeft4Bit(int num)
 {
     int left = num & 0x000000f0;
     return left >> 4;
 }
 
-/**
- * 获取整形数据的低8位的右4个位
- */
 static int getRight4Bit(int num)
 {
     return num & 0x0000000f;
 }
-/**
- * 根据索引，从S盒中获得元素
- */
+
 static int getNumFromSBox(int index)
 {
     int row = getLeft4Bit(index);
@@ -72,20 +58,12 @@ static int getNumFromSBox(int index)
     return S[row][col];
 }
 
-/**
- * 把一个字符转变成整型
- */
 static int getIntFromChar(char c)
 {
     int result = (int) c;
     return result & 0x000000ff;
 }
 
-/**
- * 把16个字符转变成4X4的数组，
- * 该矩阵中字节的排列顺序为从上到下，
- * 从左到右依次排列。
- */
 static void convertToIntArray(char *str, int pa[4][4])
 {
 	int i = 0;
@@ -101,9 +79,6 @@ static void convertToIntArray(char *str, int pa[4][4])
     }
 }
 
-/**
- * 打印4X4的数组
- */
 static void printArray(int a[4][4])
 {
 	int i = 0;
@@ -119,10 +94,6 @@ static void printArray(int a[4][4])
     printf("\n");
 }
 
-/**
- * 打印字符串的ASSCI，
- * 以十六进制显示。
- */
 static void printASSCI(char *str, int len)
 {
 	int i = 0;
@@ -133,9 +104,6 @@ static void printASSCI(char *str, int len)
     printf("\n");
 }
 
-/**
- * 把连续的4个字符合并成一个4字节的整型
- */
 static int getWordFromStr(char *str)
 {
     int one = getIntFromChar(str[0]);
@@ -148,10 +116,6 @@ static int getWordFromStr(char *str)
     return one | two | three | four;
 }
 
-/**
- * 把一个4字节的数的第一、二、三、四个字节取出，
- * 入进一个4个元素的整型数组里面。
- */
 static void splitIntToArray(int num, int array[4])
 {
     int one = num >> 24;
@@ -163,9 +127,6 @@ static void splitIntToArray(int num, int array[4])
     array[3] = num & 0x000000ff;
 }
 
-/**
- * 将数组中的元素循环左移step位
- */
 static void leftLoop4int(int array[4], int step)
 {
 	int i = 0;
@@ -184,10 +145,6 @@ static void leftLoop4int(int array[4], int step)
     }
 }
 
-/**
- * 把数组中的第一、二、三和四元素分别作为
- * 4字节整型的第一、二、三和四字节，合并成一个4字节整型
- */
 static int mergeArrayToInt(int array[4])
 {
     int one = array[0] << 24;
@@ -197,9 +154,6 @@ static int mergeArrayToInt(int array[4])
     return one | two | three | four;
 }
 
-/**
- * 常量轮值表
- */
 static const int Rcon[10] =
 {
 	0x01000000, 0x02000000,
@@ -209,17 +163,13 @@ static const int Rcon[10] =
     0x1b000000, 0x36000000
 };
 
-/**
- * 密钥扩展中的T函数
- */
 static int T(int num, int round)
 {
 	int i = 0;
     int numArray[4];
     splitIntToArray(num, numArray);
-    leftLoop4int(numArray, 1);//字循环
+    leftLoop4int(numArray, 1);
 
-    //字节代换
     for(i = 0; i < 4; i++)
     {
     	numArray[i] = getNumFromSBox(numArray[i]);
@@ -229,12 +179,8 @@ static int T(int num, int round)
     return result ^ Rcon[round];
 }
 
-//密钥对应的扩展数组
 static int w[44];
 
-/**
- * 扩展密钥，结果是把w[44]中的每个元素初始化
- */
 static void extendKey(char *key)
 {
 	int i = 0;
@@ -249,7 +195,7 @@ static void extendKey(char *key)
         if( i % 4 == 0)
         {
             w[i] = w[i - 4] ^ T(w[i - 1], j);
-            j++;//下一轮
+            j++;
         }
         else
         {
@@ -265,9 +211,6 @@ static void extendKey(char *key)
 #endif
 }
 
-/**
- * 轮密钥加
- */
 static void addRoundKey(int array[4][4], int round)
 {
 	int i = 0;
@@ -283,9 +226,6 @@ static void addRoundKey(int array[4][4], int round)
     }
 }
 
-/**
- * 字节代换
- */
 static void subBytes(int array[4][4])
 {
 	int i = 0;
@@ -299,26 +239,20 @@ static void subBytes(int array[4][4])
     }
 }
 
-/**
- * 行移位
- */
 static void shiftRows(int array[4][4])
 {
 	int i = 0;
     int rowTwo[4], rowThree[4], rowFour[4];
-    //复制状态矩阵的第2,3,4行
     for(i = 0; i < 4; i++)
     {
         rowTwo[i] = array[1][i];
         rowThree[i] = array[2][i];
         rowFour[i] = array[3][i];
     }
-    //循环左移相应的位数
     leftLoop4int(rowTwo, 1);
     leftLoop4int(rowThree, 2);
     leftLoop4int(rowFour, 3);
 
-    //把左移后的行复制回状态矩阵中
     for(i = 0; i < 4; i++)
     {
         array[1][i] = rowTwo[i];
@@ -327,9 +261,6 @@ static void shiftRows(int array[4][4])
     }
 }
 
-/**
- * 列混合要用到的矩阵
- */
 static const int colM[4][4] =
 {
 	2, 3, 1, 1,
@@ -392,9 +323,6 @@ static int GFMul14(int s)
     return GFMul12(s) ^ GFMul2(s);
 }
 
-/**
- * GF上的二元运算
- */
 static int GFMul(int n, int s)
 {
     int result;
@@ -431,9 +359,6 @@ static int GFMul(int n, int s)
     return result;
 }
 
-/**
- * 列混合
- */
 static void mixColumns(int array[4][4])
 {
 	int i = 0;
@@ -458,9 +383,6 @@ static void mixColumns(int array[4][4])
     }
 }
 
-/**
- * 把4X4数组转回字符串
- */
 static void convertArrayToStr(int array[4][4], char *str)
 {
 	int i = 0;
@@ -474,9 +396,6 @@ static void convertArrayToStr(int array[4][4], char *str)
     }
 }
 
-/**
- * 检查密钥长度
- */
 static int checkKeyLen(int len)
 {
     if(len == 16)
@@ -503,11 +422,6 @@ static void showArray(int p_array[][4])
 	}
 }
 
-/**
- * 参数 p: 明文的字符串数组。
- * 参数 plen: 明文的长度。
- * 参数 key: 密钥的字符串数组。
- */
 int AES128Encrypt(char *p_plainText, int p_plainSize, char* p_chiperText,
 		int p_chiperSize, char *key)
 {
@@ -533,34 +447,29 @@ int AES128Encrypt(char *p_plainText, int p_plainSize, char* p_chiperText,
         return -1;
     }
 
-    extendKey(key);//扩展密钥
+    extendKey(key);
     int pArray[4][4];
 
     for(k = 0; k < p_plainSize; k += 16)
     {
         convertToIntArray(p_plainText + k, pArray);
-        addRoundKey(pArray, 0);//一开始的轮密钥加
+        addRoundKey(pArray, 0);
         for(i = 1; i < 10; i++)
         {
-        	//前9轮
-            subBytes(pArray);//字节代换
-            shiftRows(pArray);//行移位
-            mixColumns(pArray);//列混合
+            subBytes(pArray);
+            shiftRows(pArray);
+            mixColumns(pArray);
             addRoundKey(pArray, i);
         }
         //showArray(pArray);
-        //第10轮
-        subBytes(pArray);//字节代换
-        shiftRows(pArray);//行移位
+        subBytes(pArray);
+        shiftRows(pArray);
         addRoundKey(pArray, 10);
         convertArrayToStr(pArray, p_chiperText + k);
     }
     return 0;
 }
 
-/**
- * 根据索引从逆S盒中获取值
- */
 static int getNumFromS1Box(int index)
 {
     int row = getLeft4Bit(index);
@@ -568,9 +477,6 @@ static int getNumFromS1Box(int index)
     return S2[row][col];
 }
 
-/**
- * 逆字节变换
- */
 static void deSubBytes(int array[4][4])
 {
 	int i = 0;
@@ -584,9 +490,6 @@ static void deSubBytes(int array[4][4])
     }
 }
 
-/**
- * 把4个元素的数组循环右移step位
- */
 static void rightLoop4int(int array[4], int step)
 {
 	int i = 0;
@@ -606,9 +509,6 @@ static void rightLoop4int(int array[4], int step)
     }
 }
 
-/**
- * 逆行移位
- */
 static void deShiftRows(int array[4][4])
 {
 	int i = 0;
@@ -632,9 +532,6 @@ static void deShiftRows(int array[4][4])
     }
 }
 
-/**
- * 逆列混合用到的矩阵
- */
 static const int deColM[4][4] =
 {
 	0xe, 0xb, 0xd, 0x9,
@@ -643,9 +540,6 @@ static const int deColM[4][4] =
     0xb, 0xd, 0x9, 0xe
 };
 
-/**
- * 逆列混合
- */
 static void deMixColumns(int array[4][4])
 {
 	int i = 0;
@@ -670,9 +564,6 @@ static void deMixColumns(int array[4][4])
     }
 }
 
-/**
- * 把两个4X4数组进行异或
- */
 static void addRoundTowArray(int aArray[4][4],int bArray[4][4])
 {
 	int i = 0;
@@ -686,10 +577,6 @@ static void addRoundTowArray(int aArray[4][4],int bArray[4][4])
     }
 }
 
-/**
- * 从4个32位的密钥字中获得4X4数组，
- * 用于进行逆列混合
- */
 static void getArrayFrom4W(int i, int array[4][4])
 {
 	int j = 0;
@@ -709,11 +596,6 @@ static void getArrayFrom4W(int i, int array[4][4])
     }
 }
 
-/**
- * 参数 c: 密文的字符串数组。
- * 参数 clen: 密文的长度。
- * 参数 key: 密钥的字符串数组。
- */
 int AES128Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText,
 		int p_plainSize, char* key)
 {
@@ -739,7 +621,7 @@ int AES128Decrypt(char* p_chiperText, int p_chiperSize, char* p_plainText,
         return -1;
     }
 
-    extendKey(key);//扩展密钥
+    extendKey(key);
     int cArray[4][4];
     for(k = 0; k < p_chiperSize; k += 16)
     {

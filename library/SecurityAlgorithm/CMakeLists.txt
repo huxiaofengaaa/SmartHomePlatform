@@ -2,11 +2,11 @@ include_directories(./include)
 
 add_library(SecurityAlgorithm STATIC ./src/MD5.c
                                      ./src/Aes.c
-                                     ./src/AES2.c
-                                     ./src/AESECB.c
-                                     ./src/AESCBC.c
-                                     ./src/AESCFB.c
-                                     ./src/AESOFB.c)
+                                     ./src/Aes2.c
+                                     ./src/AesECB.c
+                                     ./src/AesCBC.c
+                                     ./src/AesCFB.c
+                                     ./src/AesOFB.c)
 
 #add_executable(md5_file Demo/02_MD5File.cpp)
 #target_link_libraries(md5_file SecurityAlgorithm)

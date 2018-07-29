@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "AES.h"
+#include "Aes.h"
 
 AES_STATUS AES_CBC_Encrypt(const char* p_plainText, const int p_plainSize, char* p_chiperText,
 		const int p_chiperSize, const char* p_key, const char* p_initVector, PaddingType p_type)

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
-#include "AES.h"
+#include "Aes.h"
 
 void showArray(char* ptr, int size, std::string section)
 {
