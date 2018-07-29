@@ -1,10 +1,21 @@
-/*
- * TCPListenerHandler.cpp
- *
- *  Created on: 2018��7��3��
- *      Author: Administrator
- */
-
+/**************************************************************************
+ * FileName    : TCPListenerHandler.cpp
+ * Author      : huxiaofeng
+ * Create Data : 2018-07-29
+ * Revision    :
+ * Description : A TCP socket object that listens for TCP connections and completes the
+ *               handshake protocol; after successful, an new socket is created to
+ *               communicate with the client;
+ * CopyRight   :
+ * OtherInfo   : Instruction for use:
+ *               1) use AsynTCPListenerHandler class to create an new object,
+ *                  auto l_listener = AsynTCPListenerHandler("192.168.0.100", 6888, cb, 20);
+ *               2) start up TCP listener, Note: A thread will be created separately here;
+ *                  l_listener.runTCPListener();
+ *               3) if you no need to use TCP listener, you should shutdown it:
+ *                  l_listener.shutdownTCPListener();
+ * ModifyLog   :
+ ***************************************************************************/
 #include "TCPListenerHandler.hpp"
 
 AsynTCPListenerHandler::AsynTCPListenerHandler(
@@ -91,7 +102,8 @@ void AsynTCPListenerHandler::mainloop()
 		}
 		else if(l_clisockfd < 0)
 		{
-			LOG(INFO) << "AsynTCPListenerHandler::mainloop - accept failed";
+			LOG(INFO) << "AsynTCPListenerHandler::mainloop - accept failed"
+					<< ", " << strerror(errno);
 		}
 		else
 		{
@@ -106,7 +118,17 @@ int AsynTCPListenerHandler::createTCPServerSocket(std::string p_host, int p_port
 	int l_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(l_socketfd < 0)
 	{
-		LOG(INFO) << "createTCPServerSocket - create socket failed";
+		LOG(INFO) << "createTCPServerSocket - create socket failed"
+				<< ", " << strerror(errno);
+		return -1;
+	}
+
+	int l_switchStatus = 1;
+	if(setsockopt(l_socketfd, SOL_SOCKET, SO_REUSEADDR, &l_switchStatus, sizeof(l_switchStatus)) < 0)
+	{
+		LOG(INFO) << "createTCPServerSocket - set sock opt failed, " << p_host << ":" << p_port
+				<< ", " << strerror(errno);
+		close(l_socketfd);
 		return -1;
 	}
 
@@ -117,14 +139,16 @@ int AsynTCPListenerHandler::createTCPServerSocket(std::string p_host, int p_port
 	ser_addr.sin_addr.s_addr = inet_addr(p_host.c_str());
 	if(0 != bind(l_socketfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
-		LOG(INFO) << "createTCPServerSocket - bind network address failed," << p_host << ":" << p_port;
+		LOG(INFO) << "createTCPServerSocket - bind network address failed," << p_host << ":" << p_port
+				<< ", " << strerror(errno);
 		close(l_socketfd);
 		return -1;
 	}
 
 	if(0 != listen(l_socketfd, p_blockNumber))
 	{
-		LOG(INFO) << "createTCPServerSocket - listen socket failed, " << l_socketfd << ", " << p_blockNumber;
+		LOG(INFO) << "createTCPServerSocket - listen socket failed, " << l_socketfd << ", " << p_blockNumber
+				<< ", " << strerror(errno);
 		close(l_socketfd);
 		return -1;
 	}
@@ -136,7 +160,8 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 	int l_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(l_socketfd < 0)
 	{
-		LOG(INFO) << "triggerMainloopAcceptNotBlock - create socket failed";
+		LOG(INFO) << "triggerMainloopAcceptNotBlock - create socket failed"
+				<< ", " << strerror(errno);
 		return -1;
 	}
 	struct sockaddr_in ser_addr;
@@ -147,7 +172,8 @@ int AsynTCPListenerHandler::triggerMainloopAcceptNotBlock(std::string p_host, in
 
 	if(0 != connect(l_socketfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
-		LOG(INFO) << "triggerMainloopAcceptNotBlock - socket connect failed";
+		LOG(INFO) << "triggerMainloopAcceptNotBlock - socket connect failed"
+				<< ", " << strerror(errno);
 		close(l_socketfd);
 		return -1;
 	}

@@ -1,9 +1,16 @@
-/*
- * CalendarClock.cpp
- *
- *  Created on: 2018Äê7ÔÂ13ÈÕ
- *      Author: Administrator
- */
+/**************************************************************************
+ * FileName    : CalendarClock.cpp
+ * Author      : huxiaofeng
+ * Create Data : 2018-07-29
+ * Revision    :
+ * Description : a calendar and clock object used to obtain time-related data;
+ * CopyRight   :
+ * OtherInfo   : Instruction for use:
+ *               1) use CalendarClock class to create an new object,
+ *                  auto l_listener = CalendarClock();
+ *               2) call interface to obtain information
+ * ModifyLog   :
+ ***************************************************************************/
 #include "CalendarClock.hpp"
 
 std::string CalendarClock::getLocalTimeString()

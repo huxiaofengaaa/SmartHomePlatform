@@ -6,7 +6,7 @@
 #include "FsmManager.hpp"
 #include "DeviceDataStore.hpp"
 
-#define ANDLINK_SERVER_HOST	"10.96.17.50"
+#define ANDLINK_SERVER_HOST	"192.168.5.112"
 #define ANDLINK_SERVER_PORT	6887
 
 class ExcutionUnitClient: public UDPClient, public TCPClient, public FsmManager

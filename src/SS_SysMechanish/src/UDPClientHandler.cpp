@@ -1,10 +1,5 @@
-/*
- * UDPClientHandler.cpp
- *
- *  Created on: 2018Äê7ÔÂ17ÈÕ
- *      Author: Administrator
- */
 #include "UDPClientHandler.hpp"
+#include "glog/logging.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -31,8 +26,14 @@ ssize_t UDPClientHandler::writeUDPServerString(std::string p_data)
 	cli_addr.sin_port = htons(m_port);
 	cli_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
 
-	return sendto(m_sockfd, p_data.c_str(), p_data.size(), 0,
+	int l_sendSize = sendto(m_sockfd, p_data.c_str(), p_data.size(), 0,
 			(struct sockaddr*)&(cli_addr), sizeof(struct sockaddr_in));
+	if(l_sendSize < 0)
+	{
+		LOG(INFO) << "UDPClientHandler::writeUDPServerString sendto failed"
+				<< ", " << strerror(errno);
+	}
+	return l_sendSize;
 }
 
 void UDPClientHandler::setNeedResponseFlag()
@@ -104,6 +105,8 @@ int UDPClientHandler::createUDPClientSocket(std::string p_host, int p_port)
 	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if(sockfd < 0)
 	{
+		LOG(INFO) << "UDPClientHandler::createUDPClientSocket socket failed"
+				<< ", " << strerror(errno);
 		return -1;
 	}
 	struct sockaddr_in ser_addr;
@@ -113,6 +116,8 @@ int UDPClientHandler::createUDPClientSocket(std::string p_host, int p_port)
 	ser_addr.sin_addr.s_addr = inet_addr(p_host.c_str());
 	if(0 != connect(sockfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in)))
 	{
+		LOG(INFO) << "UDPClientHandler::createUDPClientSocket connect failed"
+				<< ", " << strerror(errno);
 		close(sockfd);
 		return -1;
 	}
@@ -124,8 +129,14 @@ bool UDPClientHandler::readDataFromServer(int p_sockfd)
 	char readbuffer[1024 * 8] = { 0 };
 	memset(readbuffer, 0, sizeof(readbuffer));
 	ssize_t l_nready = recv(p_sockfd, readbuffer, sizeof(readbuffer)-1, 0);
-	if(l_nready <= 0)
+	if(l_nready == 0)
 	{
+		return false;
+	}
+	if(l_nready < 0)
+	{
+		LOG(INFO) << "UDPClientHandler::readDataFromServer recv failed"
+				<< ", " << strerror(errno);
 		return false;
 	}
 	else
@@ -138,6 +149,11 @@ bool UDPClientHandler::readDataFromServer(int p_sockfd)
 		{
 			l_peerHost = inet_ntoa(l_cliaddr.sin_addr);
 			l_peerPort = ntohs(l_cliaddr.sin_port);
+		}
+		else
+		{
+			LOG(INFO) << "UDPClientHandler::readDataFromServer getpeername failed"
+					<< ", " << strerror(errno);
 		}
 		if(m_needResponse)
 		{
@@ -161,6 +177,7 @@ void UDPClientHandler::mainloop()
 		switch(select(m_sockfd + 1, &l_sockfd_set, NULL, NULL, &l_timeout))
 		{
 		case -1:
+			LOG(INFO) << "UDPClientHandler::mainloop select failed, " << strerror(errno);
 			break;
 		case 0:
 			break;

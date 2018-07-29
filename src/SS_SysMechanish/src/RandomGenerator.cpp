@@ -1,3 +1,22 @@
+/**************************************************************************
+ * FileName    : RandomGenerator.cpp
+ * Author      : huxiaofeng
+ * Create Data : 2018-07-29
+ * Revision    :
+ * Description : A random number generator object used to generator random numbers,
+ *               strings, alphabet strings, etc;
+ * CopyRight   :
+ * OtherInfo   : Instruction for use:
+ *               1) use RandomGenerator class to create an new object,
+ *                  auto l_object = RandomGenerator();
+ *               2) call interface to obtain information
+ *
+ *               when using a cross compiler, you should add the macro CROSS_BUILD
+ *               definition in the compile options; The cross-compiled C++ library
+ *               does not include  the random_device class definition, so you can
+ *               only use the srand and rand function to generate random numbers;
+ * ModifyLog   :
+ ***************************************************************************/
 #include "RandomGenerator.hpp"
 #include <random>
 #include <ctime>

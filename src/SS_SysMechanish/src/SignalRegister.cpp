@@ -1,3 +1,17 @@
+/**************************************************************************
+ * FileName    : SignalRegister.cpp
+ * Author      : huxiaofeng
+ * Create Data : 2018-07-29
+ * Revision    :
+ * Description : An object class used to register the signal operation behavior of
+ *               the Linux system. For details, refer to the linux signal;
+ * CopyRight   :
+ * OtherInfo   : Instruction for use:
+ *               1) use SignalRegister class to create an new object,
+ *                  auto l_object = SignalRegister();
+ *               2) call interface to obtain information
+ * ModifyLog   :
+ ***************************************************************************/
 #include "SignalRegister.hpp"
 
 std::map<int, std::function<bool(int)>> g_signalCallbackMap;

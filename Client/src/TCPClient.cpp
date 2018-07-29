@@ -62,7 +62,8 @@ int TCPClient::create_an_tcp_socket_client(std::string p_host,int p_port)
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sockfd < 0)
 	{
-		printf("create_an_tcp_socket_client - socket SOCK_STREAM failed\n");
+		printf("create_an_tcp_socket_client - socket SOCK_STREAM failed, %s:%d\n",
+				p_host.c_str(), p_port);
 		return -1;
 	}
 
@@ -75,7 +76,8 @@ int TCPClient::create_an_tcp_socket_client(std::string p_host,int p_port)
 	ret = connect(sockfd, (struct sockaddr *)&ser_addr, sizeof(struct sockaddr_in));
 	if(ret < 0)
 	{
-		printf("create_an_tcp_socket_client - socket connect failed\n");
+		printf("create_an_tcp_socket_client - socket connect failed, %s:%d\n",
+				p_host.c_str(), p_port);
 		close(sockfd);
 		return -1;
 	}

@@ -100,6 +100,8 @@ bool AsynTCPServerHandler::readDataFromClient(int p_sockfd)
 	ssize_t l_nready = recv(p_sockfd, readbuffer, sizeof(readbuffer)-1, 0);
 	if(l_nready <= 0)
 	{
+		LOG(INFO) << "AsynTCPServerHandler::readDataFromClient recv failed "
+				<< ", " << strerror(errno);
 		return false;
 	}
 	else
@@ -195,7 +197,13 @@ void AsynTCPServerHandler::mainloop()
 
 ssize_t AsynTCPServerHandler::writeTCPServerString(std::shared_ptr<EventTypeTCPClientDataObject> p_msg)
 {
-	return send(p_msg->m_socketfd, p_msg->m_rawData.c_str(), p_msg->m_rawData.size(), 0);
+	int l_sendSize = send(p_msg->m_socketfd, p_msg->m_rawData.c_str(), p_msg->m_rawData.size(), 0);
+	if(l_sendSize < 0)
+	{
+		LOG(INFO) << "AsynTCPServerHandler::writeTCPServerString send failed"
+				<< ", " << strerror(errno);
+	}
+	return l_sendSize;
 }
 
 std::ostream& operator<<(std::ostream& os, std::shared_ptr<EventTypeTCPClientDataObject> obj)

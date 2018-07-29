@@ -1,10 +1,14 @@
-/*
- * TerminalHandler.cpp
- *
- *  Created on: Jul 2, 2018
- *      Author: xiaofenh
- */
-
+/**************************************************************************
+ * FileName    : SystemNotify.cpp
+ * Author      : huxiaofeng
+ * Create Data : 2018-07-29
+ * Revision    :
+ * Description : A class for operating a terminal that includes reading user input from a terminal
+ *               and writing data to a standard output.
+ * CopyRight   :
+ * OtherInfo   :
+ * ModifyLog   :
+ ***************************************************************************/
 #include "TerminalHandler.hpp"
 #include "glog/logging.h"
 #include <unistd.h>
