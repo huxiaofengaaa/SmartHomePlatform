@@ -2,17 +2,10 @@
 #include "AndlinkDeviceQueryEvent.hpp"
 #include <stdio.h>
 
-bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
+std::string ExcutionUnitClient::deviceQueryChecker(std::string l_plainReq)
 {
 	printf("deviceQueryChecker running....\n");
 	struct Interface56_CommonQuery_Req l_queryReq;
-
-	std::string l_plainReq = chiperDecrypt(p_req);
-	if(l_plainReq.empty() == true)
-	{
-		return false;
-	}
-	printf("Recv Query Req Msg: %s\n", l_plainReq.c_str());
 
 	std::string l_plainResp;
 	if(true == resolveAndlinkDeviceApConfigInfoQueryReq(l_plainReq, &l_queryReq))
@@ -198,16 +191,6 @@ bool ExcutionUnitClient::deviceQueryChecker(std::string p_req)
 		}
 	}
 
-	if(l_plainResp.empty() == true)
-	{
-		return false;
-	}
-	printf("Send Control Resp Msg: %s\n", l_plainResp.c_str());
-	if(false == writeTCPString(plainEncrypt(l_plainResp)))
-	{
-		printf("send interface5_6 msg failed\n");
-		return false;
-	}
-	return true;
+	return l_plainResp;
 }
 

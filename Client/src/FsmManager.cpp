@@ -165,14 +165,26 @@ void FsmManager::runFsmManager()
 		m_currentState = FsmManagerStates::STATE_PLUGIN;
 		break;
 	case FsmManagerStates::STATE_PLUGIN_ONLINE:
+		static int g_pluginOnlineRetry = 0;
 		if(true == devicePluginOnline())
 		{
 			m_currentState = FsmManagerStates::STATE_PLUGIN_AUTH;
+			g_pluginOnlineRetry = 0;
 		}
 		else
 		{
-			m_currentState = FsmManagerStates::STATE_PLUGIN_RESET;
-			printf("plugin online failed\n");
+			g_pluginOnlineRetry++;
+			if(g_pluginOnlineRetry <= 10)
+			{
+				m_currentState = FsmManagerStates::STATE_PLUGIN_RESET;
+			}
+			else
+			{
+				m_currentState = FsmManagerStates::STATE_DISCONNECT;
+				g_pluginOnlineRetry = 0;
+			}
+			printf("plugin online failed, %d\n", g_pluginOnlineRetry);
+
 		}
 		break;
 	case FsmManagerStates::STATE_PLUGIN_AUTH:

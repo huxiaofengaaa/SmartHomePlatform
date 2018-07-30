@@ -6,7 +6,7 @@
 #include "FsmManager.hpp"
 #include "DeviceDataStore.hpp"
 
-#define ANDLINK_SERVER_HOST	"192.168.5.112"
+#define ANDLINK_SERVER_HOST	"10.96.17.50"
 #define ANDLINK_SERVER_PORT	6887
 
 class ExcutionUnitClient: public UDPClient, public TCPClient, public FsmManager
@@ -22,8 +22,8 @@ private:
 	std::string chiperDecrypt(std::string p_chiperText);
 	std::string plainEncrypt(std::string p_plainText);
 
-	bool deviceControlChecker(std::string p_req);
-	bool deviceQueryChecker(std::string p_req);
+	std::string deviceControlChecker(std::string p_req);
+	std::string deviceQueryChecker(std::string p_req);
 
 	bool deviceRegister(); // override
 	bool deviceOnline(); // override

@@ -56,6 +56,47 @@ std::string UeContextHolderAndlink::getDeviceIDByMAC(std::string p_deviceMac)
 	return std::string();
 }
 
+std::string UeContextHolderAndlink::getDeviceIDByTCPAddress(std::string p_host, int p_port)
+{
+	for(auto l_key : getAllKey())
+	{
+		auto l_keyValue = getRef(l_key);
+		if(l_keyValue->peerTCPHost == p_host
+				&& l_keyValue->peerTCPPort == p_port)
+		{
+			return l_keyValue->deviceId;
+		}
+	}
+	return std::string();
+}
+
+std::string UeContextHolderAndlink::getDeviceIDByUDPAddress(std::string p_host, int p_port)
+{
+	for(auto l_key : getAllKey())
+	{
+		auto l_keyValue = getRef(l_key);
+		if(l_keyValue->peerUDPHost == p_host
+				&& l_keyValue->peerUDPPort == p_port)
+		{
+			return l_keyValue->deviceId;
+		}
+	}
+	return std::string();
+}
+
+bool UeContextHolderAndlink::shouldDeviceEncrypt(std::string p_deviceID)
+{
+	if(p_deviceID.empty() == false)
+	{
+		auto l_uecontext = getRef(p_deviceID);
+		if(l_uecontext && l_uecontext->encrypt != 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UeContextHolderAndlink::updateNetAddress(std::string p_deviceMAC,
 		std::string p_host, int p_port, int p_sockfd, bool isTCP)
 {
@@ -99,6 +140,20 @@ bool UeContextHolderAndlink::pluginDisconnect(int p_sockfd, std::string p_host, 
 		}
 	}
 	return false;
+}
+
+bool UeContextHolderAndlink::pluginResetStatus(std::string p_deviceID)
+{
+	auto l_Context = getRef(p_deviceID);
+	if(!l_Context)
+	{
+		return false;
+	}
+	l_Context->isRegister = true;
+	l_Context->isOnline = false;
+	l_Context->isAuth = false;
+	l_Context->isPlugIn = false;
+	return true;
 }
 
 bool UeContextHolderAndlink::setRegisterResponse(std::string p_deviceID,
@@ -238,7 +293,10 @@ bool UeContextHolderAndlink::DeviceOnline(struct Interface56_Online_Req& p_onlin
 	l_uecontext->SyncCode = p_onlinereq.SyncCode;
 
 	l_uecontext->heartBeatTime = 15000;
-	l_uecontext->encrypt = 0;
+	/*
+	 * Set the default encryption type through the configuration file;
+	 */
+	l_uecontext->encrypt = m_defaultEncryptType;
 	l_uecontext->ChallengeCode = l_generator.generatorRandomNumberString(16);
 
 	l_uecontext->isOnline = true;

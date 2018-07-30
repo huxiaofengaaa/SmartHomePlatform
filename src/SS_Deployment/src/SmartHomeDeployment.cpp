@@ -18,7 +18,8 @@ SmartHomeDeployment::SmartHomeDeployment(std::shared_ptr<ConfigParser> p_config)
 
 	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>(
 			l_managerServerHost,
-			l_managerServerPort);
+			l_managerServerPort,
+			m_config);
 
 	m_andlinkExcutionUnit = std::make_shared<ExcutionUnitAndlink>(
 			l_managerServerHost,

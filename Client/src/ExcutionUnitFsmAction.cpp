@@ -283,41 +283,85 @@ bool ExcutionUnitClient::devicePluginHeartbeat()
 
 bool ExcutionUnitClient::deviceTCPDownlinkAction()
 {
+	/*
+	 * In the function deviceTCPDownlinkAction, you need to pay special
+	 * attention to the return value. Currently in STATE_PLUGIN_HEARTBEAT
+	 * state, if you need to switch state, it should return true, otherwise
+	 * you should return false even if you process the message successfully;
+	 * STATE_PLUGIN_HEARTBEAT next state is STATE_DISCONNECT, it will cause
+	 * TCP disconnection, and re-establish TCP;
+	 */
 	std::string l_downlink = readTCPString(2);
 	if(l_downlink.empty() == true)
 	{
 		return false;
 	}
-	struct Interface56_Disconnect_Req l_disconnectReq;
+	std::string l_plainReq = l_downlink;
+	int l_enctyptType = m_deviceDataStore.m_runTimeData.getEnctypt();
+	if(false == is_jSON_data(l_downlink) &&  l_enctyptType == 1)
+	{
+		/*
+		 * First, the message format is detected, and only when the message
+		 * is not in the JSON format, the AES decryption is attempted;
+		 */
+		l_plainReq = chiperDecrypt(l_downlink);
+	}
+	printf("Recv Control Req Msg: %s\n", l_plainReq.c_str());
 
-	if(true == resolve_if56_disconnect_request_msg(l_downlink, &l_disconnectReq))
+	std::string l_plainResp;
+	struct Interface56_Disconnect_Req l_disconnectReq;
+	if(true == resolve_if56_disconnect_request_msg(l_plainReq, &l_disconnectReq))
 	{
 		struct Interface56_Disconnect_Resp l_disconnectResp;
 		l_disconnectResp.respCode = 0;
 		l_disconnectResp.ID = l_disconnectReq.ID;
-		std::string l_resp = build_if56_disconnect_response_msg(l_disconnectResp);
-		if(l_resp.empty() == true)
+		l_plainResp = build_if56_disconnect_response_msg(l_disconnectResp);
+		printf("Send Resp Msg, enctyptType:%d, size:%d, : %s\n",
+				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		if(l_enctyptType == 1)
 		{
-			return false;
+			l_plainResp = plainEncrypt(l_plainResp);
 		}
-		if(writeTCPString(l_resp) <= 0)
+		if(false == writeTCPString(l_plainResp))
 		{
-			return false;
+			printf("send interface5_6 msg failed\n");
 		}
 		return true;
 	}
-	else if(true == deviceQueryChecker(l_downlink))
-	{
 
-	}
-	else if(true == deviceControlChecker(l_downlink))
+	l_plainResp = deviceQueryChecker(l_plainReq);
+	if(l_plainResp.empty() == false)
 	{
+		printf("Send Query Resp Msg, enctyptType:%d, size:%d, : %s\n",
+				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		if(l_enctyptType == 1)
+		{
+			l_plainResp = plainEncrypt(l_plainResp);
+		}
+		if(false == writeTCPString(l_plainResp))
+		{
+			printf("send interface5_6 msg failed\n");
+		}
+		return false;
+	}
 
-	}
-	else
+	l_plainResp == deviceControlChecker(l_plainReq);
+	if(l_plainResp.empty() == false)
 	{
-		printf("unknown downlink message\n");
+		printf("Send Control Resp Msg, enctyptType:%d, size:%d, : %s\n",
+				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		if(l_enctyptType == 1)
+		{
+			l_plainResp = plainEncrypt(l_plainResp);
+		}
+		if(false == writeTCPString(l_plainResp))
+		{
+			printf("send interface5_6 msg failed\n");
+		}
+		return false;
 	}
+
+	printf("unknown downlink message\n");
 	return false;
 }
 

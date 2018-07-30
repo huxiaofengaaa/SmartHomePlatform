@@ -132,6 +132,8 @@ struct Interface56_Disconnect_Resp
 	std::string ID;
 };
 
+bool is_jSON_data(std::string msg);
+
 // resolve request
 bool resolve_if56_register_request_msg(std::string msg, struct Interface56_Register_Req* req);
 bool resolve_if56_online_request_msg(std::string msg, struct Interface56_Online_Req* req);

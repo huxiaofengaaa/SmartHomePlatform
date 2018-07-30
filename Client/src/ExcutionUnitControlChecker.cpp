@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "AES.h"
 
-bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
+std::string ExcutionUnitClient::deviceControlChecker(std::string l_plainReq)
 {
 	struct Interface56_LEDControl_Req led_control_req;
 	struct Interface56_MacFilter_Req mac_filter_req;
@@ -13,13 +13,6 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 	struct Interface56_WiFiParameterSync_Req wifi_parameter_req;
 	struct Interface56_WiFiSwitch_Req wifi_switch_req;
 	struct Interface56_WPS_Req wps_req;
-
-	std::string l_plainReq = chiperDecrypt(p_req);
-	if(l_plainReq.empty() == true)
-	{
-		return false;
-	}
-	printf("Recv Control Req Msg: %s\n", l_plainReq.c_str());
 
 	Interface56_ControlCommon_Resp resp;
 	if(true == resolveAndlinkDeviceLEDControlReq(l_plainReq, &led_control_req))
@@ -235,21 +228,15 @@ bool ExcutionUnitClient::deviceControlChecker(std::string p_req)
 	}
 	else
 	{
-		return false;
+		return std::string();
 	}
 
 	std::string l_plainResp = buildAndlinkDeviceControlCommonResp(resp);
 	if(l_plainResp.empty() == true)
 	{
-		return false;
+		return std::string();
 	}
-	printf("Send Control Resp Msg: %s\n", l_plainResp.c_str());
-	if(false == writeTCPString(plainEncrypt(l_plainResp)))
-	{
-		printf("send interface5_6 msg failed\n");
-		return false;
-	}
-	return true;
+	return l_plainResp;
 }
 
 

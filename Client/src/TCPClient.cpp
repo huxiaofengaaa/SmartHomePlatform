@@ -94,7 +94,7 @@ int TCPClient::writeTCPString(std::string p_data)
 	int l_writeSize = send(m_sockfd, p_data.c_str(), p_data.size(), 0);
 	if(l_writeSize > 0)
 	{
-		std::cout << "send msg: " << p_data << std::endl;
+		std::cout << "send msg size: " << l_writeSize << " completed\n";
 	}
 	return l_writeSize;
 }
@@ -126,7 +126,7 @@ std::string TCPClient::readTCPString(int p_timeout)
 		ssize_t l_nready = recv(m_sockfd, l_buffer, sizeof(l_buffer)-1, 0);
 		if(l_nready > 0)
 		{
-			std::cout << "recv msg: " << l_buffer << std::endl;
+			std::cout << "recv msg size " << l_nready << " Completed\n";
 			return std::string(l_buffer);
 		}
 		break;

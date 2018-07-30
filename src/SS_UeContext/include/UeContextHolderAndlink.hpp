@@ -11,19 +11,32 @@
 #include "UeContextHolder.hpp"
 #include "UeContextAndlink.hpp"
 #include "glog/logging.h"
+#include "ConfigParser.hpp"
 
 class UeContextHolderAndlink: public UeContextHolder<std::shared_ptr<UeContextAndlink>>
 {
 public:
-	UeContextHolderAndlink(std::string p_host, int p_port): m_host(p_host), m_port(p_port){ }
+	UeContextHolderAndlink(std::string p_host, int p_port, std::shared_ptr<ConfigParser> p_config):
+		m_host(p_host), m_port(p_port), m_config(p_config)
+	{
+		m_defaultEncryptType =
+				m_config->getParamInteger("EncryptType", 0);
+	}
 	~UeContextHolderAndlink(){ }
+
+	std::string getDeviceIDByMAC(std::string p_deviceMac);
+	std::string getDeviceIDByTCPAddress(std::string p_host, int p_port);
+	std::string getDeviceIDByUDPAddress(std::string p_host, int p_port);
 
 	int onlineSize();
 	int pluginSize();
 
+	bool shouldDeviceEncrypt(std::string p_deviceID);
+
 	std::vector<std::string> getDeviceList();
 	bool updateNetAddress(std::string p_deviceID, std::string p_host, int p_port, int p_sockfd, bool isTCP);
 	bool pluginDisconnect(int p_sockfd, std::string p_host, int p_port);
+	bool pluginResetStatus(std::string p_deviceID);
 
 	std::string DeviceRegister(std::string deviceMac, std::string deviceType, std::string productToken);
 	bool DeviceOnline(struct Interface56_Online_Req& onlinereq);
@@ -36,12 +49,14 @@ public:
 	bool setHeartbeatResponse(bool p_result, struct Interface56_Heartbeat_Resp& resp);
 
 private:
-	std::string getDeviceIDByMAC(std::string p_deviceMac);
 	std::string generatorDeviceID();
 	std::string generatorGwToken();
 	std::string generatorDeviceToken();
 	std::string generatorAndlinkToken();
 
+	int m_defaultEncryptType;
+
 	const std::string m_host;
 	const int m_port;
+	std::shared_ptr<ConfigParser> m_config;
 };

@@ -41,7 +41,8 @@ set(ANDLINK_SRCS AndlinkDeviceEvent/AndlinkDeviceRegisterRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceDisconnectRequest.cpp
                  AndlinkDeviceEvent/AndlinkDeviceDisconnectResponse.cpp
                  AndlinkDeviceEvent/AndlinkDeviceHeartbeatRequest.cpp
-                 AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp)
+                 AndlinkDeviceEvent/AndlinkDeviceHeartbeatResponse.cpp
+                 AndlinkDeviceEvent/AndlinkDeviceOther.cpp)
 
 set(EXTERNAL_SOURCE cJSON/cJSON.c
                     MD5/MD5.c

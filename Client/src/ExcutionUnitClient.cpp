@@ -1,6 +1,7 @@
 #include "ExcutionUnitClient.hpp"
 #include <unistd.h>
 #include <string>
+#include <iostream>
 #include <string.h>
 #include <stdio.h>
 #include "AES.h"
@@ -50,6 +51,7 @@ std::string ExcutionUnitClient::chiperDecrypt(std::string p_chiperText)
 	char* l_plainText = new char[p_chiperText.size()];
 	if(!l_plainText)
 	{
+		std::cout << "ExcutionUnitClient::chiperDecrypt new char failed\n";
 		return std::string();
 	}
 	memset(l_plainText, 0, p_chiperText.size());
@@ -64,6 +66,7 @@ std::string ExcutionUnitClient::chiperDecrypt(std::string p_chiperText)
 	{
 		delete[] l_plainText;
 	}
+	std::cout << "recv msg " << l_resultString << std::endl;
 	return l_resultString;
 }
 
@@ -74,19 +77,23 @@ std::string ExcutionUnitClient::plainEncrypt(std::string p_plainText)
 	char* l_chiperText = new char[p_plainText.size() + 16];
 	if(!l_chiperText)
 	{
+		std::cout << "ExcutionUnitClient::plainEncrypt new char failed\n";
 		return std::string();
 	}
 	memset(l_chiperText, 0, p_plainText.size() + 16);
 
 	std::string l_resultString;
-	if(AES_SUCCESS == AES_CBC_Encrypt(p_plainText.c_str(), p_plainText.size(),
-			l_chiperText, p_plainText.size() + 16, l_sessionKey.c_str(), l_initVector.c_str(), PKCS5Padding))
+	if(AES_SUCCESS == AES_CBC_Encrypt(
+			p_plainText.c_str(), p_plainText.size(), l_chiperText, p_plainText.size() + 16,
+			l_sessionKey.c_str(), l_initVector.c_str(), PKCS5Padding))
 	{
+		printf("l_chiperText length %d \n", strlen(l_chiperText));
 		l_resultString = std::string(l_chiperText);
 	}
 	if(l_chiperText)
 	{
 		delete[] l_chiperText;
 	}
+	std::cout << "send msg " << p_plainText << std::endl;
 	return l_resultString;
 }

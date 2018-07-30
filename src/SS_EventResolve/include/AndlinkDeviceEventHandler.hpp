@@ -1,10 +1,3 @@
-/*
- * AndlinkDeviceEventHandler.hpp
- *
- *  Created on: 2018��7��2��
- *      Author: Administrator
- */
-
 #pragma once
 
 #include <memory>
@@ -23,6 +16,11 @@ public:
 
 	}
 	~AndlinkDeviceEventHandler() = default;
+
+	std::string chiperDecrypt(std::string p_deviceID, std::string p_chiperText);
+	std::string chiperDecrypt(std::string p_host, int p_port, std::string p_chiperText);
+	std::string plainEncrypt(std::string p_deviceID, std::string p_plainText);
+
 	std::string run(std::shared_ptr<EventTypeUDPClientDataObject> p_event);
 	std::string run(std::shared_ptr<EventTypeTCPClientDataObject> p_event);
 private:
