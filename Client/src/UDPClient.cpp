@@ -23,6 +23,7 @@ bool UDPClient::startUDPClient()
 	int l_udpSocketfd = create_an_udp_socket_client(m_host, m_port);
 	if(l_udpSocketfd < 0)
 	{
+		printf("create udp socket failed, %s\n", strerror(errno));
 		return false;
 	}
 	m_sockfd = l_udpSocketfd;
@@ -34,7 +35,7 @@ bool UDPClient::startUDPClient()
 		m_localPort = ntohs(l_localAddr.sin_port);
 		m_localhost = inet_ntoa(l_localAddr.sin_addr);
 	}
-
+	printf("start UDP Client success, %s:%d\n", m_localhost.c_str(), m_localPort);
 	return true;
 }
 
@@ -51,6 +52,7 @@ int UDPClient::writeUDPString(std::string p_data)
 {
 	if(m_sockfd <= 0 || p_data.size() <= 0)
 	{
+		printf("write UDP string failed, m_sockfd=%d, data size=%d \n", m_sockfd, p_data.size());
 		return 0;
 	}
 	struct sockaddr_in l_serverAddr;
@@ -63,7 +65,7 @@ int UDPClient::writeUDPString(std::string p_data)
 			(struct sockaddr*)&(l_serverAddr), sizeof(struct sockaddr_in));
 	if(l_writeSize > 0)
 	{
-		std::cout << "send msg: " << p_data << std::endl;
+		std::cout << "send msg size: " << l_writeSize << ", " << p_data << std::endl;
 	}
 	return l_writeSize;
 }

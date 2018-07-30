@@ -12,7 +12,7 @@
 class ExcutionUnitClient: public UDPClient, public TCPClient, public FsmManager
 {
 public:
-	ExcutionUnitClient();
+	ExcutionUnitClient(std::string p_host, int p_port);
 	~ExcutionUnitClient();
 	void startup();
 	void shutdown();
@@ -50,6 +50,8 @@ private:
 
 	bool m_exitFlag;
 	DeviceDataStore m_deviceDataStore;
+	const std::string m_host;
+	const int m_port;
 };
 
 #endif /* CLIENT_INCLUDE_EXCUTIONUNITCLIENT_HPP_ */

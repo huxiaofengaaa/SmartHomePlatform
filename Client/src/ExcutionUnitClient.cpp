@@ -6,11 +6,11 @@
 #include <stdio.h>
 #include "AES.h"
 
-ExcutionUnitClient::ExcutionUnitClient():
-	UDPClient(ANDLINK_SERVER_HOST, ANDLINK_SERVER_PORT),
-	TCPClient(ANDLINK_SERVER_HOST, ANDLINK_SERVER_PORT+1),
+ExcutionUnitClient::ExcutionUnitClient(std::string p_host, int p_port):
+	UDPClient(p_host, p_port), TCPClient(p_host, p_port + 1),
 	FsmManager(),
-	m_exitFlag(false)
+	m_exitFlag(false),
+	m_host(p_host),	m_port(p_port)
 {
 
 }

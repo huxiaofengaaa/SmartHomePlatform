@@ -18,6 +18,16 @@ TCPClient::~TCPClient()
 
 }
 
+bool TCPClient::startTCPClient(std::string p_host, int p_port)
+{
+	if(p_host != m_host || p_port != m_port)
+	{
+		m_host = p_host;
+		m_port = p_port;
+	}
+	return startTCPClient();
+}
+
 bool TCPClient::startTCPClient()
 {
 	int l_tcpSocketfd = create_an_tcp_socket_client(m_host, m_port);
