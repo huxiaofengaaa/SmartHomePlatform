@@ -1,4 +1,5 @@
 #include "DeviceDataStore.hpp"
+#include "DataBase.h"
 #include <stdio.h>
 
 DeviceReadOnlyData::DeviceReadOnlyData():
@@ -16,8 +17,14 @@ DeviceReadOnlyData::DeviceReadOnlyData():
 
 std::string DeviceReadOnlyData::initDeviceMAC() const
 {
+#ifdef CROSS_BUILD
+	char l_deviceMAC[33] = { 0 };
+	get_devicemac(l_deviceMAC);
+	return std::string(l_deviceMAC);
+#else
 	RandomGenerator l_random;
 	return l_random.generatorRandomMAC();
+#endif
 }
 
 std::string DeviceReadOnlyData::initDeviceType() const

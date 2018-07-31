@@ -72,7 +72,8 @@ MAIN_SOURCE := src/RandomGenerator.cpp \
                src/TCPClient.cpp \
                src/FsmManager.cpp \
                src/DeviceDataRunTime.cpp \
-               src/DeviceDataReadOnly.cpp
+               src/DeviceDataReadOnly.cpp \
+               src/DataBase.c
 
 HEARD_PATH := -I ./AndlinkDeviceInclude \
               -I ./cJSON \
@@ -87,9 +88,24 @@ OBJECTS := $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SOURCES)))
 CFLAGS += -fPIC -g ${HEARD_PATH}
 CXXFLAGS += -fPIC -g -std=c++0x ${HEARD_PATH}
 
+LDFLAGS += -L . -landlink56 -lpthread
+
 ifdef CROSS_BUILD
-CFLAGS += -DCROSS_BUILD
-CXXFLAGS += -DCROSS_BUILD
+HEARD_PATH += -I$(shell pwd)/../../rtl_link/
+HEARD_PATH += -I$(shell pwd)/../../boa/apmib/
+
+CFLAGS += -DCROSS_BUILD $(COMMON_CFLAGS)
+CXXFLAGS += -DCROSS_BUILD $(COMMON_CFLAGS)
+
+LDFLAGS += -L $(shell pwd)/../../boa/apmib/ -lapmib 
+LDFLAGS += -L $(shell pwd)/../../lib/lib -llink
+
+CFLAGS += -DMTD_NAME_MAPPING
+LDFLAGS += -lmtdapi
+
+CFLAGS += -I$(shell pwd)/../../adapter-api/rtk_isp_api
+LDFLAGS += -L$(shell pwd)/../../adapter-api/rtk_isp_api -l_rtk_isp_adapter
+
 endif
 
 .PHONY: clean distclean
@@ -104,7 +120,7 @@ lib: $(OBJECTS)
 	@$(RANLIB) $(LIB)
 
 program : SmartHomeClient.cpp $(LIB)
-	$(CXX) $(CXXFLAGS) SmartHomeClient.cpp -o ${PROGRAM} -L . -l andlink56 -lpthread
+	$(CXX) $(CXXFLAGS) SmartHomeClient.cpp -o ${PROGRAM} ${LDFLAGS}
 
 clean:
 	@rm -rf $(LIB) ${OBJECTS} ${PROGRAM}

@@ -210,6 +210,24 @@ private:
 	const std::string m_deviceModel;
 };
 
+#ifdef CROSS_BUILD
+
+#include "DataBase.h"
+
+class DataBase
+{
+public:
+	DataBase()
+	{
+		Client_database_init();
+	}
+	virtual ~DataBase()
+	{
+
+	}
+};
+#endif
+
 class DeviceDataStore
 {
 public:
@@ -221,6 +239,9 @@ public:
 	DeviceHoldSTAInfo m_holdSTAinfo;
 	DeviceUplinkInterface m_uplinkInterface;
 	DeviceDownlinkInterface m_downlinkInterface;
+#ifdef CROSS_BUILD
+	DataBase m_database;
+#endif
 };
 
 #endif /* CLIENT_INCLUDE_DEVICEDATASTORE_HPP_ */

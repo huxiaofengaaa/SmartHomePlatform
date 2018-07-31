@@ -1,9 +1,12 @@
 #include "ExcutionUnitClient.hpp"
 #include <unistd.h>
+#include <stdio.h>
 #include <iostream>
 
 std::string g_serverHost = "127.0.0.1";
 int g_serverPort = 6778;
+//debug_mode,for rtl_link in realtek mode
+int debug_mode = 2;
 
 void showUsage()
 {
