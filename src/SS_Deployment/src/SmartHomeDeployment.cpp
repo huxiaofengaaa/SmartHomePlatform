@@ -12,9 +12,11 @@ SmartHomeDeployment::SmartHomeDeployment(std::shared_ptr<ConfigParser> p_config)
 
 	std::string l_managerServerHost = m_config->getParamString("ManagerServerHost", "10.96.17.50");
 	int l_managerServerPort = m_config->getParamInteger("ManagerServerPort", 6887);
+	LOG(INFO) << "Manager server is " << l_managerServerHost << ":" << l_managerServerPort;
 
 	std::string l_controlServerHost = m_config->getParamString("ControlServerHost", l_managerServerHost);
 	int l_controlServerPort = m_config->getParamInteger("ControlServerPort", l_managerServerPort + 1);
+	LOG(INFO) << "Control server is " << l_controlServerHost << ":" << l_controlServerPort;
 
 	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>(
 			l_managerServerHost,

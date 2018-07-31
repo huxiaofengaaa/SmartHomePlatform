@@ -17,6 +17,8 @@ public:
 	std::string getParamString(std::string p_name, std::string p_default);
 	int getParamInteger(std::string p_name, int p_default);
 	void show();
+	std::pair<std::string, std::string> operator[](int index);
+	int size() const;
 private:
 	bool parser();
 	std::string removeSpaceFromBothEnd(std::string p_str);

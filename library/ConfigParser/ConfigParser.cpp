@@ -108,7 +108,7 @@ std::string ConfigParser::removeSpaceFromBothEnd(std::string p_str)
 	l_start = i;
 
 	i = p_str.size() - 1;
-	while(p_str[i] == ' ' || p_str[i] == '\t')
+	while(p_str[i] == ' ' || p_str[i] == '\t' || p_str[i] == '\n')
 	{
 		i--;
 	}
@@ -131,4 +131,23 @@ bool ConfigParser::parserLine(std::string p_line)
 		m_paramList.emplace(std::make_pair(l_key, l_value));
 	}
 	return true;
+}
+
+int ConfigParser::size() const
+{
+	return m_paramList.size();
+}
+
+std::pair<std::string, std::string> ConfigParser::operator[](int p_index)
+{
+	if(p_index >= 0 && p_index <= m_paramList.size() -1)
+	{
+		auto l_indexValue = m_paramList.begin();
+		while(p_index-- && l_indexValue != m_paramList.end())
+		{
+			l_indexValue++;
+		}
+		return *l_indexValue;
+	}
+	return {};
 }
