@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <stdio.h>
+#include <errno.h>
 
 UDPClient::UDPClient(std::string p_host, int p_port): m_host(p_host), m_port(p_port), m_sockfd(-1)
 {
@@ -20,6 +21,8 @@ UDPClient::~UDPClient()
 
 bool UDPClient::startUDPClient()
 {
+	shutDownUDPClient();
+
 	int l_udpSocketfd = create_an_udp_socket_client(m_host, m_port);
 	if(l_udpSocketfd < 0)
 	{

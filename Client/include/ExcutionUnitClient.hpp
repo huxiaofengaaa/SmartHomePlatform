@@ -5,16 +5,14 @@
 #include "TCPClient.hpp"
 #include "FsmManager.hpp"
 #include "DeviceDataStore.hpp"
-
-#define ANDLINK_SERVER_HOST	"10.96.17.50"
-#define ANDLINK_SERVER_PORT	6887
+#include <thread>
 
 class ExcutionUnitClient: public UDPClient, public TCPClient, public FsmManager
 {
 public:
 	ExcutionUnitClient(std::string p_host, int p_port);
 	~ExcutionUnitClient();
-	void startup();
+	void startup(bool p_asDeamonThread = false);
 	void shutdown();
 private:
 	void mainloop();
@@ -52,6 +50,9 @@ private:
 	DeviceDataStore m_deviceDataStore;
 	const std::string m_host;
 	const int m_port;
+
+	bool m_runAsDeamonThread;
+	std::thread m_deamonThread;
 };
 
 #endif /* CLIENT_INCLUDE_EXCUTIONUNITCLIENT_HPP_ */

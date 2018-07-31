@@ -47,7 +47,13 @@ int main(int argc, char** argv)
 	resolveInputOption(argc, argv);
 
 	ExcutionUnitClient l_eu{ g_serverHost, g_serverPort};
-	l_eu.startup();
+	l_eu.startup(true);
+
+	while(true)
+	{
+		sleep(1);
+		printf("wait ExcutionUnitClient\n");
+	}
 	l_eu.shutdown();
 	return 0;
 }

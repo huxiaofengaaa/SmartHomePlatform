@@ -65,4 +65,4 @@ add_executable(SmartHomeDevice SmartHomeClient.cpp
                                ${ANDLINK_CONTROL_SRCS}
                                ${ANDLINK_QUERY_SRCS})
 
-#target_link_libraries(SmartHomeDevice eventResolve pthread )
+target_link_libraries(SmartHomeDevice pthread)

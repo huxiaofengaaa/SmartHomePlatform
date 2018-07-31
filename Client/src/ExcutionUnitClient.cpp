@@ -4,13 +4,15 @@
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
+#include <functional>
 #include "AES.h"
 
 ExcutionUnitClient::ExcutionUnitClient(std::string p_host, int p_port):
 	UDPClient(p_host, p_port), TCPClient(p_host, p_port + 1),
 	FsmManager(),
 	m_exitFlag(false),
-	m_host(p_host),	m_port(p_port)
+	m_host(p_host),	m_port(p_port),
+	m_runAsDeamonThread(false)
 {
 
 }
@@ -20,19 +22,42 @@ ExcutionUnitClient::~ExcutionUnitClient()
 
 }
 
-void ExcutionUnitClient::startup()
+void ExcutionUnitClient::startup(bool p_asDeamonThread)
 {
 	startUDPClient();
 	char buffer[128] = { 0 };
 	memset(buffer, 0, sizeof(buffer));
 	snprintf(buffer, sizeof(buffer), "%s:%d", getLocalUDPHost().c_str(), getLocalUDPPort());
 	m_deviceDataStore.m_runTimeData.storeDeviceIPAddr(std::string(buffer));
-	mainloop();
+	if(p_asDeamonThread == true)
+	{
+		if(m_runAsDeamonThread == false)
+		{
+			auto l_threadTask = std::bind(&ExcutionUnitClient::mainloop, this);
+			m_deamonThread = std::move(std::thread(l_threadTask));
+			m_runAsDeamonThread = true;
+			printf("ExcutionUnitClient run as deamon thread successfully!\n");
+			return;
+		}
+		printf("ExcutionUnitClient already run as deamon thread, ignore this request\n");
+	}
+	else
+	{
+		printf("ExcutionUnitClient run as signal task mode\n");
+		mainloop();
+	}
 }
 
 void ExcutionUnitClient::shutdown()
 {
-
+	m_exitFlag = true;
+	if(m_runAsDeamonThread == true)
+	{
+		m_deamonThread.join();
+		m_runAsDeamonThread = false;
+	}
+	shutDownUDPClient();
+	shutDownTCPClient();
 }
 
 void ExcutionUnitClient::mainloop()
@@ -40,7 +65,6 @@ void ExcutionUnitClient::mainloop()
 	while(m_exitFlag == false)
 	{
 		runFsmManager();
-//		sleep(1);
 	}
 }
 
