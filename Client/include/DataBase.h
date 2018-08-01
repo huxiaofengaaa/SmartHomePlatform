@@ -24,6 +24,11 @@ extern "C"
 {
 #endif
 
+void format_mac_from_colon(char *mac, const char *src);
+void riprt(char *str);
+int setcfgx(const char *filpath, const char *nam, char *val);
+int getcfgx(const char *filpath, const char *nam, char *val);
+
 /*
  * Function declaration
  */
@@ -64,6 +69,16 @@ void get_smartnet_wifi5gconf_info(int *enable, char *transmitpower, int *channel
 void get_smartnet_wifi24gssidconf_info(wifi_conf_info *wifissidconf);
 void get_smartnet_wifi5gssidconf_info(wifi_conf_info *wifissidconf);
 void get_smartnet_uplink_info(char *uplinktype, char *rxrate, char *txrate);
+
+/*
+ * The following function is implemented by myself
+ */
+int get_led_status();
+void get_roaming_status(int* p_enable, int* p_lowRssi24G, int* p_lowRssi5G);
+void get_macfilter_status(int* p_enable, int* p_policy, char* p_entryBuffer, int p_bufferSize);
+int get_radio_number();
+void get_radio_status(int index, char* p_radioName, int* p_radioEnable,
+		char* p_radioPower, int* p_radioChannel);
 
 #ifdef __cplusplus
 }

@@ -2,40 +2,47 @@
 #define CLIENT_INCLUDE_DEVICEDATASTORE_HPP_
 
 #include <string>
+#include <tuple>
+#include <stdio.h>
+#include "DataBase.h"
 #include "RandomGenerator.hpp"
 
-class DeviceBasicConfig
+class BasicConfigInterface
 {
 public:
-	DeviceBasicConfig():
-		m_workMode(initWorkMode())
-	{
+	virtual ~BasicConfigInterface(){ }
+	virtual void init() = 0;
+};
 
+class DeviceBasicConfig: public BasicConfigInterface
+{
+public:
+	void init()
+	{
+		m_workMode = initWorkMode();
 	}
 
 	int initWorkMode(){ return 0; }
 
-	int getMacFilterEnable(){ return 0;}
-	int getMacFilterPolicy(){ return 0;}
-	int getLEDOnOff(){ return 0; }
-	int getRoamingSwitch(){ return 0; }
-	int getLowRSSI24G(){ return 0;}
-	int getLowRSSI5G(){ return 0;}
+	std::tuple<int, int, std::string> getMacFilterStatus();
+	std::tuple<int, int, int> getRoamingStatus();
+	int getLEDOnOff();
+
 	int getWorkMode() const{return m_workMode;}
 	bool setLEDOnOff(int p_value){ return true; }
-	std::string getMacFilterEntries() { return std::string();}
 
 	bool triggerSystemReboot(){return true;}
 	bool setMacFilter(int p_enable, int p_policy, std::string p_entry){return true;}
 	bool setRoaming(int p_switch, int p_lowRssi24G, int p_lowRssi5G){return true;}
 
 private:
-	const int m_workMode;
+	int m_workMode;
 };
 
-class DeviceDownlinkInterface
+class DeviceDownlinkInterface: public BasicConfigInterface
 {
 public:
+	void init() {}
 	int getDownlinkInterfaceNumber(){ return 3;}
 	std::string getDownlinkRadio(int index){ return std::string();}
 	int getDownlinkIndex(int index){return 0;}
@@ -50,9 +57,10 @@ public:
 	int getDownlinkDiscardPacketsReceived(int index){return 0;}
 };
 
-class DeviceUplinkInterface
+class DeviceUplinkInterface: public BasicConfigInterface
 {
 public:
+	void init() {}
 	std::string getUplinkType(){ return std::string("Ethernet");}
 	std::string getUplinkMacAddress(){ return std::string();}
 	std::string getUplinkRadio(){ return std::string();}
@@ -65,9 +73,10 @@ public:
 	std::string getUplinkTxRate(){ return std::string();}
 };
 
-class DeviceHoldSTAInfo
+class DeviceHoldSTAInfo: public BasicConfigInterface
 {
 public:
+	void init() {}
 	int getSTADeviceNumber(){ return 3;}
 	std::string getSTADeviceMacAddress(int index){ return std::string();}
 	std::string getSTADeviceVMacAddress(int index){ return std::string();}
@@ -79,9 +88,10 @@ public:
 	std::string getSTADeviceTxRate(int index){ return std::string();}
 };
 
-class DeviceRadioConfigurationList
+class DeviceRadioConfigurationList: public BasicConfigInterface
 {
 public:
+	void init() {}
 	int getRadioConfigurationNumber(){ return 2;}
 	std::string getRadioConfigName(int index){ return index == 0 ? "2.4G" : "5G";}
 	int getRadioConfigIndex(int index){ return index;}
@@ -93,14 +103,19 @@ public:
 	int getRadioConfigSSIDAdvertisementEnabled(int index){return 0;}
 };
 
-class DeviceRadioConfig
+class DeviceRadioConfig: public BasicConfigInterface
 {
 public:
-	int getRadioNumber(){ return 2;}
-	std::string getRadioName(int index){ return index == 0 ? "2.4G" : "5G";}
-	int getRadioEnable(int index) { return 0;}
-	std::string getRadioTransmitPower(int index) { return std::string("100%");}
-	int getRadioChannel(int index){ return 1;}
+	void init() {}
+	int getRadioNumber();
+	/*
+	 * The function getRadioStatus obtains the status information of the specified
+	 * radio frequency index. The first one of the returned results is the radio frequency,
+	 * The result may be 2.4G or 5G. the second is the radio frequency enable state,
+	 * the third is the radio frequency power, and the fourth is the radio frequency channel.
+	 */
+	std::tuple<std::string, int, std::string, int> getRadioStatus(int p_index);
+
 	int get5GSupport(){ return 1;}
 
 	bool set24GWps(){ return true;}
@@ -127,11 +142,15 @@ public:
 	}
 };
 
-class DeviceRunTimeData
+class DeviceRunTimeData: public BasicConfigInterface
 {
 public:
-	DeviceRunTimeData();
-
+	void init()
+	{
+		m_SyncCode = initSyncCode();
+		m_startupTimestamps = time(NULL);
+		initDevRND();
+	}
 	void initDevRND();
 	std::string initSyncCode(){ return "0";}
 
@@ -174,13 +193,23 @@ private:
 	std::string m_SyncCode;
 	std::string m_UserKey;
 	std::string m_deviceIPAddr;
-	const long m_startupTimestamps;
+	long m_startupTimestamps;
 };
 
-class DeviceReadOnlyData
+class DeviceReadOnlyData: public BasicConfigInterface
 {
 public:
-	DeviceReadOnlyData();
+	void init()
+	{
+		m_deviceMAC = initDeviceMAC();
+		m_deviceType = initDeviceType();
+		m_productToken = initProductToken();
+		m_deviceSn = initDeviceSn();
+		m_firmwareVersion = initFirmWareVersion();
+		m_softwareVersion = initSoftWareVersion();
+		m_deviceVendor = initDeviceVendor();
+		m_deviceModel = initDeviceModel();
+	}
 
 	std::string initDeviceMAC() const;
 	std::string initDeviceType() const;
@@ -200,37 +229,41 @@ public:
 	std::string getDeviceVendor() const;
 	std::string getDeviceModel() const;
 private:
-	const std::string m_deviceMAC;
-	const std::string m_deviceType;
-	const std::string m_productToken;
-	const std::string m_deviceSn;
-	const std::string m_firmwareVersion;
-	const std::string m_softwareVersion;
-	const std::string m_deviceVendor;
-	const std::string m_deviceModel;
+	std::string m_deviceMAC;
+	std::string m_deviceType;
+	std::string m_productToken;
+	std::string m_deviceSn;
+	std::string m_firmwareVersion;
+	std::string m_softwareVersion;
+	std::string m_deviceVendor;
+	std::string m_deviceModel;
 };
 
 #ifdef CROSS_BUILD
-
 #include "DataBase.h"
-
-class DataBase
-{
-public:
-	DataBase()
-	{
-		Client_database_init();
-	}
-	virtual ~DataBase()
-	{
-
-	}
-};
 #endif
 
 class DeviceDataStore
 {
 public:
+	DeviceDataStore()
+	{
+#ifdef CROSS_BUILD
+		if(0 != Client_database_init())
+		{
+			printf("Client_database_init failed\n");
+		}
+		check_andlink_configuration_file();
+#endif
+		m_readOnlyData.init();
+		m_runTimeData.init();
+		m_basicConfig.init();
+		m_radioConfig.init();
+		m_radioConfigurationList.init();
+		m_holdSTAinfo.init();
+		m_uplinkInterface.init();
+		m_downlinkInterface.init();
+	}
 	DeviceReadOnlyData m_readOnlyData;
 	DeviceRunTimeData m_runTimeData;
 	DeviceBasicConfig m_basicConfig;
@@ -239,9 +272,6 @@ public:
 	DeviceHoldSTAInfo m_holdSTAinfo;
 	DeviceUplinkInterface m_uplinkInterface;
 	DeviceDownlinkInterface m_downlinkInterface;
-#ifdef CROSS_BUILD
-	DataBase m_database;
-#endif
 };
 
 #endif /* CLIENT_INCLUDE_DEVICEDATASTORE_HPP_ */

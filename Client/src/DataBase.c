@@ -1,8 +1,9 @@
-#ifdef CROSS_BUILD
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 #include "DataBase.h"
+
+#ifdef CROSS_BUILD
 #include "apmib.h"
 #include "rtl_link.h"
 #include "rtl_link_utils.h"
@@ -48,7 +49,7 @@ void format_mac_from_colon(char *mac, const char *src)
 	int index = 0;
 	int num = 0;
 	int len = strlen(src);
-
+	int l_numberBeforeSemicolon = 0;
 	if (NULL == src || len == 0 || NULL == mac)
 	{
 		return;
@@ -58,12 +59,23 @@ void format_mac_from_colon(char *mac, const char *src)
 	{
 		if (':' != src[index])
 		{
+			if(l_numberBeforeSemicolon >= 2)
+			{
+				mac[num] = ':';
+				num++;
+				l_numberBeforeSemicolon = 0;
+			}
 			mac[num] = src[index];
 			if (src[index] <= 'f' && src[index] >= 'a')
 			{
 				mac[num] -= 32;
 			}
+			l_numberBeforeSemicolon += 1;
 			num++;
+		}
+		else
+		{
+			l_numberBeforeSemicolon = 0;
 		}
 	}
 	mac[num] = '\0';
@@ -305,7 +317,10 @@ void check_andlink_configuration_file()
 {
 	if(access(ANDLINK_CONF_FILE, 0) < 0)
 	{
-		system("touch /etc/config/fhandlink");
+		char l_cmd[64] = { 0 };
+		snprintf(l_cmd, sizeof(l_cmd), "touch %s", ANDLINK_CONF_FILE);
+		system(l_cmd);
+		printf("check_andlink_configuration_file - create file %s\n", ANDLINK_CONF_FILE);
 #if defined(ANDLINK_PRODUCT_TYPE) && (ANDLINK_PRODUCT_TYPE == 0 || ANDLINK_PRODUCT_TYPE == 2)
 		setcfgx(ANDLINK_CONF_FILE, "SyncCode", "0");
 #endif
@@ -709,6 +724,116 @@ void get_smartnet_uplink_info(char *uplinktype, char *rxrate, char *txrate)
 	int synccode = 0;
 
 	return;
+}
+
+
+////////////////////////////////////////////////////////////////////
+/*
+ * The following function is implemented by myself
+ */
+
+int get_led_status()
+{
+	LEDStatus led;
+    memset(&led, 0, sizeof(led));
+    rtl_link_getLEDStatus(&led);
+    return led.on;
+}
+
+void get_roaming_status(int* p_enable, int* p_lowRssi24G, int* p_lowRssi5G)
+{
+	RoamingConfig roaming;
+    memset(&roaming, 0, sizeof(roaming));
+    rtl_link_getRoamingStatus(&roaming);
+    if(p_enable != NULL)
+    {
+    	*p_enable = roaming.enable;
+    }
+    if(p_lowRssi24G != NULL)
+    {
+    	*p_lowRssi24G = roaming.rssi_2g;
+    }
+    if(p_lowRssi5G != NULL)
+    {
+    	*p_lowRssi5G = roaming.rssi_5g;
+    }
+}
+
+void get_macfilter_status(int* p_enable, int* p_policy, char* p_entryBuffer, int p_bufferSize)
+{
+    MacFilter macfilter;
+    MACFILTER_T *macentry;
+	int i = 0;
+	char ver[33];
+	apmib_get(MIB_RTL_LINK_ANDLINK_VER, (void *)ver);
+	memset(&macfilter, 0, sizeof(macfilter));
+	if (!strcasecmp(ver, "v2.10e"))
+	{
+        list_init(&macfilter.mac_list);
+        rtl_link_getMacFilterSetting(&macfilter);
+	}
+	if(p_enable != NULL)
+	{
+		*p_enable = macfilter.enable;
+	}
+	if(p_policy != NULL)
+	{
+		*p_policy = macfilter.policy;
+	}
+	if(p_entryBuffer != NULL && p_bufferSize > 0)
+	{
+		char filter_item[64];
+        if (macfilter.mac_list.len > 32)
+        {
+            macfilter.mac_list.len = 32;
+        }
+        for (i = 0; i < macfilter.mac_list.len; i++)
+        {
+            macentry = list_get_element(&macfilter.mac_list, i);
+            snprintf(filter_item, sizeof(filter_item), "%02x:%02x:%02x:%02x:%02x:%02x/%s,",
+                macentry->macAddr[0], macentry->macAddr[1], macentry->macAddr[2],
+				macentry->macAddr[3], macentry->macAddr[4], macentry->macAddr[5],
+				macentry->comment);
+            strcat(p_entryBuffer, filter_item);
+        }
+	}
+}
+
+int get_radio_number()
+{
+	RfStatus rf;
+    memset(&rf, 0, sizeof(rf));
+    rtl_link_getRFInfo(&rf);
+    return rf.num;
+}
+
+void get_radio_status(int index, char* p_radioName, int* p_radioEnable,
+		char* p_radioPower, int* p_radioChannel)
+{
+	RfStatus rf;
+    memset(&rf, 0, sizeof(rf));
+    rtl_link_getRFInfo(&rf);
+
+    if(index >= 0 && index < rf.num)
+    {
+    	if(p_radioName != NULL)
+    	{
+    		sprintf(p_radioName, "%s",
+    				rf.rf[index].band == PHYBAND_2G ? "2.4G" : "5G");
+    	}
+    	if(p_radioEnable != NULL)
+    	{
+    		*p_radioEnable = rf.rf[index].enable;
+    	}
+    	if(p_radioPower != NULL)
+    	{
+    		sprintf(p_radioPower, "%d", rf.rf[index].power);
+    	}
+    	if(p_radioChannel != NULL)
+    	{
+    		*p_radioChannel = rf.rf[index].channel;
+    	}
+    }
 }
 
 #endif

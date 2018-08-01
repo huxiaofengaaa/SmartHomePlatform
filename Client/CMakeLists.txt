@@ -60,6 +60,8 @@ add_executable(SmartHomeDevice SmartHomeClient.cpp
                                src/FsmManager.cpp
                                src/DeviceDataRunTime.cpp
                                src/DeviceDataReadOnly.cpp
+                               src/DeviceDataBasicConfig.cpp
+                               src/DeviceDataRadioConfig.cpp
                                src/DataBase.c
                                ${EXTERNAL_SOURCE}
                                ${ANDLINK_SRCS}

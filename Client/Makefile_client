@@ -9,15 +9,6 @@ abs_builddir = $(CUR_PATH)
 top_builddir = ..
 top_srcdir = ..
 
-# CROSS_COMPILER_PATH := /home/smartnetwork_v1r1/smartnetv1r1_4/huxiaofeng/project/router_commit/toolchain/msdk-4.4.7-mips-EL-3.10-u0.9.33-m32t-140827/usr/bin
-
-# ifdef CROSS_BUILD
-# CC = ${CROSS_COMPILER_PATH}/msdk-linux-gcc
-# CXX = ${CROSS_COMPILER_PATH}/msdk-linux-g++
-# AR = ${CROSS_COMPILER_PATH}/msdk-linux-ar
-# RANLIB = ${CROSS_COMPILER_PATH}/msdk-linux-ranlib
-# endif
-
 LIB=libandlink56.a
 PROGRAM=andlink56
 
@@ -73,6 +64,8 @@ MAIN_SOURCE := src/RandomGenerator.cpp \
                src/FsmManager.cpp \
                src/DeviceDataRunTime.cpp \
                src/DeviceDataReadOnly.cpp \
+               src/DeviceDataBasicConfig.cpp \
+               src/DeviceDataRadioConfig.cpp \
                src/DataBase.c
 
 HEARD_PATH := -I ./AndlinkDeviceInclude \
@@ -85,12 +78,18 @@ SOURCES := ${ANDLINK_CONTROL_SRCS} ${ANDLINK_QUERY_SRCS} ${ANDLINK_SRCS} ${EXTER
 
 OBJECTS := $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SOURCES)))
 
-CFLAGS += -fPIC -g ${HEARD_PATH}
-CXXFLAGS += -fPIC -g -std=c++0x ${HEARD_PATH}
+CFLAGS += -fPIC ${HEARD_PATH}
+CXXFLAGS += -fPIC -std=c++0x ${HEARD_PATH}
 
 LDFLAGS += -L . -landlink56 -lpthread
 
 ifdef CROSS_BUILD
+# CROSS_COMPILER_PATH := /home/smartnetwork_v1r1/smartnetv1r1_4/huxiaofeng/project/router/toolchain/msdk-4.4.7-mips-EL-3.10-u0.9.33-m32t-140827/usr/bin
+# CC = ${CROSS_COMPILER_PATH}/msdk-linux-gcc
+# CXX = ${CROSS_COMPILER_PATH}/msdk-linux-g++
+# AR = ${CROSS_COMPILER_PATH}/msdk-linux-ar
+# RANLIB = ${CROSS_COMPILER_PATH}/msdk-linux-ranlib
+
 HEARD_PATH += -I$(shell pwd)/../../rtl_link/
 HEARD_PATH += -I$(shell pwd)/../../boa/apmib/
 

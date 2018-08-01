@@ -18,13 +18,18 @@ std::string ExcutionUnitClient::deviceQueryChecker(std::string l_plainReq)
 		resp.softwareVersion = m_deviceDataStore.m_readOnlyData.getSoftWareVersion();
 		resp.WorkingMode = m_deviceDataStore.m_basicConfig.getWorkMode();
 		resp.UpTime = m_deviceDataStore.m_runTimeData.getUpTime();
-		resp.MacFilterEnable = m_deviceDataStore.m_basicConfig.getMacFilterEnable();
-		resp.MacFilterPolicy = m_deviceDataStore.m_basicConfig.getMacFilterPolicy();
-		resp.MacFilterEntries = m_deviceDataStore.m_basicConfig.getMacFilterEntries();
+
+		auto l_macFilterStatus = m_deviceDataStore.m_basicConfig.getMacFilterStatus();
+		resp.MacFilterEnable = std::get<0>(l_macFilterStatus);
+		resp.MacFilterPolicy = std::get<1>(l_macFilterStatus);
+		resp.MacFilterEntries = std::get<2>(l_macFilterStatus);
+
 		resp.LEDOnOff = m_deviceDataStore.m_basicConfig.getLEDOnOff();
-		resp.RoamingSwitch = m_deviceDataStore.m_basicConfig.getRoamingSwitch();
-		resp.LowRSSI24G = m_deviceDataStore.m_basicConfig.getLowRSSI24G();
-		resp.LowRSSI5G = m_deviceDataStore.m_basicConfig.getLowRSSI5G();
+
+		auto l_romaingStatus = m_deviceDataStore.m_basicConfig.getRoamingStatus();
+		resp.RoamingSwitch = std::get<0>(l_romaingStatus);
+		resp.LowRSSI24G = std::get<1>(l_romaingStatus);
+		resp.LowRSSI5G = std::get<2>(l_romaingStatus);
 
 		int l_radioNumber = m_deviceDataStore.m_radioConfig.getRadioNumber();
 		RadioInformation* l_radio = new RadioInformation[l_radioNumber];
@@ -34,10 +39,12 @@ std::string ExcutionUnitClient::deviceQueryChecker(std::string l_plainReq)
 			resp.RadioNumber = l_radioNumber;
 			for(int i = 0 ; i < l_radioNumber ; i++)
 			{
-				l_radio[i].Radio = m_deviceDataStore.m_radioConfig.getRadioName(i);
-				l_radio[i].Enable = m_deviceDataStore.m_radioConfig.getRadioEnable(i);
-				l_radio[i].Channel = m_deviceDataStore.m_radioConfig.getRadioChannel(i);
-				l_radio[i].TransmitPower = m_deviceDataStore.m_radioConfig.getRadioTransmitPower(i);
+				auto l_radioStatus = m_deviceDataStore.m_radioConfig.getRadioStatus(i);
+
+				l_radio[i].Radio = std::get<0>(l_radioStatus);
+				l_radio[i].Enable = std::get<1>(l_radioStatus);
+				l_radio[i].TransmitPower = std::get<2>(l_radioStatus);
+				l_radio[i].Channel = std::get<3>(l_radioStatus);
 			}
 		}
 		else

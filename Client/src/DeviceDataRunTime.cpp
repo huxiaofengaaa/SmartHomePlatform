@@ -1,13 +1,6 @@
 #include "DeviceDataStore.hpp"
 #include <stdio.h>
 
-DeviceRunTimeData::DeviceRunTimeData():
-	m_SyncCode(initSyncCode()),
-	m_startupTimestamps(time(NULL))
-{
-	initDevRND();
-}
-
 void DeviceRunTimeData::initDevRND()
 {
 	RandomGenerator l_random;
