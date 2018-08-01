@@ -62,22 +62,17 @@ std::string ExcutionUnitClient::deviceQueryChecker(std::string l_plainReq)
 			resp.ConfigurationNumber = l_radioConfigurationNumber;
 			for(int i = 0 ; i < l_radioConfigurationNumber ; i++)
 			{
-				l_radioConfiguration[i].Radio =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigName(i);
-				l_radioConfiguration[i].Index =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigIndex(i);
-				l_radioConfiguration[i].Enable =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigEnable(i);
-				l_radioConfiguration[i].SSID =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigSSID(i);
-				l_radioConfiguration[i].SecurityMode =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigSecurityMode(i);
-				l_radioConfiguration[i].Pwd =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigPwd(i);
-				l_radioConfiguration[i].MaxAssociateNum =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigMaxAssociateNum(i);
-				l_radioConfiguration[i].SSIDAdvertisementEnabled =
-						m_deviceDataStore.m_radioConfigurationList.getRadioConfigSSIDAdvertisementEnabled(i);
+				auto l_radioConfigurationStatus =
+						m_deviceDataStore.m_radioConfigurationList.getRadioConfigurationStatus(i);
+
+				l_radioConfiguration[i].Radio = std::get<0>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].Index = std::get<1>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].Enable = std::get<2>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].SSID = std::get<3>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].SecurityMode = std::get<4>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].Pwd = std::get<5>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].MaxAssociateNum = std::get<6>(l_radioConfigurationStatus);
+				l_radioConfiguration[i].SSIDAdvertisementEnabled = std::get<7>(l_radioConfigurationStatus);
 			}
 		}
 		else

@@ -73,12 +73,15 @@ void get_smartnet_uplink_info(char *uplinktype, char *rxrate, char *txrate);
 /*
  * The following function is implemented by myself
  */
-int get_led_status();
+int  get_led_status();
 void get_roaming_status(int* p_enable, int* p_lowRssi24G, int* p_lowRssi5G);
 void get_macfilter_status(int* p_enable, int* p_policy, char* p_entryBuffer, int p_bufferSize);
-int get_radio_number();
-void get_radio_status(int index, char* p_radioName, int* p_radioEnable,
-		char* p_radioPower, int* p_radioChannel);
+int  get_radio_number();
+void get_radio_status(int index, char* p_radioName, int* p_radioEnable, char* p_radioPower, int* p_radioChannel);
+int  get_radio_configuration_number();
+void get_radio_configuration_status(
+	int p_index, char* p_configName, int* p_configEnable, char* p_configSSID, char* p_configSecurityMode,
+	char* p_configPwd, int* p_configMaxAssociateNum, int* p_configSSIDAdvertisementEnabled);
 
 #ifdef __cplusplus
 }

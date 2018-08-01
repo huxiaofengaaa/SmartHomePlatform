@@ -92,15 +92,16 @@ class DeviceRadioConfigurationList: public BasicConfigInterface
 {
 public:
 	void init() {}
-	int getRadioConfigurationNumber(){ return 2;}
-	std::string getRadioConfigName(int index){ return index == 0 ? "2.4G" : "5G";}
-	int getRadioConfigIndex(int index){ return index;}
-	int getRadioConfigEnable(int index){return 1;}
-	std::string getRadioConfigSSID(int index){return std::string();}
-	std::string getRadioConfigSecurityMode(int index){return std::string();}
-	std::string getRadioConfigPwd(int index){return std::string();}
-	int getRadioConfigMaxAssociateNum(int index){return 0;}
-	int getRadioConfigSSIDAdvertisementEnabled(int index){return 0;}
+	int getRadioConfigurationNumber();
+
+	/*
+	 * The function getRadioConfigurationStatus is used to obtain the radio configuration
+	 * information; in the returned result is:
+	 * 		RadioName, Index, enable, SSID, securityMode, Pwd, MaxAssociateNum, SSIDAdvertisementEnabled
+	 * In general, the Index value is p_index + 1;
+	 */
+	std::tuple<std::string, int, int, std::string, std::string, std::string, int, int>
+		getRadioConfigurationStatus(int p_index);
 };
 
 class DeviceRadioConfig: public BasicConfigInterface

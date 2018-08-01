@@ -836,5 +836,81 @@ void get_radio_status(int index, char* p_radioName, int* p_radioEnable,
     }
 }
 
+int get_radio_configuration_number()
+{
+	WiFiConfig config;
+	memset(&config, 0, sizeof(config));
+	rtl_link_getWiFiConfig(&config);
+	return config.num;
+}
+
+void get_radio_configuration_status(
+		int p_index, char* p_configName, int* p_configEnable, char* p_configSSID, char* p_configSecurityMode,
+		char* p_configPwd, int* p_configMaxAssociateNum, int* p_configSSIDAdvertisementEnabled)
+{
+	WiFiConfig config;
+	memset(&config, 0, sizeof(config));
+	rtl_link_getWiFiConfig(&config);
+	if(p_index >= 0 && p_index < config.num)
+	{
+		if(p_configName)
+		{
+			sprintf(p_configName, "%s", config.ap[p_index].band == PHYBAND_2G ? "2.4G" : "5G");
+		}
+		if(p_configEnable)
+		{
+			*p_configEnable = config.ap[p_index].enable;
+		}
+		if(p_configSSID)
+		{
+			sprintf(p_configSSID, "%s", config.ap[p_index].ssid);
+		}
+		if(p_configSecurityMode && p_configPwd)
+		{
+			if (config.ap[p_index].encrypt == ENCRYPT_DISABLED)
+			{
+				sprintf(p_configSecurityMode, "%s", "None");
+				sprintf(p_configPwd, "%s", "");
+			}
+			else if (config.ap[p_index].encrypt == ENCRYPT_WEP)
+			{
+				if (config.ap[p_index].wep_type == WEP64)
+				{
+					sprintf(p_configSecurityMode, "%s", "WEP-64");
+					sprintf(p_configPwd, "%s", config.ap[p_index].key);
+				}
+				else if (config.ap[p_index].wep_type == WEP128)
+				{
+					sprintf(p_configSecurityMode, "%s", "WEP-128");
+					sprintf(p_configPwd, "%s", config.ap[p_index].key);
+				}
+			}
+			else if (config.ap[p_index].encrypt == ENCRYPT_WPA)
+			{
+				sprintf(p_configSecurityMode, "%s", "WPA-Personal");
+				sprintf(p_configPwd, "%s", config.ap[p_index].key);
+			}
+			else if (config.ap[p_index].encrypt == ENCRYPT_WPA2)
+			{
+				sprintf(p_configSecurityMode, "%s", "WPA2-Personal");
+				sprintf(p_configPwd, "%s", config.ap[p_index].key);
+			}
+			else if (config.ap[p_index].encrypt == ENCRYPT_WPA2_MIXED)
+			{
+				sprintf(p_configSecurityMode, "%s", "MIXED-WPAPSK2");
+				sprintf(p_configPwd, "%s", config.ap[p_index].key);
+			}
+		}
+		if(p_configMaxAssociateNum)
+		{
+			*p_configMaxAssociateNum = config.ap[p_index].max_sta_num;
+		}
+		if(p_configSSIDAdvertisementEnabled)
+		{
+			*p_configSSIDAdvertisementEnabled = config.ap[p_index].broadcast_ssid;
+		}
+	}
+}
+
 #endif
 
