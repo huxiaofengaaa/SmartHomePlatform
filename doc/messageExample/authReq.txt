@@ -1,0 +1,5 @@
+{
+	"RPCMethod":	"Register",
+	"MAC":	"18:52:82:F8:FC:E0",
+	"CheckSN":	"939db2a56c64cbf28157418d0e05f02b"
+}

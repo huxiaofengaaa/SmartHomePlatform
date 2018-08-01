@@ -1,0 +1,6 @@
+{
+	"deviceMac":	"18:52:82:F8:FC:E0",
+	"deviceType":	"30103",
+	"productToken":	"71236281462768609280131934879249",
+	"timestamp":	1533118323
+}

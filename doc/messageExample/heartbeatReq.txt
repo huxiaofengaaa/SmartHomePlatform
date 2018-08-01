@@ -1,0 +1,6 @@
+{
+	"RPCMethod":	"heartbeat",
+	"deviceId":	"CMCC-08812-KBCMCJBVBNKC",
+	"MAC":	"18:52:82:F8:FC:E0",
+	"IPAddr":	"192.168.107.239:44517"
+}

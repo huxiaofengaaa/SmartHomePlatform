@@ -1,0 +1,6 @@
+{
+	"respCode":	2,
+	"heartBeatTime":	15,
+	"MessageServer":	"10.96.17.50:6887",
+	"ServerIP":	"10.96.17.50:6888"
+}

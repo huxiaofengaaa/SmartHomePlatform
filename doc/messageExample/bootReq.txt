@@ -1,0 +1,20 @@
+{
+	"RPCMethod":	"boot",
+	"DevRND":	"72101326537614882802876147643313",
+	"deviceId":	"CMCC-08812-KBCMCJBVBNKC",
+	"deviceMac":	"18:52:82:F8:FC:E0",
+	"deviceType":	"30103",
+	"firmwareVersion":	"SR120-A_V1.0",
+	"softwareVersion":	"SR_V1.00",
+	"ipAddress":	"192.168.107.239:44517",
+	"timestamp":	1533118331,
+	"XData":	{
+		"deviceVendor":	"fiberhome",
+		"deviceModel":	"SR120",
+		"deviceSn":	"741E93-651D8-185282f8fce0",
+		"apUplinkType":	"Ethernet",
+		"radio5":	1,
+		"user_key":	"71236281462768609280131934879249",
+		"SyncCode":	"0"
+	}
+}

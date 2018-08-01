@@ -1,0 +1,120 @@
+{
+	"ID":	"8046129751142890",
+	"deviceId":	"CMCC-08812-KBCMCJBVBNKC",
+	"data":	{
+		"hardwareVersion":	"SR120-A_V1.0",
+		"softwareVersion":	"SR_V1.00",
+		"WorkingMode":	0,
+		"UpTime":	"16",
+		"MacFilterEnable":	0,
+		"MacFilterPolicy":	0,
+		"MacFilterEntries":	"",
+		"LEDOnOff":	1,
+		"RoamingSwitch":	0,
+		"LowRSSI24G":	-100,
+		"LowRSSI5G":	-100,
+		"SyncCode":	"0",
+		"Radios":	[{
+				"Radio":	"5G",
+				"Enable":	1,
+				"TransmitPower":	"100",
+				"Channel":	149
+			}, {
+				"Radio":	"2.4G",
+				"Enable":	1,
+				"TransmitPower":	"100",
+				"Channel":	6
+			}],
+		"Configurations":	[{
+				"Radio":	"5G",
+				"Index":	1,
+				"Enable":	1,
+				"SSID":	"RTK 11n AP 5G",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"5G",
+				"Index":	2,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP VAP1",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"5G",
+				"Index":	3,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP VAP2",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"5G",
+				"Index":	4,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP VAP3",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"5G",
+				"Index":	5,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP VAP4",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"2.4G",
+				"Index":	6,
+				"Enable":	1,
+				"SSID":	"RTK 11n AP 2.4G",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"2.4G",
+				"Index":	7,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP 1 VAP1",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"2.4G",
+				"Index":	8,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP 1 VAP2",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"2.4G",
+				"Index":	9,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP 1 VAP3",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}, {
+				"Radio":	"2.4G",
+				"Index":	10,
+				"Enable":	0,
+				"SSID":	"RTK 11n AP 1 VAP4",
+				"SecurityMode":	"None",
+				"Pwd":	"",
+				"MaxAssociateNum":	64,
+				"SSIDAdvertisementEnabled":	1
+			}]
+	}
+}

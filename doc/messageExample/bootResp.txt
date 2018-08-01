@@ -1,0 +1,7 @@
+{
+	"respCode":	0,
+	"timestamp":	1533118332,
+	"encrypt":	0,
+	"ChallengeCode":	"0393619286566263",
+	"ServerIP":	"10.96.17.50:6888"
+}

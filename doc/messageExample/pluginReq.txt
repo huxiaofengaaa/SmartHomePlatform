@@ -1,0 +1,6 @@
+{
+	"RPCMethod":	"RequestPlug-in",
+	"Key":	"b51f53ff1f64dab112fad6ac57edeaf6",
+	"ServerAddr":	"10.96.17.50",
+	"ServerPort":	"6888"
+}
