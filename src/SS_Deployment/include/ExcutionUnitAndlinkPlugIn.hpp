@@ -8,6 +8,8 @@
 #pragma once
 
 #include "ExcutionUnit.hpp"
+#include "ExcutionUnitWithSignalQueue.hpp"
+#include "ExcutionUnitWithMultipleQueue.hpp"
 #include "glog/logging.h"
 #include "UDPServerHandler.hpp"
 #include "TCPListenerHandler.hpp"
@@ -18,7 +20,7 @@
 #include "PacketStatistician.hpp"
 
 class ExcutionUnitAndlinkPlugIn:
-		public ExcutionUnit<std::shared_ptr<EventTypeTCPClientDataObject>>,
+		public ExcutionUnitWithMultipleQueue<std::string, std::shared_ptr<EventTypeTCPClientDataObject>>,
 		public AsynTCPListenerHandler,
 		public AsynTCPServerHandler,
 		public PacketStatistician

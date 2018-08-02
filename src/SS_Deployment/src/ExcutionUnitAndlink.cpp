@@ -10,7 +10,7 @@
 ExcutionUnitAndlink::ExcutionUnitAndlink(std::string p_host, int p_port,
 		std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder):
 	m_host(p_host), m_port(p_port),
-	ExcutionUnit(
+	ExcutionUnitWithSignalQueue(
 			"Andlink",
 			5,
 			std::bind(&ExcutionUnitAndlink::handleDataObject,
@@ -76,6 +76,11 @@ bool ExcutionUnitAndlink::asycUDPServerDataCallback(std::shared_ptr<EventTypeUDP
 
 bool ExcutionUnitAndlink::handleDataObject(std::shared_ptr<EventTypeUDPClientDataObject> p_eventObj)
 {
+	if(!p_eventObj)
+	{
+		return false;
+	}
+
 	auto l_andlinkHandler = std::make_shared<AndlinkDeviceEventHandler>(m_ueContextHolder);
 	std::string l_resp = l_andlinkHandler->run(p_eventObj);
 

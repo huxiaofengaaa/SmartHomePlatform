@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 #include "glog/logging.h"
-#include "ExcutionUnit.hpp"
+#include "ExcutionUnitWithSignalQueue.hpp"
 #include "UDPServerHandler.hpp"
 #include "UeContextHolderAndlink.hpp"
 #include "AndlinkDeviceEventHandler.hpp"
@@ -18,7 +18,7 @@
 #include "PacketStatistician.hpp"
 
 class ExcutionUnitAndlink:
-		public ExcutionUnit<std::shared_ptr<EventTypeUDPClientDataObject>>,
+		public ExcutionUnitWithSignalQueue<std::shared_ptr<EventTypeUDPClientDataObject>>,
 		public AsynUDPServerHandler,
 		public PacketStatistician
 {

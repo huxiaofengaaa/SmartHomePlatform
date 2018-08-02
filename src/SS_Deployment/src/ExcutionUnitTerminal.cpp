@@ -6,7 +6,7 @@ ExcutionUnitTerminal::ExcutionUnitTerminal(
 		std::shared_ptr<UeContextHolderAndlink> p_ueContextHolder,
 		std::shared_ptr<ExcutionUnitAndlink> p_euAndlink,
 		std::shared_ptr<ExcutionUnitAndlinkPlugIn> p_euAndlinkPlugin):
-	ExcutionUnit(
+	ExcutionUnitWithSignalQueue(
 			"Terminal",
 			1,
 			std::bind(&ExcutionUnitTerminal::handleDataObject,
@@ -51,6 +51,11 @@ bool ExcutionUnitTerminal::terminalAsycDataCallback(std::string p_data)
 
 bool ExcutionUnitTerminal::handleDataObject(std::string p_str)
 {
+	if(p_str.empty() == true)
+	{
+		return false;
+	}
+
 	if(p_str != std::string("\n"))
 	{
 		LOG(INFO) << "Terminal input, size:" << p_str.size() << ", msg:" << p_str;

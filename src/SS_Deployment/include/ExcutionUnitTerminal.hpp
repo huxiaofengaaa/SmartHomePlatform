@@ -7,7 +7,7 @@
 #include <functional>
 #include <map>
 #include "glog/logging.h"
-#include "ExcutionUnit.hpp"
+#include "ExcutionUnitWithSignalQueue.hpp"
 #include "ExcutionUnitAndlink.hpp"
 #include "ExcutionUnitAndlinkPlugIn.hpp"
 #include "TerminalHandler.hpp"
@@ -16,7 +16,7 @@
 #include "PacketStatistician.hpp"
 
 class ExcutionUnitTerminal:
-		public ExcutionUnit<std::string>,
+		public ExcutionUnitWithSignalQueue<std::string>,
 		public AsynTerminalHandler,
 		public PacketStatistician
 {

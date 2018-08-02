@@ -5,7 +5,7 @@ ExcutionUnitAndlinkPlugIn::ExcutionUnitAndlinkPlugIn(std::string p_host, int p_p
 	m_host(p_host),
 	m_port(p_port),
 	m_ueContextHolder(p_ueContextHolder),
-	ExcutionUnit(
+	ExcutionUnitWithMultipleQueue(
 			"AndlinkPlugIn",
 			5,
 			std::bind(&ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject,
@@ -52,6 +52,11 @@ void ExcutionUnitAndlinkPlugIn::shutdown()
 
 bool ExcutionUnitAndlinkPlugIn::excutionUnitHandleDataObject(std::shared_ptr<EventTypeTCPClientDataObject> p_eventObj)
 {
+	if(!p_eventObj)
+	{
+		return false;
+	}
+
 	auto l_deviceID = m_ueContextHolder->getDeviceIDByTCPAddress(
 			p_eventObj->m_host, p_eventObj->m_port);
 
@@ -85,7 +90,8 @@ bool ExcutionUnitAndlinkPlugIn::asycTCPServerReceiveDataHandler(std::shared_ptr<
 
 	LOG(INFO) << p_eventObj;
 	countRecvPacket(p_eventObj->m_rawData.size());
-	return addDataObject(p_eventObj);
+	auto l_key = p_eventObj->m_host + ":" + std::to_string(p_eventObj->m_port);
+	return addDataObject(l_key, p_eventObj);
 }
 
 bool ExcutionUnitAndlinkPlugIn::asycTcpConnectionHandler(std::shared_ptr<ClientConnectInfo> p_connectionInfo)
