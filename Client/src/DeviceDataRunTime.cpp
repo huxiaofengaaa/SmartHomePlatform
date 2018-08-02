@@ -111,7 +111,7 @@ std::string DeviceRunTimeData::getUpTime()
 {
 	long l_upTime = time(NULL) - m_startupTimestamps;
 	char tmp[128] = { 0 };
-	snprintf(tmp, sizeof(tmp), "%d", l_upTime);
+	snprintf(tmp, sizeof(tmp), "%ld", l_upTime);
 	return std::string(tmp);
 }
 

@@ -316,8 +316,8 @@ bool ExcutionUnitClient::deviceTCPDownlinkAction()
 		l_disconnectResp.respCode = 0;
 		l_disconnectResp.ID = l_disconnectReq.ID;
 		l_plainResp = build_if56_disconnect_response_msg(l_disconnectResp);
-		printf("Send Resp Msg, enctyptType:%d, size:%d, : %s\n",
-				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		std::cout << "Send Resp Msg, enctyptType:" << l_enctyptType
+				<< ", size:" << l_plainResp.size() << ", :" << l_plainResp << std::endl;
 		if(l_enctyptType == 1)
 		{
 			l_plainResp = plainEncrypt(l_plainResp);
@@ -332,8 +332,8 @@ bool ExcutionUnitClient::deviceTCPDownlinkAction()
 	l_plainResp = deviceQueryChecker(l_plainReq);
 	if(l_plainResp.empty() == false)
 	{
-		printf("Send Query Resp Msg, enctyptType:%d, size:%d, : %s\n",
-				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		std::cout << "Send Query Resp Msg, enctyptType:" << l_enctyptType
+				<< ", size:" << l_plainResp.size() << ", :" << l_plainResp << std::endl;
 		if(l_enctyptType == 1)
 		{
 			l_plainResp = plainEncrypt(l_plainResp);
@@ -348,8 +348,8 @@ bool ExcutionUnitClient::deviceTCPDownlinkAction()
 	l_plainResp == deviceControlChecker(l_plainReq);
 	if(l_plainResp.empty() == false)
 	{
-		printf("Send Control Resp Msg, enctyptType:%d, size:%d, : %s\n",
-				l_enctyptType, l_plainResp.size(), l_plainResp.c_str());
+		std::cout << "Send Control Resp Msg, enctyptType:" << l_enctyptType
+				<< ", size:" << l_plainResp.size() << ", :" << l_plainResp << std::endl;
 		if(l_enctyptType == 1)
 		{
 			l_plainResp = plainEncrypt(l_plainResp);

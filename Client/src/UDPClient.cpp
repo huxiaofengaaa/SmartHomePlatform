@@ -55,7 +55,8 @@ int UDPClient::writeUDPString(std::string p_data)
 {
 	if(m_sockfd <= 0 || p_data.size() <= 0)
 	{
-		printf("write UDP string failed, m_sockfd=%d, data size=%d \n", m_sockfd, p_data.size());
+		std::cout << "write UDP string failed, m_sockfd = " << m_sockfd << ", data size="
+				<< p_data.size() << std::endl;
 		return 0;
 	}
 	struct sockaddr_in l_serverAddr;

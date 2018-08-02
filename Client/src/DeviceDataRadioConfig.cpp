@@ -26,7 +26,7 @@ std::tuple<std::string, int, std::string, int> DeviceRadioConfig::getRadioStatus
 #else
 
 #endif
-	return std::make_tuple<std::string, int, std::string, int>(
+	return std::tuple<std::string, int, std::string, int>(
 			l_radioName, l_radioEnable, l_radioPower, l_radioChannel);
 }
 
@@ -59,7 +59,7 @@ DeviceRadioConfigurationList::getRadioConfigurationStatus(int p_index)
 #else
 
 #endif
-	return std::make_tuple<std::string, int, int, std::string, std::string, std::string, int, int>(
+	return std::tuple<std::string, int, int, std::string, std::string, std::string, int, int>(
 			l_configurationName, l_configurationIndex, l_configurationEnable,
 			l_configurationSSID, l_configurationSecurityMode, l_configurationPwd,
 			l_configurationMaxAssociateNum, l_configurationSSIDAdvertisementEnabled);

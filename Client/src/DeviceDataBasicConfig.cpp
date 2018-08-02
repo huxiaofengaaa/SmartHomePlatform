@@ -25,7 +25,7 @@ std::tuple<int, int, int> DeviceBasicConfig::getRoamingStatus()
 #else
 
 #endif
-	return std::make_tuple<int, int, int>(l_romaingEnable, l_lowRssi24G, l_lowRssi5G);
+	return std::tuple<int, int, int>(l_romaingEnable, l_lowRssi24G, l_lowRssi5G);
 }
 
 std::tuple<int, int, std::string> DeviceBasicConfig::getMacFilterStatus()
@@ -39,7 +39,7 @@ std::tuple<int, int, std::string> DeviceBasicConfig::getMacFilterStatus()
 #else
 
 #endif
-	return std::make_tuple<int, int, std::string>(
+	return std::tuple<int, int, std::string>(
 			l_macFilterEnable, l_macFilterPolicy, std::string(l_macFilterEntry));
 }
 

@@ -111,7 +111,7 @@ std::string ExcutionUnitClient::plainEncrypt(std::string p_plainText)
 			p_plainText.c_str(), p_plainText.size(), l_chiperText, p_plainText.size() + 16,
 			l_sessionKey.c_str(), l_initVector.c_str(), PKCS5Padding))
 	{
-		printf("l_chiperText length %d \n", strlen(l_chiperText));
+		std::cout << "l_chiperText length " << strlen(l_chiperText) << std::endl;
 		l_resultString = std::string(l_chiperText);
 	}
 	if(l_chiperText)
