@@ -16,7 +16,7 @@ struct UeContextAndlink
 	{
 
 	}
-	~UeContextAndlink() = default;
+	virtual ~UeContextAndlink() = default;
 
 	bool isDeviceOnline()
 	{

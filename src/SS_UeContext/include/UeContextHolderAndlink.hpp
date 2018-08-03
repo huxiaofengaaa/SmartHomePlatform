@@ -12,15 +12,32 @@
 #include "UeContextAndlink.hpp"
 #include "glog/logging.h"
 #include "ConfigParser.hpp"
+#include "DataBaseStorage.hpp"
 
-class UeContextHolderAndlink: public UeContextHolder<std::shared_ptr<UeContextAndlink>>
+class UeContextHolderAndlink: public UeContextHolder<std::shared_ptr<UeContextAndlink>>,
+                              public DataBaseStorage
 {
 public:
 	UeContextHolderAndlink(std::string p_host, int p_port, std::shared_ptr<ConfigParser> p_config):
-		m_host(p_host), m_port(p_port), m_config(p_config)
+		m_host(p_host), m_port(p_port), m_config(p_config), DataBaseStorage()
 	{
-		m_defaultEncryptType =
-				m_config->getParamInteger("EncryptType", 0);
+		m_defaultEncryptType = m_config->getParamInteger("EncryptType", 0);
+
+		if(true == DataBaseStorage::reStartup("127.0.0.1", 6379, "12345678"))
+		{
+			if(true == recoveryAllDataFromRemoteServer())
+			{
+				LOG(INFO) << "recovery all data from remote server successfully";
+			}
+			else
+			{
+				LOG(INFO) << "recovery all data from remote server failed";
+			}
+		}
+		else
+		{
+			LOG(INFO) << "data base storage re-startup failed";
+		}
 	}
 	~UeContextHolderAndlink(){ }
 
@@ -53,6 +70,12 @@ private:
 	std::string generatorGwToken();
 	std::string generatorDeviceToken();
 	std::string generatorAndlinkToken();
+
+	bool recoveryAllDataFromRemoteServer()
+	{
+		//TODO
+		return true;
+	}
 
 	int m_defaultEncryptType;
 
