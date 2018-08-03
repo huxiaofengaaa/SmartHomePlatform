@@ -52,6 +52,7 @@ public:
 		m_queueNotify.notifyAll();
 	}
 
+protected:
 	bool ExcutionUnitWait(std::function<bool()> p_checker)
 	{
 		return m_queueNotify.wait(p_checker);

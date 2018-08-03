@@ -33,13 +33,13 @@ private:
 	{
 		//LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop start";
 		std::function<bool()> l_checker = std::bind(&ExcutionUnitWithMultipleQueue::isDataNotEmpty, this);
-		//auto l_checker = std::bind(&MultipleDataQueue<KeyType, DataType>::isDataObjectNotEmpty, this);
 		while(shouldExcutionUnitExit() == false)
 		{
 			if(true == ExcutionUnitWait(l_checker))
 			{
 				auto l_eventObj = MultipleDataQueue<KeyType, DataType>::detachDataObject();
 				m_callback(std::get<1>(l_eventObj));
+				MultipleDataQueue<KeyType, DataType>::setKeyDeActive(std::get<0>(l_eventObj));
 			}
 		}
 		//LOG(INFO) << "ExcutionUnit " << m_ExcutionUnitName << " main loop exit";

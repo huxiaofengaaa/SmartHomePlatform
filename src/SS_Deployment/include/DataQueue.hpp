@@ -8,6 +8,7 @@
 #include <tuple>
 #include <algorithm>
 #include <iterator>
+#include "glog/logging.h"
 
 template<class KeyType, class DataType>
 class DataQueueInterface
@@ -48,7 +49,7 @@ public:
 			m_dataQueue.erase(m_dataQueue.begin());
 		}
 		m_queueMutex.unlock();
-		return {1, l_obj};
+		return std::tuple<KeyType, DataType>(1, l_obj);
 	}
 
 	int getDataObjectSize() override
@@ -119,7 +120,7 @@ public:
 			}
 		}
 		m_queueMutex.unlock();
-		return {l_key, l_obj};
+		return std::tuple<KeyType, DataType>(l_key, l_obj);
 	}
 
 	int getDataObjectSize() override
@@ -151,6 +152,7 @@ public:
 			if(*iter == p_key)
 			{
 				m_activeKey.erase(iter);
+				LOG(INFO) << "Key " << p_key << " is setting Unactive" << std::endl;
 				break;
 			}
 		}
@@ -171,6 +173,7 @@ private:
 	{
 		if(false == isKeyActive(p_key))
 		{
+			LOG(INFO) << "Key " << p_key << " is setting active" << std::endl;
 			m_activeKey.push_back(p_key);
 		}
 	}
