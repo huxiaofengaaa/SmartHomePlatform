@@ -5,6 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR}/library/glog/src)
 include_directories(${CMAKE_SOURCE_DIR}/library/cJSON)
 include_directories(${CMAKE_SOURCE_DIR}/library/SecurityAlgorithm/include)
 include_directories(${CMAKE_SOURCE_DIR}/library/ConfigParser)
+include_directories(${CMAKE_SOURCE_DIR}/library/hiredis/include)
 include_directories(SS_Deployment/include)
 include_directories(SS_EventResolve/include)
 include_directories(SS_SysMechanish/include)
@@ -30,6 +31,7 @@ add_executable(SmartHomePlatform SmartHomeMain.cpp
                                  SS_Deployment/src/ExcutionUnitTerminal.cpp
                                  SS_Deployment/src/ExcutionUnitTerminalCmdCallback.cpp)
                                  
-target_link_libraries(SmartHomePlatform terminalCmd eventResolve ueContext sysMechanish pthread glog cJSON SecurityAlgorithm ConfigParser)
+target_link_libraries(SmartHomePlatform terminalCmd eventResolve ueContext sysMechanish pthread 
+                                        glog cJSON SecurityAlgorithm ConfigParser hiredis)
 
 #add_executable(SmartHomeDevice SmartHomeClient.cpp)
