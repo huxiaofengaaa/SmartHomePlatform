@@ -18,6 +18,8 @@ SmartHomeDeployment::SmartHomeDeployment(std::shared_ptr<ConfigParser> p_config)
 	int l_controlServerPort = m_config->getParamInteger("ControlServerPort", l_managerServerPort + 1);
 	LOG(INFO) << "Control server is " << l_controlServerHost << ":" << l_controlServerPort;
 
+	m_timer = std::make_shared<TimerWithExcutionUnit>();
+
 	m_ueContextAndlinkHolder = std::make_shared<UeContextHolderAndlink>(
 			l_managerServerHost,
 			l_managerServerPort,
