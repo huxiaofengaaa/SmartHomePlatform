@@ -115,3 +115,180 @@ bool DataBaseStorage::authRedis()
 	}
 	return l_authResult;
 }
+
+bool DataBaseStorage::writeString(std::string p_key, std::string p_value)
+{
+	bool l_writeResult = false;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "write string failed, not connect to remote redis server";
+		return l_writeResult;
+	}
+
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler,
+			"set %s %s", p_key.c_str(), p_value.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_STATUS
+			&& l_redisResp->str == std::string("OK"))
+	{
+		l_writeResult = true;
+	}
+	else
+	{
+		LOG(INFO) << "Redis write string error, key = " << p_key << " value = " << p_value;
+		l_writeResult = false;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_writeResult;
+}
+
+std::string DataBaseStorage::readString(std::string p_key, std::string p_defaultValue)
+{
+	std::string l_readResult = p_defaultValue;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "write string failed, not connect to remote redis server";
+		return l_readResult;
+	}
+
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler, "get %s", p_key.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_STRING)
+	{
+		l_readResult = l_redisResp->str;
+	}
+	else
+	{
+		LOG(INFO) << "Redis read string error, key = " << p_key;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_readResult;
+}
+
+bool DataBaseStorage::hashWriteOneField(std::string p_key, std::string p_field, std::string p_value)
+{
+	bool l_writeResult = false;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "redis hash write failed, not connect to remote redis server";
+		return l_writeResult;
+	}
+
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler,
+			"hset %s %s %s", p_key.c_str(), p_field.c_str(), p_value.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_INTEGER
+			&& l_redisResp->integer == 0)
+	{
+		l_writeResult = true;
+	}
+	else
+	{
+		LOG(INFO) << "Redis hash write error, key = " << p_key
+				  << " filed = " << p_field << " value = " << p_value;
+		l_writeResult = false;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_writeResult;
+}
+
+std::string DataBaseStorage::hashReadOneField(std::string p_key, std::string p_field, std::string p_defaultValue)
+{
+	std::string l_readResult = p_defaultValue;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "redis read hash failed, not connect to remote redis server";
+		return l_readResult;
+	}
+
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler, "hget %s %s",
+			p_key.c_str(), p_field.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_STRING)
+	{
+		l_readResult = l_redisResp->str;
+	}
+	else
+	{
+		LOG(INFO) << "Redis hash read error, key = " << p_key << " field = " << p_field;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_readResult;
+}
+
+bool DataBaseStorage::setAdd(std::string p_key, std::string p_value)
+{
+	bool l_addResult = false;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "redis read set failed, not connect to remote redis server";
+		return l_addResult;
+	}
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler, "sadd %s %s",
+			p_key.c_str(), p_value.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_INTEGER)
+	{
+		if(l_redisResp->integer == 0)
+		{
+			LOG(INFO) << "set value " << p_value << " already exist in " << p_key;
+		}
+		l_addResult = true;
+	}
+	else
+	{
+		LOG(INFO) << "Redis set write error, key = " << p_key << " value = " << p_value;
+		l_addResult = false;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_addResult;
+
+}
+
+std::vector<std::string> DataBaseStorage::setGetAll(std::string p_key)
+{
+	std::vector<std::string> l_readResult;
+	if(m_redisClientHandler == NULL || m_connectToRemoteFlag == false)
+	{
+		LOG(INFO) << "redis read set failed, not connect to remote redis server";
+		return l_readResult;
+	}
+
+	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler, "smembers %s", p_key.c_str());
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_ARRAY && NULL != l_redisResp->element)
+	{
+		for(int i = 0; i< l_redisResp->elements ; i++)
+		{
+			if(l_redisResp->element[i] != NULL)
+			{
+				l_readResult.push_back(l_redisResp->element[i]->str);
+			}
+		}
+	}
+	else
+	{
+		LOG(INFO) << "Redis set read error, key = " << p_key ;
+	}
+	if(l_redisResp)
+	{
+		freeReplyObject(l_redisResp);
+		l_redisResp = NULL;
+	}
+	return l_readResult;
+}
+

@@ -13,6 +13,7 @@ UeContextHolderAndlink::UeContextHolderAndlink(
 	std::string l_redisServerHost = m_config->getParamString("RedisServerHost", "127.0.0.1");
 	int l_redisServerPort = m_config->getParamInteger("RedisServerPort", 6379);
 	std::string l_redisServerPw = m_config->getParamString("RedisServerPasswd", "");
+
 	LOG(INFO) << "Redis server is " << l_redisServerHost << ":" << l_redisServerPort
 			  << ", password " << l_redisServerPw;
 

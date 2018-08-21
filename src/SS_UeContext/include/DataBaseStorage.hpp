@@ -16,6 +16,15 @@ public:
 	bool reStartup(std::string p_redisHost, int p_redisPort, std::string p_redisAuthPwd);
 	bool shutdown();
 
+	bool writeString(std::string p_key, std::string p_value);
+	std::string readString(std::string p_key, std::string p_defaultValue = "");
+
+	bool hashWriteOneField(std::string p_key, std::string p_field, std::string p_value);
+	std::string hashReadOneField(std::string p_key, std::string p_field, std::string p_defaultValue = "");
+
+	bool setAdd(std::string p_key, std::string p_value);
+	std::vector<std::string> setGetAll(std::string p_key);
+
 private:
 	bool connectRedis();
 	bool authRedis();
