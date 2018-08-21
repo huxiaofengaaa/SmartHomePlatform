@@ -1,1 +1,49 @@
 # welcome to SmartHomePlatform
+## 1 编译安装
+- 解压源码并切换到源码目录：[smartnetv1r1_4@localhost SmartHomePlatform]$ cd SmartHomePlatform
+- 安装Redis数据库：
+  - 切换到redis源码目录：[smartnetv1r1_4@localhost SmartHomePlatform]$ cd library/
+  - 解压redis源码：[smartnetv1r1_4@localhost library]$ tar -xvf redis-4.0.10.tar.gz
+  - 编译redis：[smartnetv1r1_4@localhost library]$ cd redis-4.0.10/ && make
+  - 配置redis：打开配置文件redis.conf，根据自己需求配置；
+  - 启动redis服务器：[smartnetv1r1_4@localhost redis-4.0.10]$ ./src/redis-server redis.conf &
+- 编译SmartHomePlatform：
+  - 切换到项目主页：${YOUR PATH}/SmartHomePlatform
+  - 新建编译目录: [smartnetv1r1_4@localhost SmartHomePlatform]$ mkdir build && cd build
+  - 运行cmake生成Makefile文件：cmake ..
+  - 编译：make
+- 修改配置文件config.ini：
+  - 拷贝配置文件到当前目录：[smartnetv1r1_4@localhost build]$ cp ../config.ini .
+  - 修改config.ini文件进行修改；请注意如果RedisServerPasswd为空，表示redis服务器不需要认证：
+- 启动服务器：
+  - 显示log日志到屏幕：[smartnetv1r1_4@localhost build]$ GLOG_logtostderr=1 ./bin/SmartHomePlatform
+  - 打印log日志到日志文件：[smartnetv1r1_4@localhost build]$ ./bin/SmartHomePlatform
+- 启动客户端测试：[smartnetv1r1_4@localhost build]$ ./bin/SmartHomeDevice
+
+## 2 代码目录说明
+- Client：客户端代码总目录
+  - AES：AES数据加密解密算法库
+  - AndlinkDeviceControlEvent：Andlink协议编码解码模块，控制类消息
+  - AndlinkDeviceEvent：Andlink协议编码解码模块，UDP常规消息
+  - AndlinkDeviceInclude：Andlink协议编码解码模块，头文件
+  - AndlinkDeviceQueryEvent：Andlink协议编码解码模块，查询类消息
+  - cJSON：JSON算法C语言实现库
+  - CMakeLists.txt：SmartHomeDevice客户端程序总cmake文件
+  - include：一般头文件
+  - Makefile_client ：交叉编译环境makefile定义版
+  - MD5：md5sum算法C语言实现模块
+  - SmartHomeClient.cpp：SmartHomeDevice客户端主程序入口
+  - src：SmartHomeDevice客户端源码总目录
+- CMakeLists.txt：项目主Cmake文件；
+- config.ini：默认配置文件模板
+- doc：文档目录
+- library：第三方开源库文件目录
+  - cJSON :服务端JSON库
+  - CMakeLists.txt ：服务端主cmake文件
+  - ConfigParser：配置文件解析模块
+  - glog ：服务端日志输出库
+  - hiredis ：redis数据库客户端库
+  - redis-4.0.10.tar.gz ：redis数据库服务端源码
+  - SecurityAlgorithm：安全算法模块
+- README.md：使用说明
+- src：服务端源代码
