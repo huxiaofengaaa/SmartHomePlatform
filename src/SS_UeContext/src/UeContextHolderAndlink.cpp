@@ -4,6 +4,35 @@
 #include "CalendarClock.hpp"
 #include "MD5.h"
 
+UeContextHolderAndlink::UeContextHolderAndlink(
+		std::string p_host, int p_port, std::shared_ptr<ConfigParser> p_config):
+		m_host(p_host), m_port(p_port), m_config(p_config), DataBaseStorage()
+{
+	m_defaultEncryptType = m_config->getParamInteger("EncryptType", 0);
+
+	std::string l_redisServerHost = m_config->getParamString("RedisServerHost", "127.0.0.1");
+	int l_redisServerPort = m_config->getParamInteger("RedisServerPort", 6379);
+	std::string l_redisServerPw = m_config->getParamString("RedisServerPasswd", "");
+	LOG(INFO) << "Redis server is " << l_redisServerHost << ":" << l_redisServerPort
+			  << ", password " << l_redisServerPw;
+
+	if(true == DataBaseStorage::reStartup(l_redisServerHost, l_redisServerPort, l_redisServerPw))
+	{
+		if(true == recoveryAllDataFromRemoteServer())
+		{
+			LOG(INFO) << "recovery all data from remote server successfully";
+		}
+		else
+		{
+			LOG(INFO) << "recovery all data from remote server failed";
+		}
+	}
+	else
+	{
+		LOG(INFO) << "data base storage re-startup failed";
+	}
+}
+
 std::vector<std::string> UeContextHolderAndlink::getDeviceList()
 {
 	return getAllKey();

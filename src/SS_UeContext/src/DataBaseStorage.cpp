@@ -1,8 +1,11 @@
 #include "DataBaseStorage.hpp"
 
 DataBaseStorage::DataBaseStorage(std::string p_redisHost, int p_redisPort, std::string p_redisAuthPwd)
-		: m_redisHost(p_redisHost), m_redisPort(p_redisPort), m_redisAuthPwd(p_redisAuthPwd),
-		  m_connectToRemoteFlag(false), m_redisClientHandler(NULL)
+		: m_redisHost(p_redisHost),
+		  m_redisPort(p_redisPort),
+		  m_redisAuthPwd(p_redisAuthPwd),
+		  m_connectToRemoteFlag(false),
+		  m_redisClientHandler(NULL)
 {
 	LOG(INFO) << "default remote data base server is " << p_redisHost << ":" << m_redisPort;
 }
