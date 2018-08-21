@@ -379,6 +379,102 @@ bool UeContextHolderAndlink::DeviceHeartbeat(std::string p_deviceId, std::string
 	CalendarClock clock;
 	l_uecontext->lastHeartbeat = clock.getTimeStamp();
 	l_uecontext->ipAddress = p_IPAddr;
+	storeAndlinkDevice(p_deviceId);
+	return true;
+}
+
+bool UeContextHolderAndlink::storeAndlinkDevice(std::string p_deviceId)
+{
+	auto l_uecontext = getRef(p_deviceId);
+	if(!l_uecontext)
+	{
+		return false;
+	}
+	DataBaseStorage::hashWriteOneFieldBool(p_deviceId, "isRegister", l_uecontext->isRegister);
+	DataBaseStorage::hashWriteOneFieldBool(p_deviceId, "isOnline", l_uecontext->isOnline);
+	DataBaseStorage::hashWriteOneFieldBool(p_deviceId, "isAuth", l_uecontext->isAuth);
+	DataBaseStorage::hashWriteOneFieldBool(p_deviceId, "isPlugIn", l_uecontext->isPlugIn);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "lastHeartbeat", l_uecontext->lastHeartbeat);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "peerUDPHost", l_uecontext->peerUDPHost);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "peerUDPPort", l_uecontext->peerUDPPort);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "UDPSocketfd", l_uecontext->UDPSocketfd);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "peerTCPHost", l_uecontext->peerTCPHost);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "peerTCPPort", l_uecontext->peerTCPPort);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "TCPSocketfd", l_uecontext->TCPSocketfd);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceId", l_uecontext->deviceId);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceMac", l_uecontext->deviceMac);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceType", l_uecontext->deviceType);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "productToken", l_uecontext->productToken);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "gwToken", l_uecontext->gwToken);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceToken", l_uecontext->deviceToken);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "andlinkToken", l_uecontext->andlinkToken);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "DevRND", l_uecontext->DevRND);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "firmwareVersion", l_uecontext->firmwareVersion);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "softwareVersion", l_uecontext->softwareVersion);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "ipAddress", l_uecontext->ipAddress);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceVendor", l_uecontext->deviceVendor);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceModel", l_uecontext->deviceModel);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "deviceSn", l_uecontext->deviceSn);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "apUplinkType", l_uecontext->apUplinkType);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "radio5", l_uecontext->radio5);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "user_key", l_uecontext->user_key);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "SyncCode", l_uecontext->SyncCode);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "heartBeatTime", l_uecontext->heartBeatTime);
+	DataBaseStorage::hashWriteOneFieldNumber(p_deviceId, "encrypt", l_uecontext->encrypt);
+	DataBaseStorage::hashWriteOneField(p_deviceId, "ChallengeCode", l_uecontext->ChallengeCode);
+
+	DataBaseStorage::setAdd(c_deviceListKey, p_deviceId);
+	return true;
+}
+
+bool UeContextHolderAndlink::recoveryAllDataFromRemoteServer()
+{
+	auto l_deviceList = DataBaseStorage::setGetAll(c_deviceListKey);
+	for(auto iter = l_deviceList.begin() ; iter != l_deviceList.end(); iter++)
+	{
+		std::string l_deviceID = *iter;
+		auto l_uecontext = getRef(l_deviceID);
+		if(!l_uecontext)
+		{
+			l_uecontext = std::make_shared<UeContextAndlink>(l_deviceID);
+			add(l_deviceID, l_uecontext);
+		}
+
+		l_uecontext->isRegister = DataBaseStorage::hashReadOneFieldBool(l_deviceID, "isRegister");
+		l_uecontext->isOnline = DataBaseStorage::hashReadOneFieldBool(l_deviceID, "isOnline");
+		l_uecontext->isAuth = DataBaseStorage::hashReadOneFieldBool(l_deviceID, "isAuth");
+		l_uecontext->isPlugIn = DataBaseStorage::hashReadOneFieldBool(l_deviceID, "isPlugIn");
+		l_uecontext->lastHeartbeat = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "lastHeartbeat");
+		l_uecontext->peerUDPHost = DataBaseStorage::hashReadOneField(l_deviceID, "peerUDPHost");
+		l_uecontext->peerUDPPort = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "peerUDPPort");
+		l_uecontext->UDPSocketfd = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "UDPSocketfd");
+		l_uecontext->peerTCPHost = DataBaseStorage::hashReadOneField(l_deviceID, "peerTCPHost");
+		l_uecontext->peerTCPPort = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "peerTCPPort");
+		l_uecontext->TCPSocketfd = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "TCPSocketfd");
+		//l_uecontext->deviceId = DataBaseStorage::hashReadOneField(l_deviceID, "deviceId");
+		l_uecontext->deviceMac = DataBaseStorage::hashReadOneField(l_deviceID, "deviceMac");
+		l_uecontext->deviceType = DataBaseStorage::hashReadOneField(l_deviceID, "deviceType");
+		l_uecontext->productToken = DataBaseStorage::hashReadOneField(l_deviceID, "productToken");
+		l_uecontext->gwToken = DataBaseStorage::hashReadOneField(l_deviceID, "gwToken");
+		l_uecontext->deviceToken = DataBaseStorage::hashReadOneField(l_deviceID, "deviceToken");
+		l_uecontext->andlinkToken = DataBaseStorage::hashReadOneField(l_deviceID, "andlinkToken");
+		l_uecontext->DevRND = DataBaseStorage::hashReadOneField(l_deviceID, "DevRND");
+		l_uecontext->firmwareVersion = DataBaseStorage::hashReadOneField(l_deviceID, "firmwareVersion");
+		l_uecontext->softwareVersion = DataBaseStorage::hashReadOneField(l_deviceID, "softwareVersion");
+		l_uecontext->ipAddress = DataBaseStorage::hashReadOneField(l_deviceID, "ipAddress");
+		l_uecontext->deviceVendor = DataBaseStorage::hashReadOneField(l_deviceID, "deviceVendor");
+		l_uecontext->deviceModel = DataBaseStorage::hashReadOneField(l_deviceID, "deviceModel");
+		l_uecontext->deviceSn = DataBaseStorage::hashReadOneField(l_deviceID, "deviceSn");
+		l_uecontext->apUplinkType = DataBaseStorage::hashReadOneField(l_deviceID, "apUplinkType");
+		l_uecontext->radio5 = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "radio5");
+		l_uecontext->user_key = DataBaseStorage::hashReadOneField(l_deviceID, "user_key");
+		l_uecontext->SyncCode = DataBaseStorage::hashReadOneField(l_deviceID, "SyncCode");
+		l_uecontext->heartBeatTime = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "heartBeatTime");
+		l_uecontext->encrypt = DataBaseStorage::hashReadOneFieldNumber(l_deviceID, "encrypt");
+		l_uecontext->ChallengeCode = DataBaseStorage::hashReadOneField(l_deviceID, "ChallengeCode");
+
+		LOG(INFO) << "recovery " << *iter;
+	}
 	return true;
 }
 

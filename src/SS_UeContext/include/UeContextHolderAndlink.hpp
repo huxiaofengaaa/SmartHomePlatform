@@ -51,11 +51,9 @@ private:
 	std::string generatorDeviceToken();
 	std::string generatorAndlinkToken();
 
-	bool recoveryAllDataFromRemoteServer()
-	{
-		//TODO
-		return true;
-	}
+	const std::string c_deviceListKey = "SmartHomePlatformAndlinkDeviceList";
+	bool storeAndlinkDevice(std::string p_deviceId);
+	bool recoveryAllDataFromRemoteServer();
 
 	int m_defaultEncryptType;
 

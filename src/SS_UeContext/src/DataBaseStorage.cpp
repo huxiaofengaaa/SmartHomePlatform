@@ -182,9 +182,12 @@ bool DataBaseStorage::hashWriteOneField(std::string p_key, std::string p_field, 
 
 	redisReply *l_redisResp= (redisReply *)redisCommand(m_redisClientHandler,
 			"hset %s %s %s", p_key.c_str(), p_field.c_str(), p_value.c_str());
-	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_INTEGER
-			&& l_redisResp->integer == 0)
+	if(l_redisResp != NULL && l_redisResp->type == REDIS_REPLY_INTEGER)
 	{
+		if(l_redisResp->integer == 0)
+		{
+			LOG(INFO) << "key " << p_key << " field " << p_field << " already exist, modify it";
+		}
 		l_writeResult = true;
 	}
 	else
@@ -199,6 +202,24 @@ bool DataBaseStorage::hashWriteOneField(std::string p_key, std::string p_field, 
 		l_redisResp = NULL;
 	}
 	return l_writeResult;
+}
+
+bool DataBaseStorage::hashWriteOneFieldNumber(std::string p_key, std::string p_field, int p_value)
+{
+	std::string l_fieldValue = std::to_string(p_value);
+	return hashWriteOneField(p_key, p_field, l_fieldValue);
+}
+
+bool DataBaseStorage::hashWriteOneFieldBool(std::string p_key, std::string p_field, bool p_value)
+{
+	if(p_value == true)
+	{
+		return hashWriteOneField(p_key, p_field, "true");
+	}
+	else
+	{
+		return hashWriteOneField(p_key, p_field, "false");
+	}
 }
 
 std::string DataBaseStorage::hashReadOneField(std::string p_key, std::string p_field, std::string p_defaultValue)
@@ -226,6 +247,23 @@ std::string DataBaseStorage::hashReadOneField(std::string p_key, std::string p_f
 		l_redisResp = NULL;
 	}
 	return l_readResult;
+}
+
+int DataBaseStorage::hashReadOneFieldNumber(std::string p_key, std::string p_field, int p_defaultValue)
+{
+	std::string l_defaultStringValue = std::to_string(p_defaultValue);
+	std::string l_returnValue = hashReadOneField(p_key, p_field, l_defaultStringValue);
+	return std::atoi(l_returnValue.c_str());
+}
+
+bool DataBaseStorage::hashReadOneFieldBool(std::string p_key, std::string p_field)
+{
+	std::string l_returnValue = hashReadOneField(p_key, p_field, "");
+	if(l_returnValue == "true")
+	{
+		return true;
+	}
+	return false;
 }
 
 bool DataBaseStorage::setAdd(std::string p_key, std::string p_value)

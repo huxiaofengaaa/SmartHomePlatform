@@ -20,7 +20,12 @@ public:
 	std::string readString(std::string p_key, std::string p_defaultValue = "");
 
 	bool hashWriteOneField(std::string p_key, std::string p_field, std::string p_value);
+	bool hashWriteOneFieldNumber(std::string p_key, std::string p_field, int p_value);
+	bool hashWriteOneFieldBool(std::string p_key, std::string p_field, bool p_value);
+
 	std::string hashReadOneField(std::string p_key, std::string p_field, std::string p_defaultValue = "");
+	int hashReadOneFieldNumber(std::string p_key, std::string p_field, int p_defaultValue = 0);
+	bool hashReadOneFieldBool(std::string p_key, std::string p_field);
 
 	bool setAdd(std::string p_key, std::string p_value);
 	std::vector<std::string> setGetAll(std::string p_key);
